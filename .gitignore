@@ -1,0 +1,19 @@
+### Composer ###
+composer.phar
+/vendor/
+
+### Git ###
+*.orig
+
+### PhpStorm+all Patch ###
+# Ignores the whole idea folder
+# See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
+
+.idea/
+
+### VisualStudioCode ###
+.vscode/
+.history
+
+### Environment Variables ###
+.env

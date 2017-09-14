@@ -1,0 +1,14 @@
+{
+    "name": "andreas.martin/stage-t1",
+    "authors": [
+        {
+            "name": "Andreas Martin",
+            "email": "andreas.martin@andreasmartin.ch"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "HelloWorld\\": "src/"
+        }
+    }
+}
