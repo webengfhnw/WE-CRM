@@ -15,5 +15,12 @@ composer.phar
 .vscode/
 .history
 
+### Visual Paradigm ###
+.vpprefdata/
+*.vpp~*
+*.vpp.*
+*.lock
+tmp/*
+
 ### Environment Variables ###
 .env
