@@ -21,7 +21,17 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 - UC-5 [Generate a PDF customer list]: Agents can generate a PDF containing a list of their customers.
 - UC-6 [Send customer list via email]: Agents can send an email containing a list of their customers to their own inbox.
 
+#### Constraints
+
 ### Design
+
+#### Solution Strategy
+
+#### Wireframe
+
+![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png)
+![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
+![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
 
 #### Domain Model
 
@@ -30,6 +40,14 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 #### ERD
 
 ![](modelling/images/WE-CRM-ERD.png)
+
+#### Data Access
+
+![](modelling/images/WE-CRM-Data-Access.png)
+
+#### Business Logic
+
+![](modelling/images/WE-CRM-Business-Logic.png)
 
 ### Implementation
 
@@ -49,7 +67,7 @@ CREATE TABLE Agent (
   Email    varchar(255), 
   Password varchar(255), 
   PRIMARY KEY (ID));
-ALTER TABLE Customer ADD INDEX AgentCustomers (AgentID), ADD CONSTRAINT AgentCustomers FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE Customer ADD INDEX AgentCustomer (AgentID), ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
 ```
 
 ##### PostgreSQL
@@ -66,9 +84,8 @@ CREATE TABLE Agent (
   Email    varchar(255), 
   Password varchar(255), 
   PRIMARY KEY (ID));
-ALTER TABLE Customer ADD CONSTRAINT AgentCustomers FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
 ```
-
 
 #### Stage 1: Building a Static Website with Bootstrap
 

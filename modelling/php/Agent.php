@@ -40,7 +40,7 @@ class Agent {
 	 * @ParamType id int
 	 * @ReturnType void
 	 */
-	public function setId(&$id) {
+	public function setId($id) {
 		$this->id = $id;
 	}
 
@@ -60,7 +60,7 @@ class Agent {
 	 * @ParamType email String
 	 * @ReturnType void
 	 */
-	public function setEmail(&$email) {
+	public function setEmail($email) {
 		$this->email = $email;
 	}
 
@@ -80,7 +80,7 @@ class Agent {
 	 * @ParamType password String
 	 * @ReturnType void
 	 */
-	public function setPassword(&$password) {
+	public function setPassword($password) {
 		$this->password = $password;
 	}
 }

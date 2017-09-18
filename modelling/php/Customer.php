@@ -44,7 +44,7 @@ class Customer {
 	 * @ParamType id int
 	 * @ReturnType void
 	 */
-	public function setId(&$id) {
+	public function setId($id) {
 		$this->id = $id;
 	}
 
@@ -64,7 +64,7 @@ class Customer {
 	 * @ParamType name String
 	 * @ReturnType void
 	 */
-	public function setName(&$name) {
+	public function setName($name) {
 		$this->name = $name;
 	}
 
@@ -84,7 +84,7 @@ class Customer {
 	 * @ParamType email String
 	 * @ReturnType void
 	 */
-	public function setEmail(&$email) {
+	public function setEmail($email) {
 		$this->email = $email;
 	}
 
@@ -104,7 +104,7 @@ class Customer {
 	 * @ParamType mobile String
 	 * @ReturnType void
 	 */
-	public function setMobile(&$mobile) {
+	public function setMobile($mobile) {
 		$this->mobile = $mobile;
 	}
 }
