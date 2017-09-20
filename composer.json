@@ -11,7 +11,7 @@
     "php": "~7.1.0"
   },
   "scripts": {
-    "post-install-cmd": ["cd stageT1 && composer install"],
-    "post-update-cmd": ["cd stageT1 && composer update"]
+    "post-install-cmd": ["cd stageT1 && composer install && dir"],
+    "post-update-cmd": ["cd stageT1 && composer update && dir"]
   }
 }
