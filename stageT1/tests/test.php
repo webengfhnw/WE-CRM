@@ -1,7 +1,7 @@
 <?php
 
 // Autoload files using the Composer autoloader.
-require('../../vendor/autoload.php');
+require('../vendor/autoload.php');
 
 use HelloWorld\Greetings;
 
