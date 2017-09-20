@@ -1,6 +1,6 @@
 ### Composer ###
 composer.phar
-/vendor/
+vendor/
 !/composer.lock
 
 ### Git ###
