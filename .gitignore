@@ -1,7 +1,7 @@
 ### Composer ###
 composer.phar
 /vendor/
-*.lock
+!/composer.lock
 
 ### Git ###
 *.orig
@@ -9,7 +9,6 @@ composer.phar
 ### PhpStorm+all Patch ###
 # Ignores the whole idea folder
 # See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
-
 .idea/
 
 ### VisualStudioCode ###
@@ -20,7 +19,6 @@ composer.phar
 .vpprefdata/
 *.vpp~*
 *.vpp.*
-tmp/*
 
 ### Environment Variables ###
 .env
