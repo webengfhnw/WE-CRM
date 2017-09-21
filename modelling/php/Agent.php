@@ -13,6 +13,10 @@ class Agent {
 	/**
 	 * @AttributeType String
 	 */
+	private $name;
+	/**
+	 * @AttributeType String
+	 */
 	private $email;
 	/**
 	 * @AttributeType String
@@ -42,6 +46,26 @@ class Agent {
 	 */
 	public function setId($id) {
 		$this->id = $id;
+	}
+
+	/**
+	 * @access public
+	 * @return String
+	 * @ReturnType String
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	 * @access public
+	 * @param String name
+	 * @return void
+	 * @ParamType name String
+	 * @ReturnType void
+	 */
+	public function setName($name) {
+		$this->name = $name;
 	}
 
 	/**
