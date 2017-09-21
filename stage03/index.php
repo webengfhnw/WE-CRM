@@ -48,6 +48,13 @@ route("GET", "/logout", function() {
 });
 
 route_auth("GET", "/", $auth, function() {
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            SELECT * FROM customer;');
+    $stmt->execute();
+    global $customers;
+    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     layoutSetContent("customers.php");
 });
 
@@ -60,11 +67,28 @@ route_auth("GET", "/customer/create", $auth, function() {
 });
 
 route_auth("GET", "/customer/edit", $auth, function() {
+    $id = $_GET["id"];
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            SELECT * FROM customer WHERE id = :id;');
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+    global $customer;
+    $customer = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
     layoutSetContent("customerEdit.php");
 });
 
 route_auth("GET", "/customer/delete", $auth, function() {
-    $data = $_GET["id"];
+    $id = $_GET["id"];
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            DELETE FROM customer
+            WHERE id = :id
+        ');
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
     redirect("/");
 });
 
@@ -84,6 +108,19 @@ route_auth("POST", "/customer/update", $auth, function() {
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':mobile', $mobile);
         $stmt->bindValue(':agentid', 1);
+        $stmt->execute();
+    }else{
+        require("database/database.php");
+        $pdoInstance = connect();
+        $stmt = $pdoInstance->prepare('
+            UPDATE customer SET name = :name,
+                email = :email,
+                mobile = :mobile
+            WHERE id = :id');
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':mobile', $mobile);
+        $stmt->bindValue(':id', $id);
         $stmt->execute();
     }
     redirect("/");
