@@ -21,4 +21,4 @@ vendor/
 *.vpp.*
 
 ### Environment Variables ###
-.env
+*.env
