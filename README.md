@@ -53,41 +53,35 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 
 #### SQL
 
-##### MySQL
-```SQL
-CREATE TABLE Customer (
-  ID      int(10) NOT NULL AUTO_INCREMENT, 
-  Name    varchar(255), 
-  Email   varchar(255), 
-  Mobile  varchar(255), 
-  AgentID int(10) NOT NULL, 
-  PRIMARY KEY (ID));
-CREATE TABLE Agent (
-  ID       int(10) NOT NULL AUTO_INCREMENT, 
-  Email    varchar(255), 
-  Password varchar(255), 
-  PRIMARY KEY (ID));
-ALTER TABLE Customer ADD INDEX AgentCustomer (AgentID), ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
-```
-
 ##### PostgreSQL
 ```SQL
 CREATE TABLE Customer (
-  ID      SERIAL NOT NULL, 
-  Name    varchar(255), 
-  Email   varchar(255), 
-  Mobile  varchar(255), 
-  AgentID int4 NOT NULL, 
+  ID      SERIAL NOT NULL,
+  Name    varchar(255),
+  Email   varchar(255),
+  Mobile  varchar(255),
+  AgentID int4 NOT NULL,
   PRIMARY KEY (ID));
 CREATE TABLE Agent (
-  ID       SERIAL NOT NULL, 
-  Email    varchar(255), 
-  Password varchar(255), 
+  ID       SERIAL NOT NULL,
+  Name     varchar(255),
+  Email    varchar(255),
+  Password varchar(255),
   PRIMARY KEY (ID));
 ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
 ```
 
 #### Stage 1: Building a Static Website with Bootstrap
+
+#### Stage 3:
+uncomment the following lines in php.ini:
+
+extension=php_pdo_pgsql.dll
+extension=php_pgsql.dll
+
+```SQL
+INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
+```
 
 ### Evaluation and Deployment
 

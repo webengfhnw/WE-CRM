@@ -7,7 +7,8 @@ CREATE TABLE Customer (
   PRIMARY KEY (ID));
 CREATE TABLE Agent (
   ID       SERIAL NOT NULL, 
+  Name     varchar(255), 
   Email    varchar(255), 
   Password varchar(255), 
   PRIMARY KEY (ID));
-ALTER TABLE Customer ADD CONSTRAINT AgentCustomers FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
