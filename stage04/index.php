@@ -86,7 +86,7 @@ route_auth("GET", "/", $auth, function () {
     require("database/database.php");
     $pdoInstance = connect();
     $stmt = $pdoInstance->prepare('
-            SELECT * FROM customer WHERE agentid = :agentId;');
+            SELECT * FROM customer WHERE agentid = :agentId ORDER BY id;');
     $stmt->bindValue(':agentId', $_SESSION["agentLogin"]["id"]);
     $stmt->execute();
     global $customers;
