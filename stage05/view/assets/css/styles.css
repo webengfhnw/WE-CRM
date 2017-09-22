@@ -1,0 +1,9 @@
+.btn-group {
+  white-space:nowrap;
+}
+
+.btn-group > .btn {
+  float:none;
+  display:inline-block;
+}
+

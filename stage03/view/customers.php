@@ -27,7 +27,7 @@
                 <td>jonny@miller.net </td>
                 <td>+41797007070 </td>
                 <td>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group btn-group-sm" role="group">
                         <a class="btn btn-default" role="button" href="customer/edit?id=1"> <i class="fa fa-edit"></i></a>
                         <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=1"> <i class="glyphicon glyphicon-trash"></i></button>
                     </div>
@@ -39,7 +39,7 @@
                 <td>james@mauer.net </td>
                 <td>+41788008080 </td>
                 <td>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group btn-group-sm" role="group">
                         <a class="btn btn-default" role="button" href="customer/edit?id=2"> <i class="fa fa-edit"></i></a>
                         <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=2"> <i class="glyphicon glyphicon-trash"></i></button>
                     </div>

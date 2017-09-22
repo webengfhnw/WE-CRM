@@ -30,7 +30,7 @@
                 <td><?php echo $customer["email"] ?> </td>
                 <td><?php echo $customer["mobile"] ?> </td>
                 <td>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group btn-group-sm" role="group">
                         <a class="btn btn-default" role="button" href="customer/edit?id=<?php echo $customer["id"] ?>"> <i class="fa fa-edit"></i></a>
                         <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=<?php echo $customer["id"] ?>"> <i class="glyphicon glyphicon-trash"></i></button>
                     </div>
