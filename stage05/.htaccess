@@ -1,7 +1,7 @@
 RewriteEngine On
 
-RewriteCond %{HTTP_HOST} ^(.*)\.herokuapp\.com$
 RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^(.*)\.herokuapp\.com$
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
 
 RewriteCond %{REQUEST_FILENAME} !-d
