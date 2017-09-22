@@ -8,8 +8,8 @@
 
 function connect()
 {
-    global $pdoConfig;
-    $pdoInstance = new PDO ($pdoConfig["dsn"], $pdoConfig["user"], $pdoConfig["password"]);
+    global $config;
+    $pdoInstance = new PDO ($config["pdo"]["dsn"], $config["pdo"]["user"], $config["pdo"]["password"]);
     $pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $pdoInstance;
 }
