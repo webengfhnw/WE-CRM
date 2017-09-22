@@ -1,4 +1,9 @@
-RewriteEngine on
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^(.*)\.herokuapp\.com$
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(?!.*assets/)(.*) index.php [L,E=ORIGINAL_PATH:/$1]
