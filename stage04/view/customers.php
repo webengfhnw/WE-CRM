@@ -21,30 +21,22 @@
             </tr>
             </thead>
             <tbody>
+            <?php
+            global $customers;
+            foreach($customers as $customer): ?>
             <tr>
-                <td>1 </td>
-                <td>Jonny Miller</td>
-                <td>jonny@miller.net </td>
-                <td>+41797007070 </td>
+                <td><?php echo $customer["id"] ?> </td>
+                <td><?php echo $customer["name"] ?></td>
+                <td><?php echo $customer["email"] ?> </td>
+                <td><?php echo $customer["mobile"] ?> </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a class="btn btn-default" role="button" href="customer/edit?id=1"> <i class="fa fa-edit"></i></a>
-                        <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=1"> <i class="glyphicon glyphicon-trash"></i></button>
+                        <a class="btn btn-default" role="button" href="customer/edit?id=<?php echo $customer["id"] ?>"> <i class="fa fa-edit"></i></a>
+                        <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=<?php echo $customer["id"] ?>"> <i class="glyphicon glyphicon-trash"></i></button>
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td>2 </td>
-                <td>James Mauer</td>
-                <td>james@mauer.net </td>
-                <td>+41788008080 </td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a class="btn btn-default" role="button" href="customer/edit?id=2"> <i class="fa fa-edit"></i></a>
-                        <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customer/delete?id=2"> <i class="glyphicon glyphicon-trash"></i></button>
-                    </div>
-                </td>
-            </tr>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>

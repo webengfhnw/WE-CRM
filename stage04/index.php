@@ -82,29 +82,82 @@ route("GET", "/logout", function () {
     redirect("/login");
 });
 
-route_auth("GET", "/", $auth, function() {
+route_auth("GET", "/", $auth, function () {
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            SELECT * FROM customer WHERE agentid = :agentId;');
+    $stmt->bindValue(':agentId', $_SESSION["agentLogin"]["id"]);
+    $stmt->execute();
+    global $customers;
+    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     layoutSetContent("customers.php");
 });
 
-route_auth("GET", "/agent/edit", $auth, function() {
+route_auth("GET", "/agent/edit", $auth, function () {
     require_once("view/agentEdit.php");
 });
 
-route_auth("GET", "/customer/create", $auth, function() {
+route_auth("GET", "/customer/create", $auth, function () {
     layoutSetContent("customerEdit.php");
 });
 
-route_auth("GET", "/customer/edit", $auth, function() {
+route_auth("GET", "/customer/edit", $auth, function () {
+    $id = $_GET["id"];
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            SELECT * FROM customer WHERE id = :id;');
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+    global $customer;
+    $customer = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
     layoutSetContent("customerEdit.php");
 });
 
-route_auth("GET", "/customer/delete", $auth, function() {
-    $data = $_GET["id"];
+route_auth("GET", "/customer/delete", $auth, function () {
+    $id = $_GET["id"];
+    require("database/database.php");
+    $pdoInstance = connect();
+    $stmt = $pdoInstance->prepare('
+            DELETE FROM customer
+            WHERE id = :id
+        ');
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
     redirect("/");
 });
 
-route_auth("POST", "/customer/update", $auth, function() {
-    $data = $_POST["name"];
+route_auth("POST", "/customer/update", $auth, function () {
+    $id = $_POST["id"];
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $mobile = $_POST["mobile"];
+    if ($id === "") {
+        require("database/database.php");
+        $pdoInstance = connect();
+        $stmt = $pdoInstance->prepare('
+            INSERT INTO customer (name, email, mobile, agentid)
+            VALUES (:name, :email , :mobile, :agentid)');
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':mobile', $mobile);
+        $stmt->bindValue(':agentid', $_SESSION["agentLogin"]["id"]);
+        $stmt->execute();
+    } else {
+        require("database/database.php");
+        $pdoInstance = connect();
+        $stmt = $pdoInstance->prepare('
+            UPDATE customer SET name = :name,
+                email = :email,
+                mobile = :mobile
+            WHERE id = :id');
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':mobile', $mobile);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+    }
     redirect("/");
 });
 
