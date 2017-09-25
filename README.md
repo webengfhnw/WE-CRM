@@ -73,8 +73,30 @@ ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENC
 
 #### Stage 1: Building a Static Website with Bootstrap
 
+In stage 01 a bootstrap based prototype has been created by using a prototyping application. 
+
+In this case, the prototype application Bootstrap Studio has been used to create a basic user interface design based on an HTML grid, Bootstrap CSS and JavaScript, including the selection of web fonts and font-based icons.
+
+The assets (HTML, CSS, JavaScript, image and font files) has been exported and will be extended in the later stages by PHP logic, and later with jQuery, to build a dynamic website.
+
+#### Stage 2:
+
+````apacheconf
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^(.*)\.herokuapp\.com$
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(?!.*assets/)(.*) index.php [L,E=ORIGINAL_PATH:/$1]
+RewriteRule assets/(.*) view/assets/$1 [NC,L]
+````
+
 #### Stage 3:
-uncomment the following lines in php.ini:
+un-comment the following lines in php.ini:
 
 extension=php_pdo_pgsql.dll
 extension=php_pgsql.dll
@@ -84,6 +106,10 @@ INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
 ```
 
 ### Evaluation and Deployment
+
+#### Heroku Deployment
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 ## Releases
 

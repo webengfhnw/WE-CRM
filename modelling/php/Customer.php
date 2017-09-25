@@ -26,7 +26,7 @@ class Customer {
 	 * @AssociationType Agent
 	 * @AssociationMultiplicity 1
 	 */
-	public $agent;
+	public $agentCustomer;
 
 	/**
 	 * @access public

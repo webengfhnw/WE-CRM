@@ -1,5 +1,6 @@
 <?php
 require_once(realpath(dirname(__FILE__)) . '/Customer.php');
+require_once(realpath(dirname(__FILE__)) . '/AuthToken.php');
 
 /**
  * @access private
@@ -23,10 +24,15 @@ class Agent {
 	 */
 	private $password;
 	/**
-	 * @AssociationType Customer
+	 * @AssociationType Customer[]
 	 * @AssociationMultiplicity 0..*
 	 */
-	public $customer = array();
+	private $customer;
+	/**
+	 * @AssociationType AuthToken
+	 * @AssociationMultiplicity 0..*
+	 */
+	public $agentToken = array();
 
 	/**
 	 * @access public
@@ -106,6 +112,26 @@ class Agent {
 	 */
 	public function setPassword($password) {
 		$this->password = $password;
+	}
+
+	/**
+	 * @access public
+	 * @return Customer[]
+	 * @ReturnType Customer[]
+	 */
+	public function getCustomer() {
+		return $this->customer;
+	}
+
+	/**
+	 * @access public
+	 * @param Customer[] customer
+	 * @return void
+	 * @ParamType customer Customer[]
+	 * @ReturnType void
+	 */
+	public function setCustomer(array $customer) {
+		$this->customer = $customer;
 	}
 }
 ?>
