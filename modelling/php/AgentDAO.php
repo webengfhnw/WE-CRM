@@ -42,26 +42,6 @@ class AgentDAO {
 
 	/**
 	 * @access public
-	 * @param Agent agent
-	 * @return Agent
-	 * @ParamType agent Agent
-	 * @ReturnType Agent
-	 */
-	public function delete(Agent $agent) {
-		// Not yet implemented
-	}
-
-	/**
-	 * @access public
-	 * @return Agent[]
-	 * @ReturnType Agent[]
-	 */
-	public function findAll() {
-		// Not yet implemented
-	}
-
-	/**
-	 * @access public
 	 * @param String email
 	 * @return Agent
 	 * @ParamType email String

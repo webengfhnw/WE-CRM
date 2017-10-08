@@ -51,15 +51,6 @@ class CustomerDAO {
 
 	/**
 	 * @access public
-	 * @return Customer[]
-	 * @ReturnType Customer[]
-	 */
-	public function findAll() {
-		// Not yet implemented
-	}
-
-	/**
-	 * @access public
 	 * @param int agentId
 	 * @return Customer[]
 	 * @ParamType agentId int

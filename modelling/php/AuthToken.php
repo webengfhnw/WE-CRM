@@ -1,6 +1,4 @@
 <?php
-require_once(realpath(dirname(__FILE__)) . '/Agent.php');
-
 /**
  * @access public
  * @author andreas.martin
@@ -23,10 +21,10 @@ class AuthToken {
 	 */
 	private $expiration;
 	/**
-	 * @AssociationType Agent
+	 * @AssociationType int
 	 * @AssociationMultiplicity 1
 	 */
-	private $agent;
+	private $agentId;
 
 	/**
 	 * @access public
@@ -110,22 +108,22 @@ class AuthToken {
 
 	/**
 	 * @access public
-	 * @return Agent
-	 * @ReturnType Agent
+	 * @return int
+	 * @ReturnType int
 	 */
-	public function getAgent() {
-		return $this->agent;
+	public function getAgentId() {
+		return $this->agentId;
 	}
 
 	/**
 	 * @access public
-	 * @param Agent agent
+	 * @param int agentId
 	 * @return void
-	 * @ParamType agent Agent
+	 * @ParamType agentId int
 	 * @ReturnType void
 	 */
-	public function setAgent(Agent $agent) {
-		$this->agent = $agent;
+	public function setAgentId($agentId) {
+		$this->agentId = $agentId;
 	}
 }
 ?>

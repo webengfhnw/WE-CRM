@@ -1,6 +1,5 @@
 <?php
 require_once(realpath(dirname(__FILE__)) . '/Customer.php');
-require_once(realpath(dirname(__FILE__)) . '/AuthToken.php');
 
 /**
  * @access private
@@ -28,11 +27,6 @@ class Agent {
 	 * @AssociationMultiplicity 0..*
 	 */
 	private $customer;
-	/**
-	 * @AssociationType AuthToken
-	 * @AssociationMultiplicity 0..*
-	 */
-	public $agentToken = array();
 
 	/**
 	 * @access public
