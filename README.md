@@ -79,21 +79,32 @@ In this case, the prototype application Bootstrap Studio has been used to create
 
 The assets (HTML, CSS, JavaScript, image and font files) has been exported and will be extended in the later stages by PHP logic, and later with jQuery, to build a dynamic website.
 
-#### Stage 2:
+#### Stage 2: PHP Files and Basic Router
 
-````apacheconf
+In stage 02 the HTML prototype files will be transferred to PHP files and a basic router functionality will be implemented.
+
+The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
+
+```apacheconf
+# .htaccess files provide a way to make configuration changes on a per-directory basis
 RewriteEngine On
 
-RewriteCond %{HTTP_HOST} ^(.*)\.herokuapp\.com$
+# this ensures that HTTPS is used except on localhost
+RewriteCond %{HTTP_HOST} !=localhost
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
 
+# this redirects everything except asset requests to the index.php file
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(?!.*assets/)(.*) index.php [L,E=ORIGINAL_PATH:/$1]
 RewriteRule assets/(.*) view/assets/$1 [NC,L]
-````
+```
+
+The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global.
+
+Finally, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
 
 #### Stage 3:
 un-comment the following lines in php.ini:
@@ -107,15 +118,14 @@ INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
 
 ### Evaluation and Deployment
 
+#### Project Set-Up
+
+##### Git
+The project contains a .gitignore file to keep certain 
+
 #### Heroku Deployment
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-## Releases
-
-### 1.0.0
-
-- Initial version
 
 ## Maintainer
 
