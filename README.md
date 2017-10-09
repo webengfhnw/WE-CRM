@@ -1,9 +1,5 @@
 # WE-CRM
 
-[![GitHub forks](https://img.shields.io/github/forks/badges/shields.svg?style=social&label=Fork)](https://github.com/webengfhnw/WE-CRM)
-[![GitHub last commit](https://img.shields.io/github/last-commit/google/skia.svg)](https://github.com/webengfhnw/WE-CRM)
-[![Website](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=my-website)](https://andreasmartin.ch)
-
 ## Summary
 This is a reference project elaborated by the students step-by-step in every FHNW web engineering lecture.
 
