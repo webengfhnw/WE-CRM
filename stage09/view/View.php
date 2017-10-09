@@ -26,6 +26,12 @@ class View{
         return $this->variables[$key];
     }
 
+    public function __isset($key) {
+        if(!array_key_exists($key, $this->variables))
+            return false;
+        return isset($this->variables[$key]);
+    }
+
     public static function noHTML($input, $encoding = "UTF-8")
     {
         return htmlentities($input, ENT_QUOTES | ENT_HTML5, $encoding);

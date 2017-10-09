@@ -28,10 +28,10 @@ global $agent;
         <h2 class="text-center"><strong>WE-CRM | Update</strong> your account. </h2></div>
     <form action="<?php echo $GLOBALS["ROOT_URL"]; ?>/agent/edit" method="post">
         <div class="form-group">
-            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo !empty($this->agent->getName()) ? $this->agent->getName() : ''; ?>">
+            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo isset($this->agent) ? $this->agent->getName() : ''; ?>">
         </div>
         <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo !empty($this->agent->getEmail()) ? $this->agent->getEmail() : ''; ?>">
+            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo isset($this->agent) ? $this->agent->getEmail() : ''; ?>">
         </div>
         <div class="form-group">
             <input class="form-control" type="password" name="password" placeholder="Password">

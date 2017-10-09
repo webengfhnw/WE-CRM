@@ -14,25 +14,25 @@ use view\View;
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>ID </span></div>
-                <input class="form-control" type="text" name="id" readonly="" value="<?php echo !empty($this->customer->getId()) ? $this->customer->getId() : ''; ?>">
+                <input class="form-control" type="text" name="id" readonly="" value="<?php echo isset($this->customer) ? $this->customer->getId() : ''; ?>">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Name </span></div>
-                <input class="form-control" type="text" name="name" value="<?php echo !empty($this->customer->getName()) ? View::noHTML($this->customer->getName()) : ''; ?>">
+                <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getName()) : ''; ?>">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Email </span></div>
-                <input class="form-control" type="email" name="email" value="<?php echo !empty($this->customer->getEmail()) ? View::noHTML($this->customer->getEmail()) : ''; ?>">
+                <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getEmail()) : ''; ?>">
             </div>
         </div>
         <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><span>Mobile </span></div>
-                    <input class="form-control" type="text" name="mobile" value="<?php echo !empty($this->customer->getMobile()) ? View::noHTML($this->customer->getMobile()) : ''; ?>">
+                    <input class="form-control" type="text" name="mobile" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getMobile()) : ''; ?>">
                 </div>
         </div>
         <div class="btn-group" role="group">
