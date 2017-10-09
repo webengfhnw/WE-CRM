@@ -11,25 +11,26 @@ namespace controller;
 use domain\Customer;
 use service\WECRMServiceImpl;
 use view\View;
+use view\LayoutRendering;
 
 class CustomerController
 {
     public static function create(){
         $contentView = new View("customerEdit.php");
-        layoutRendering($contentView);
+        LayoutRendering::basicLayout($contentView);
     }
 
     public static function readAll(){
         $contentView = new View("customers.php");
         $contentView->customers = WECRMServiceImpl::getInstance()->findAllCustomer();
-        layoutRendering($contentView);
+        LayoutRendering::basicLayout($contentView);
     }
 
     public static function edit(){
         $id = $_GET["id"];
         $contentView = new View("customerEdit.php");
         $contentView->customer = WECRMServiceImpl::getInstance()->readCustomer($id);
-        layoutRendering($contentView);
+        LayoutRendering::basicLayout($contentView);
     }
 
     public static function update(){
@@ -48,14 +49,6 @@ class CustomerController
     public static function delete(){
         $id = $_GET["id"];
         WECRMServiceImpl::getInstance()->deleteCustomer($id);
-    }
-
-    protected function layoutRendering(View $contentView){
-        $view = new View("layout.php");
-        $view->header = (new View("header.php"))->render();
-        $view->content = $contentView->render();
-        $view->footer = (new View("footer.php"))->render();
-        echo $view->render();
     }
 
 }

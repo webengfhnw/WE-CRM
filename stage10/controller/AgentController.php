@@ -8,7 +8,6 @@
 
 namespace controller;
 
-use domain\Agent;
 use service\WECRMServiceImpl;
 use view\View;
 
@@ -28,4 +27,11 @@ class AgentController
         WECRMServiceImpl::getInstance()->registerAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     }
 
+    public static function registerView(){
+        echo (new View("agentRegister.php"))->render();
+    }
+
+    public static function loginView(){
+        echo (new View("agentLogin.php"))->render();
+    }
 }

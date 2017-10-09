@@ -8,42 +8,31 @@
 require_once("config/Autoloader.php");
 
 use router\Router;
-use service\WECRMServiceImpl;
-use view\View;
 use controller\CustomerController;
 use controller\AgentController;
+use controller\AuthController;
+use controller\ErrorController;
 
 session_start();
 
-function layoutRendering(View $contentView){
-    $view = new View("layout.php");
-    $view->header = (new View("header.php"))->render();
-    $view->content = $contentView->render();
-    $view->footer = (new View("footer.php"))->render();
-    echo $view->render();
-}
-
 $auth = function () {
-    if (isset($_SESSION["agentLogin"])) {
-        if(WECRMServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
-            return true;
-        }
-    }
+    if (AuthController::authenticate())
+        return true;
     Router::redirect("/login");
     return false;
 };
 
 $error = function () {
     Router::errorHeader();
-    echo (new View("404.php"))->render();
+    ErrorController::show404();
 };
 
 Router::route("GET", "/login", function () {
-    echo (new View("agentLogin.php"))->render();
+    AgentController::loginView();
 });
 
 Router::route("GET", "/register", function () {
-    echo (new View("agentRegister.php"))->render();
+    AgentController::registerView();
 });
 
 Router::route("POST", "/register", function () {
@@ -52,11 +41,7 @@ Router::route("POST", "/register", function () {
 });
 
 Router::route("POST", "/login", function () {
-    $weCRMService = WECRMServiceImpl::getInstance();
-    if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
-    {
-        $_SESSION["agentLogin"]["token"] = $weCRMService->issueToken();
-    }
+    AuthController::login();
     Router::redirect("/");
 });
 
