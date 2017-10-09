@@ -28,10 +28,7 @@ function call_route($method, $path) {
     global $routes;
     global $error;
     $path = trim(parse_url($path, PHP_URL_PATH), '/');
-    if(!array_key_exists($method, $routes)) {
-        call_user_func($error); return;
-    }
-    if(!array_key_exists($path, $routes[$method])) {
+    if(!array_key_exists($method, $routes) || !array_key_exists($path, $routes[$method])) {
         call_user_func($error); return;
     }
     $route = $routes[$method][$path];

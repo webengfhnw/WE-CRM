@@ -35,10 +35,7 @@ class Router
 
     public static function call_route($method, $path, $error) {
         $path = trim(parse_url($path, PHP_URL_PATH), '/');
-        if(!array_key_exists($method, self::$routes)) {
-            call_user_func($error); return;
-        }
-        if(!array_key_exists($path, self::$routes[$method])) {
+        if(!array_key_exists($method, self::$routes) || !array_key_exists($path, self::$routes[$method])) {
             call_user_func($error); return;
         }
         $route = self::$routes[$method][$path];
