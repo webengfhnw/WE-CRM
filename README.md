@@ -1,5 +1,9 @@
 # WE-CRM
 
+[![GitHub forks](https://img.shields.io/github/forks/badges/shields.svg?style=social&label=Fork)](https://github.com/webengfhnw/WE-CRM)
+[![GitHub last commit](https://img.shields.io/github/last-commit/google/skia.svg)](https://github.com/webengfhnw/WE-CRM)
+[![Website](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=my-website)](https://andreasmartin.ch)
+
 ## Summary
 This is a reference project elaborated by the students step-by-step in every FHNW web engineering lecture.
 
@@ -23,9 +27,13 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 
 #### Constraints
 
+TODO: write
+
 ### Design
 
 #### Solution Strategy
+
+TODO: write
 
 #### Wireframe
 
@@ -37,39 +45,19 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 
 ![](modelling/images/WE-CRM-Domain-Model.png)
 
-#### ERD
+#### Entity Relationship Diagram
 
 ![](modelling/images/WE-CRM-ERD.png)
 
-#### Data Access
+#### Data Access Model
 
 ![](modelling/images/WE-CRM-Data-Access.png)
 
-#### Business Logic
+#### Business Logic Model
 
 ![](modelling/images/WE-CRM-Business-Logic.png)
 
 ### Implementation
-
-#### SQL
-
-##### PostgreSQL
-```SQL
-CREATE TABLE Customer (
-  ID      SERIAL NOT NULL,
-  Name    varchar(255),
-  Email   varchar(255),
-  Mobile  varchar(255),
-  AgentID int4 NOT NULL,
-  PRIMARY KEY (ID));
-CREATE TABLE Agent (
-  ID       SERIAL NOT NULL,
-  Name     varchar(255),
-  Email    varchar(255),
-  Password varchar(255),
-  PRIMARY KEY (ID));
-ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
-```
 
 #### Stage 1: Building a Static Website with Bootstrap
 
@@ -81,7 +69,7 @@ The assets (HTML, CSS, JavaScript, image and font files) has been exported and w
 
 #### Stage 2: PHP Files and Basic Router
 
-In stage 02 the HTML prototype files will be transferred to PHP files and a basic router functionality will be implemented.
+In stage 02 the HTML prototype files will be transferred to PHP files, and a basic router functionality will be implemented.
 
 The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
 
@@ -106,7 +94,34 @@ The basic procedural router provides redirection, an error header, the PATH_INFO
 
 Finally, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
 
-#### Stage 3:
+#### Stage 3: Database and .env Config Files
+
+##### PostgreSQL
+```SQL
+CREATE TABLE Customer (
+  ID      SERIAL NOT NULL, 
+  Name    varchar(255), 
+  Email   varchar(255), 
+  Mobile  varchar(255), 
+  AgentID int4 NOT NULL, 
+  PRIMARY KEY (ID));
+CREATE TABLE Agent (
+  ID       SERIAL NOT NULL, 
+  Name     varchar(255), 
+  Email    varchar(255), 
+  Password varchar(255), 
+  PRIMARY KEY (ID));
+CREATE TABLE AuthToken (
+  ID         SERIAL NOT NULL, 
+  AgentID    int4 NOT NULL, 
+  Selector   varchar(255), 
+  Validator  varchar(255), 
+  Expiration timestamp, 
+  PRIMARY KEY (ID));
+ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+```
+
 un-comment the following lines in php.ini:
 
 extension=php_pdo_pgsql.dll
@@ -119,6 +134,8 @@ INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
 ### Evaluation and Deployment
 
 #### Project Set-Up
+
+TODO: write
 
 ##### Git
 The project contains a .gitignore file to keep certain 
