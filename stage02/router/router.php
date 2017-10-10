@@ -20,16 +20,11 @@ function route($method, $path, $routeFunction) {
 
 function route_auth($method, $path, $auth, $routeFunction) {
     global $routes;
-<<<<<<< HEAD
-    $path = trim($path, "/");
-    $routes[$method][$path] = array("auth" => $auth, "function" => $function);
-=======
 
     /* TODO: add paths to $routes[] array.
      * 1. Maybe you will have to trim the $path first.
      * 2. Create a multi dimensional array (suggestion: $routes[$method][$path]) and store the authFunction and routeFunction Lambdas as one array.
      */
->>>>>>> eccddc7e23eb9a015c0e14edaa9852cfe323020f
 }
 
 function call_route($method, $path) {
