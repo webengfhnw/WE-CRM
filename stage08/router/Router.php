@@ -22,29 +22,29 @@ class Router
         }
     }
 
-    public static function route($method, $path, $function) {
-        self::route_auth($method, $path, null, $function);
+    public static function route($method, $path, $routeFunction) {
+        self::route_auth($method, $path, null, $routeFunction);
     }
 
-    public static function route_auth($method, $path, $auth, $function) {
+    public static function route_auth($method, $path, $authFunction, $routeFunction) {
         if(empty(self::$routes))
             self::init("/index.php");
         $path = trim($path, '/');
-        self::$routes[$method][$path] = array("auth" => $auth, "function" => $function);
+        self::$routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
     }
 
-    public static function call_route($method, $path, $error) {
+    public static function call_route($method, $path, $errorFunction) {
         $path = trim(parse_url($path, PHP_URL_PATH), '/');
         if(!array_key_exists($method, self::$routes) || !array_key_exists($path, self::$routes[$method])) {
-            call_user_func($error); return;
+            $errorFunction(); return;
         }
         $route = self::$routes[$method][$path];
-        if(isset($route["auth"])) {
-            if (!call_user_func($route["auth"])) {
+        if(isset($route["authFunction"])) {
+            if (!$route["authFunction"]()) {
                 return;
             }
         }
-        call_user_func($route["function"]);
+        $route["routeFunction"]();
     }
 
     public static function errorHeader() {

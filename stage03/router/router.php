@@ -14,30 +14,30 @@ else {
     $_SERVER['PATH_INFO'] = "/";
 }
 
-function route($method, $path, $function) {
-    route_auth($method, $path, null, $function);
+function route($method, $path, $routeFunction) {
+    route_auth($method, $path, null, $routeFunction);
 }
 
-function route_auth($method, $path, $auth, $function) {
+function route_auth($method, $path, $authFunction, $routeFunction) {
     global $routes;
     $path = trim($path, '/');
-    $routes[$method][$path] = array("auth" => $auth, "function" => $function);
+    $routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
 }
 
 function call_route($method, $path) {
     global $routes;
-    global $error;
+    global $errorFunction;
     $path = trim(parse_url($path, PHP_URL_PATH), '/');
     if(!array_key_exists($method, $routes) || !array_key_exists($path, $routes[$method])) {
-        call_user_func($error); return;
+        $errorFunction(); return;
     }
     $route = $routes[$method][$path];
-    if(isset($route["auth"])) {
-        if (!call_user_func($route["auth"])) {
+    if(isset($route["authFunction"])) {
+        if (!$route["authFunction"]()) {
             return;
         }
     }
-    call_user_func($route["function"]);
+    $route["routeFunction"]();
 }
 
 function redirect($redirect_path) {

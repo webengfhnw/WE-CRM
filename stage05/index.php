@@ -13,7 +13,7 @@ use router\Router;
 
 session_start();
 
-$auth = function () {
+$authFunction = function () {
     if (isset($_SESSION["agentLogin"])) {
         return true;
     }
@@ -21,7 +21,7 @@ $auth = function () {
     return false;
 };
 
-$error = function () {
+$errorFunction = function () {
     Router::errorHeader();
     require_once("view/404.php");
 };
@@ -84,7 +84,7 @@ $error = function () {
         Router::redirect("/login");
     });
 
-    Router::route_auth("GET", "/", $auth, function () {
+    Router::route_auth("GET", "/", $authFunction, function () {
         require("database/database.php");
         $pdoInstance = connect();
         $stmt = $pdoInstance->prepare('
@@ -96,15 +96,15 @@ $error = function () {
         layoutSetContent("customers.php");
     });
 
-    Router::route_auth("GET", "/agent/edit", $auth, function () {
+    Router::route_auth("GET", "/agent/edit", $authFunction, function () {
         require_once("view/agentEdit.php");
     });
 
-    Router::route_auth("GET", "/customer/create", $auth, function () {
+    Router::route_auth("GET", "/customer/create", $authFunction, function () {
         layoutSetContent("customerEdit.php");
     });
 
-    Router::route_auth("GET", "/customer/edit", $auth, function () {
+    Router::route_auth("GET", "/customer/edit", $authFunction, function () {
         $id = $_GET["id"];
         require("database/database.php");
         $pdoInstance = connect();
@@ -117,7 +117,7 @@ $error = function () {
         layoutSetContent("customerEdit.php");
     });
 
-    Router::route_auth("GET", "/customer/delete", $auth, function () {
+    Router::route_auth("GET", "/customer/delete", $authFunction, function () {
         $id = $_GET["id"];
         require("database/database.php");
         $pdoInstance = connect();
@@ -130,7 +130,7 @@ $error = function () {
         Router::redirect("/");
     });
 
-    Router::route_auth("POST", "/customer/update", $auth, function () {
+    Router::route_auth("POST", "/customer/update", $authFunction, function () {
         $id = $_POST["id"];
         $name = $_POST["name"];
         $email = $_POST["email"];
@@ -163,4 +163,4 @@ $error = function () {
         Router::redirect("/");
     });
 
-Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $error);
+Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
