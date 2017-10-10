@@ -11,7 +11,7 @@ require_once("view/layout.php");
 /* TODO: start the session.
  */
 
-$auth = function() {
+$authFunction = function() {
     /* TODO: check is a session has been set.
     *  real authentication will be implemented later.
     */
@@ -19,7 +19,7 @@ $auth = function() {
     return false;
 };
 
-$error = function() {
+$errorFunction = function() {
     errorHeader();
     /* TODO: add 404 page.
     */
@@ -51,28 +51,28 @@ route("GET", "/logout", function() {
     redirect("/login");
 });
 
-route_auth("GET", "/", $auth, function() {
+route_auth("GET", "/", $authFunction, function() {
     layoutSetContent("customers.php");
 });
 
-route_auth("GET", "/agent/edit", $auth, function() {
+route_auth("GET", "/agent/edit", $authFunction, function() {
     require_once("view/agentEdit.php");
 });
 
-route_auth("GET", "/customer/create", $auth, function() {
+route_auth("GET", "/customer/create", $authFunction, function() {
     layoutSetContent("customerEdit.php");
 });
 
-route_auth("GET", "/customer/edit", $auth, function() {
+route_auth("GET", "/customer/edit", $authFunction, function() {
     layoutSetContent("customerEdit.php");
 });
 
-route_auth("GET", "/customer/delete", $auth, function() {
+route_auth("GET", "/customer/delete", $authFunction, function() {
     $data = $_GET["id"];
     redirect("/");
 });
 
-route_auth("POST", "/customer/update", $auth, function() {
+route_auth("POST", "/customer/update", $authFunction, function() {
     $data = $_POST["name"];
     redirect("/");
 });
