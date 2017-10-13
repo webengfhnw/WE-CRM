@@ -65,19 +65,6 @@ class WECRMServiceImpl implements WECRMService {
 
 	/**
 	 * @access public
-	 * @param string name
-	 * @param String email
-	 * @param String password
-	 * @ParamType name string
-	 * @ParamType email String
-	 * @ParamType password String
-	 */
-	public function registerAgent($name, $email, $password) {
-		// Not yet implemented
-	}
-
-	/**
-	 * @access public
 	 * @return Agent
 	 * @ReturnType Agent
 	 */
@@ -90,9 +77,11 @@ class WECRMServiceImpl implements WECRMService {
 	 * @param string name
 	 * @param String email
 	 * @param String password
+	 * @return boolean
 	 * @ParamType name string
 	 * @ParamType email String
 	 * @ParamType password String
+	 * @ReturnType boolean
 	 */
 	public function editAgent($name, $email, $password) {
 		// Not yet implemented

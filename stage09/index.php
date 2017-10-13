@@ -46,7 +46,7 @@ Router::route("GET", "/register", function () {
 });
 
 Router::route("POST", "/register", function () {
-    WECRMServiceImpl::getInstance()->registerAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+    WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     Router::redirect("/logout");
 });
 

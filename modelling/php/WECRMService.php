@@ -33,17 +33,6 @@ interface WECRMService {
 
 	/**
 	 * @access public
-	 * @param string name
-	 * @param String email
-	 * @param String password
-	 * @ParamType name string
-	 * @ParamType email String
-	 * @ParamType password String
-	 */
-	public function registerAgent($name, $email, $password);
-
-	/**
-	 * @access public
 	 * @return Agent
 	 * @ReturnType Agent
 	 */
@@ -54,9 +43,11 @@ interface WECRMService {
 	 * @param string name
 	 * @param String email
 	 * @param String password
+	 * @return boolean
 	 * @ParamType name string
 	 * @ParamType email String
 	 * @ParamType password String
+	 * @ReturnType boolean
 	 */
 	public function editAgent($name, $email, $password);
 
