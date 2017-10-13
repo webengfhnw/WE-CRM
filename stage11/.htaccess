@@ -3,7 +3,7 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} !=localhost
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,R=301]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
 
 RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
 RewriteRule assets/(.*) view/assets/$1 [QSA,L]
