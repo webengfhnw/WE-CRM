@@ -24,7 +24,7 @@ class AuthToken {
 	 * @AssociationType int
 	 * @AssociationMultiplicity 1
 	 */
-	private $agentId;
+	private $agentid;
 
 	/**
 	 * @access public
@@ -111,19 +111,19 @@ class AuthToken {
 	 * @return int
 	 * @ReturnType int
 	 */
-	public function getAgentId() {
-		return $this->agentId;
+	public function getAgentid() {
+		return $this->agentid;
 	}
 
 	/**
 	 * @access public
-	 * @param int agentId
+	 * @param int agentid
 	 * @return void
-	 * @ParamType agentId int
+	 * @ParamType agentid int
 	 * @ReturnType void
 	 */
-	public function setAgentId($agentId) {
-		$this->agentId = $agentId;
+	public function setAgentid($agentid) {
+		$this->agentid = $agentid;
 	}
 }
 ?>
