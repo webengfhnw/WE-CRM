@@ -79,18 +79,55 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
 
+# this sends the authorization header to a PHP envirnoment variable
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # this redirects everything except asset requests to the index.php file
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(?!.*assets/)(.*) index.php [L,E=ORIGINAL_PATH:/$1]
-RewriteRule assets/(.*) view/assets/$1 [NC,L]
+RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
+RewriteRule assets/(.*) view/assets/$1 [QSA,L]
 ```
 
-The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global.
+The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global. Then, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
 
-Finally, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
+The follwing `route_auth` function stores a route (the configured path) in a multidimensional array using the HTTP method and the path. The route consists of an autentication and a route callback function.
+```PHP
+function route_auth($method, $path, $authFunction, $routeFunction) {
+    global $routes;
+    $path = trim($path, '/');
+    $routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
+}
+```
+The follwing `call_route` function is used to process every request. Remeber this is a besic procedural router, later it will be transferred to OOP style.
+```PHP
+function call_route($method, $path) {
+    global $routes;
+    global $errorFunction;
+    $path = trim(parse_url($path, PHP_URL_PATH), '/');
+    if(!array_key_exists($method, $routes) || !array_key_exists($path, $routes[$method])) {
+        $errorFunction(); return;
+    }
+    $route = $routes[$method][$path];
+    if(isset($route["authFunction"])) {
+        if (!$route["authFunction"]()) {
+            return;
+        }
+    }
+    $route["routeFunction"]();
+}
+```
 
 #### Stage 3: Database and .env Config Files
+
+In stage 3 (and stage 4) WE-CRM will be extended with a database functionality. 
+
+[Link-name2](#domain-model)
+[Link-name2](#default-parameter-direction)
+
+
+- creation of the database
+- creation of config files
+- session and login in DB
+- customer access and view in stage 4
 
 ##### PostgreSQL
 ```SQL
@@ -132,6 +169,10 @@ INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
 #### Project Set-Up
 
 TODO: write
+
+##### Visual Paradigm Configuration
+######  Default Parameter Direction
+![](images/VP-default-parameter-direction.png)
 
 ##### Git
 The project contains a .gitignore file to keep certain 
