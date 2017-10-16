@@ -37,13 +37,13 @@ TODO: write
 ![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
 ![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
 
-#### Domain Model
-
-![](modelling/images/WE-CRM-Domain-Model.png)
-
 #### Entity Relationship Diagram
 
 ![](modelling/images/WE-CRM-ERD.png)
+
+#### Domain Model
+
+![](modelling/images/WE-CRM-Domain-Model.png)
 
 #### Data Access Model
 
@@ -63,9 +63,11 @@ In this case, the prototype application Bootstrap Studio has been used to create
 
 The assets (HTML, CSS, JavaScript, image and font files) has been exported and will be extended in the later stages by PHP logic, and later with jQuery, to build a dynamic website.
 
-#### Stage 2: PHP Files and Basic Router
+#### Stage 2: PHP Files, Basic Router and Session
 
 In stage 02 the HTML prototype files will be transferred to PHP files, and a basic router functionality will be implemented.
+
+##### .htaccess
 
 The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
 
@@ -87,9 +89,11 @@ RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
 RewriteRule assets/(.*) view/assets/$1 [QSA,L]
 ```
 
+##### Procedural Router
+
 The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global. Then, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
 
-The follwing `route_auth` function stores a route (the configured path) in a multidimensional array using the HTTP method and the path. The route consists of an autentication and a route callback function.
+The following `route_auth` function stores a route (the configured path) in a multidimensional array using the HTTP method and the path. The route consists of an authentication and a route callback function.
 ```PHP
 function route_auth($method, $path, $authFunction, $routeFunction) {
     global $routes;
@@ -97,7 +101,7 @@ function route_auth($method, $path, $authFunction, $routeFunction) {
     $routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
 }
 ```
-The follwing `call_route` function is used to process every request. Remeber this is a besic procedural router, later it will be transferred to OOP style.
+The following `call_route` function is used to process every request. Remember this is a basic procedural router, later it will be transferred to OOP style.
 ```PHP
 function call_route($method, $path) {
     global $routes;
@@ -115,21 +119,40 @@ function call_route($method, $path) {
     $route["routeFunction"]();
 }
 ```
+##### Session
 
-#### Stage 3: Database and .env Config Files
+Sessions are an almost secure (not 100%) way to identify a user over several requests.
+
+It is recommended to start a session at the beginning of a PHP script as follows: 
+```PHP
+session_start();
+```
+
+Then a session value (such as a user id) can be stored in the session array:
+```PHP
+$_SESSION["key"] = "value";
+```
+
+And a value can be accessed again:
+```PHP
+$value = $_SESSION["key"];
+```
+
+Finally, a session can be destroyed again if required (such as logout):
+```PHP
+session_destroy();
+```
+
+#### Stage 3: Database, .env Config Files and Passwords
 
 In stage 3 (and stage 4) WE-CRM will be extended with a database functionality. 
 
-[Link-name2](#domain-model)
-[Link-name2](#default-parameter-direction)
+As a first step, an [Entity Relationship Diagram](#entity-relationship-diagram) needs to be created, which can be partially be derived from the use case's nouns.
 
+Depending on the modelling environment, a [Domain Model](#domain-model) can be created in-sync at the same time. Please make sure that ["in" parameter direction](#default-parameter-direction-configuration) is configured. The [Domain Model](#domain-model) will be used in stage 7 to implement a basic object-relational mapping (ORM) using PDO.
 
-- creation of the database
-- creation of config files
-- session and login in DB
-- customer access and view in stage 4
+As a result and depending on the modelling environment ([Visual Paradigm Postgresql Database Generation](#postgresql-database-generation)), a Data Definition Language (DDL) SQL can be exported as follows:
 
-##### PostgreSQL
 ```SQL
 CREATE TABLE Customer (
   ID      SERIAL NOT NULL, 
@@ -155,13 +178,101 @@ ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENC
 ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
 ```
 
-un-comment the following lines in php.ini:
+As a result of this stage, the user (agent) registration and login will be realized using ([Sessions](#session)), ([.env Config Files](#env-config-files)), ([PDO](#pdo)) and dealing with ([Passwords](#session)) securely.
 
+##### .env Config Files
+
+As a best practice, database related configuration should be stored outside of the source code in a configuration file. By convention, `.env` files must be kept outside of a version control by adding an entry to `.gitignore`. In this web application, the database configuration will be loaded from an INI file with an `.env` extension, since PHP provides already integrated functions for reading INI files. The file in the `config` folder may look like this:
+
+```ini
+[database]
+driver=<driver>
+host=<host>
+database=<database>
+user=<user>
+port=5432
+password=<password>
+``` 
+
+To read such an INI file, the following PHP functions can be used:
+```PHP
+$iniFile = "config/config.env";
+if(file_exists($iniFile)) {
+    $dataArray = parse_ini_file($iniFile, true);
+    $dataConfigArray = $dataArray[database];
+    // ...
+}
+```
+
+##### PDO
+
+As a next step, the user (agent) registration and login are realized using PDO for data access.
+
+In order to use PDO with Postgresql the following lines need to be un-commented in php.ini:
+```INI
 extension=php_pdo_pgsql.dll
 extension=php_pgsql.dll
+```
 
-```SQL
-INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
+As a good practice, the PDO instantiation should be kept in a different file (in a later stage different class containing static methods).
+
+The initialization of PDO can be realized as following:
+```PHP
+$pdoInstance = new PDO ($dsn, $username, $password);
+$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+```
+
+Then prepared statements can be executed. In the following example an associative array (`PDO::FETCH_ASSOC`) will be returned. In the later stage 7, objects will be mapped to tables (`PDO::FETCH_CLASS`):
+```PHP
+$stmt = $pdoInstance->prepare('SELECT * FROM table WHERE id = :id;');
+$stmt->bindValue(':id', $id);
+$stmt->execute();
+$resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
+```
+
+#### Passwords
+
+Passwords are extremely sensitive data.
+1. They must be transmitted over HTTPS only - never HTTP only!
+2. Always the best hashing method available in PHP must be used before storing a password in a database table.
+3. Try to keep the raw / un-hashed password as short as possible in memory.
+
+A secure password hashing in PHP can be realized as follows:
+```PHP
+$hashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
+// store the $hashedPassword in DB
+```
+
+A secure password verification with a re-hashing if required can be realized as follows:
+```PHP
+if (password_verify($_POST["password"], $hashedPassword)) {
+    // start session
+    if (password_needs_rehash($hashedPassword, PASSWORD_DEFAULT)) {
+        $reHashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
+        // store the $reHashedPassword in DB
+    }
+}
+```
+
+#### Stage 4: Dynamic Views
+
+In stage 4, the web-application is extended with functionality to store and retrieve customer data in a procedural way and similar as described in the ([PDO](#pdo)) section.
+
+The view files are extended with `<?php ?>` tags injecting the required dynamic data. In this stage, it is still a procedural implementation. The following example shows how a HTML table can be dynamically populated:
+```PHP
+<?php foreach($customers as $customer): ?>
+    <tr>
+        <td><?php echo $customer["id"] ?> </td>
+        <td><?php echo $customer["name"] ?></td>
+        <td><?php echo $customer["email"] ?> </td>
+        <td><?php echo $customer["mobile"] ?> </td>
+    </tr>
+<?php endforeach; ?>
+```
+
+The following code snipped shows how an HTML form input field value can be set, if data is available:
+```PHP
+<input class="form-control" type="email" name="email" value="<?php echo !empty($customer["email"]) ? $customer["email"] : ''; ?>">
 ```
 
 ### Evaluation and Deployment
@@ -170,9 +281,12 @@ INSERT INTO agent (email, password) VALUES ('test@test.org','secret');
 
 TODO: write
 
-##### Visual Paradigm Configuration
-######  Default Parameter Direction
+##### Visual Paradigm
+######  Default Parameter Direction Configuration
 ![](images/VP-default-parameter-direction.png)
+
+######  Postgresql Database Generation
+![](images/VP-database-generation.png)
 
 ##### Git
 The project contains a .gitignore file to keep certain 
