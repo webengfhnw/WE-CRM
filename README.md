@@ -204,6 +204,16 @@ if(file_exists($iniFile)) {
 }
 ```
 
+If this application is deployed out of this GitHub repository to Heroku, the Heroku app can be extended with a Postgresql database. The configuration items to this database can be accessed from PHP code, which is running on Heroku, by using environment variables as follows:
+```PHP
+if(isset($_ENV["DATABASE_URL"])){
+    $dbopts = parse_url(getenv('DATABASE_URL'));
+    $config["pdo"]["dsn"] = "pgsql" . ":host=" . $dbopts["host"] . ";port=" . $dbopts["port"] . "; dbname=" . ltrim($dbopts["path"],'/') . "; sslmode=require";
+    $config["pdo"]["user"] = $dbopts["user"];
+    $config["pdo"]["password"] = $dbopts["pass"];
+}
+```
+
 ##### PDO
 
 As a next step, the user (agent) registration and login are realized using PDO for data access.
