@@ -17,7 +17,7 @@ class AuthToken {
 	 */
 	private $validator;
 	/**
-	 * @AttributeType Timestamp
+	 * @AttributeType String
 	 */
 	private $expiration;
 	/**
@@ -92,7 +92,7 @@ class AuthToken {
 	 * @ReturnType Timestamp
 	 */
 	public function getExpiration() {
-		return $this->expiration;
+		// Not yet implemented
 	}
 
 	/**
@@ -103,7 +103,7 @@ class AuthToken {
 	 * @ReturnType void
 	 */
 	public function setExpiration(Timestamp $expiration) {
-		$this->expiration = $expiration;
+		// Not yet implemented
 	}
 
 	/**

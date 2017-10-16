@@ -1,11 +1,12 @@
 <?php
 require_once(realpath(dirname(__FILE__)) . '/AuthToken.php');
+require_once(realpath(dirname(__FILE__)) . '/BasicDAO.php');
 
 /**
  * @access public
  * @author andreas.martin
  */
-class AuthTokenDAO {
+class AuthTokenDAO extends BasicDAO {
 
 	/**
 	 * @access public

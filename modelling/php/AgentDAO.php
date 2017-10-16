@@ -1,11 +1,12 @@
 <?php
 require_once(realpath(dirname(__FILE__)) . '/Agent.php');
+require_once(realpath(dirname(__FILE__)) . '/BasicDAO.php');
 
 /**
  * @access public
  * @author andreas.martin
  */
-class AgentDAO {
+class AgentDAO extends BasicDAO {
 
 	/**
 	 * @access public

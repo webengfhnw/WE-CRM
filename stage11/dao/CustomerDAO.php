@@ -2,14 +2,13 @@
 
 namespace dao;
 
-use database\Database;
 use domain\Customer;
 
 /**
  * @access public
  * @author andreas.martin
  */
-class CustomerDAO {
+class CustomerDAO extends BasicDAO {
 
 	/**
 	 * @access public
@@ -19,8 +18,7 @@ class CustomerDAO {
 	 * @ReturnType Customer
 	 */
 	public function create(Customer $customer) {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
+        $stmt = $this->pdoInstance->prepare('
             INSERT INTO customer (name, email, mobile, agentid)
             VALUES (:name, :email , :mobile, :agentId)');
         $stmt->bindValue(':name', $customer->getName());
@@ -28,7 +26,7 @@ class CustomerDAO {
         $stmt->bindValue(':mobile', $customer->getMobile());
         $stmt->bindValue(':agentId', $customer->getAgentId());
         $stmt->execute();
-        return $this->read($pdoInstance->lastInsertId());
+        return $this->read($this->pdoInstance->lastInsertId());
 	}
 
 	/**
@@ -39,8 +37,7 @@ class CustomerDAO {
 	 * @ReturnType Customer
 	 */
 	public function read($customerId) {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
+        $stmt = $this->pdoInstance->prepare('
             SELECT * FROM customer WHERE id = :id;');
         $stmt->bindValue(':id', $customerId);
         $stmt->execute();
@@ -55,8 +52,7 @@ class CustomerDAO {
 	 * @ReturnType Customer
 	 */
 	public function update(Customer $customer) {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
+        $stmt = $this->pdoInstance->prepare('
             UPDATE customer SET name = :name,
                 email = :email,
                 mobile = :mobile
@@ -75,8 +71,7 @@ class CustomerDAO {
 	 * @ParamType customer Customer
 	 */
 	public function delete(Customer $customer) {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
+        $stmt = $this->pdoInstance->prepare('
             DELETE FROM customer
             WHERE id = :id
         ');
@@ -92,8 +87,7 @@ class CustomerDAO {
 	 * @ReturnType Customer[]
 	 */
 	public function findByAgent($agentId) {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
+        $stmt = $this->pdoInstance->prepare('
             SELECT * FROM customer WHERE agentid = :agentId ORDER BY id;');
         $stmt->bindValue(':agentId', $agentId);
         $stmt->execute();
