@@ -3,14 +3,12 @@
 ## Summary
 This is a reference project elaborated by the students step-by-step in every FHNW web engineering lecture.
 
-## Process
+## Analysis
 
-### Analysis
-
-#### Scenario
+### Scenario
 WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possible and lightweight demonstration tool that allows agents to manage their customer data. Agents have an own access to their customer data. Besides, agents can email themselves an complete extract or create a PDF of their customers.
 
-#### Use Case
+### Use Case
 
 ![](modelling/images/WE-CRM-Use-Case.png)
 
@@ -21,41 +19,41 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 - UC-5 [Generate a PDF customer list]: Agents can generate a PDF containing a list of their customers.
 - UC-6 [Send customer list via email]: Agents can send an email containing a list of their customers to their own inbox.
 
-#### Constraints
+### Constraints
 
 TODO: write
 
-### Design
+## Design
 
-#### Solution Strategy
+### Solution Strategy
 
 TODO: write
 
-#### Wireframe
+### Wireframe
 
 ![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png)
 ![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
 ![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
 
-#### Entity Relationship Diagram
+### Entity Relationship Diagram
 
 ![](modelling/images/WE-CRM-ERD.png)
 
-#### Domain Model
+### Domain Model
 
 ![](modelling/images/WE-CRM-Domain-Model.png)
 
-#### Data Access Model
+### Data Access Model
 
 ![](modelling/images/WE-CRM-Data-Access.png)
 
-#### Business Logic Model
+### Business Logic Model
 
 ![](modelling/images/WE-CRM-Business-Logic.png)
 
-### Implementation
+## Implementation
 
-#### Stage 1: Building a Static Website with Bootstrap
+### Stage 1: Building a Static Website with Bootstrap
 
 In stage 01 a bootstrap based prototype has been created by using a prototyping application. 
 
@@ -63,11 +61,11 @@ In this case, the prototype application Bootstrap Studio has been used to create
 
 The assets (HTML, CSS, JavaScript, image and font files) has been exported and will be extended in the later stages by PHP logic, and later with jQuery, to build a dynamic website.
 
-#### Stage 2: PHP Files, Basic Router and Session
+### Stage 2: PHP Files, Basic Router and Session
 
 In stage 02 the HTML prototype files will be transferred to PHP files, and a basic router functionality will be implemented.
 
-##### .htaccess
+#### .htaccess
 
 The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
 
@@ -89,7 +87,7 @@ RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
 RewriteRule assets/(.*) view/assets/$1 [QSA,L]
 ```
 
-##### Procedural Router
+#### Procedural Router
 
 The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global. Then, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
 
@@ -119,7 +117,7 @@ function call_route($method, $path) {
     $route["routeFunction"]();
 }
 ```
-##### Session
+#### Session
 
 Sessions are an almost secure (not 100%) way to identify a user over several requests.
 
@@ -143,7 +141,7 @@ Finally, a session can be destroyed again if required (such as logout):
 session_destroy();
 ```
 
-#### Stage 3: Database, .env Config Files and Passwords
+### Stage 3: Database, .env Config Files and Passwords
 
 In stage 3 (and stage 4) WE-CRM will be extended with a database functionality. 
 
@@ -180,7 +178,7 @@ ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES
 
 As a result of this stage, the user (agent) registration and login will be realized using ([Sessions](#session)), ([.env Config Files](#env-config-files)), ([PDO](#pdo)) and dealing with ([Passwords](#session)) securely.
 
-##### .env Config Files
+#### .env Config Files
 
 As a best practice, database related configuration should be stored outside of the source code in a configuration file. By convention, `.env` files must be kept outside of a version control by adding an entry to `.gitignore`. In this web application, the database configuration will be loaded from an INI file with an `.env` extension, since PHP provides already integrated functions for reading INI files. The file in the `config` folder may look like this:
 
@@ -214,7 +212,7 @@ if(isset($_ENV["DATABASE_URL"])){
 }
 ```
 
-##### PDO
+#### PDO
 
 As a next step, the user (agent) registration and login are realized using PDO for data access.
 
@@ -240,7 +238,7 @@ $stmt->execute();
 $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ```
 
-#### Passwords
+### Passwords
 
 Passwords are extremely sensitive data.
 1. They must be transmitted over HTTPS only - never HTTP only!
@@ -264,7 +262,7 @@ if (password_verify($_POST["password"], $hashedPassword)) {
 }
 ```
 
-#### Stage 4: Dynamic Views
+### Stage 4: Dynamic Views
 
 In stage 4, the web-application is extended with functionality to store and retrieve customer data in a procedural way and similar as described in the ([PDO](#pdo)) section.
 
@@ -285,23 +283,23 @@ The following code snipped shows how an HTML form input field value can be set, 
 <input class="form-control" type="email" name="email" value="<?php echo !empty($customer["email"]) ? $customer["email"] : ''; ?>">
 ```
 
-### Evaluation and Deployment
+## Evaluation and Deployment
 
-#### Project Set-Up
+### Project Set-Up
 
 TODO: write
 
-##### Visual Paradigm
-######  Default Parameter Direction Configuration
+#### Visual Paradigm
+#####  Default Parameter Direction Configuration
 ![](images/VP-default-parameter-direction.png)
 
-######  Postgresql Database Generation
+#####  Postgresql Database Generation
 ![](images/VP-database-generation.png)
 
-##### Git
+#### Git
 The project contains a .gitignore file to keep certain 
 
-#### Heroku Deployment
+### Heroku Deployment
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
