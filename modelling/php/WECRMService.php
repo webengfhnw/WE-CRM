@@ -15,10 +15,6 @@ interface WECRMService {
 	 * @AttributeType int
 	 */
 	const RESET_TOKEN = 2;
-	/**
-	 * @AttributeType int
-	 */
-	const JWT_TOKEN = 3;
 
 	/**
 	 * @access public
@@ -106,10 +102,12 @@ interface WECRMService {
 	/**
 	 * @access public
 	 * @param int type
+	 * @param String email
 	 * @return String
 	 * @ParamType type int
+	 * @ParamType email String
 	 * @ReturnType String
 	 */
-	public function issueToken($type = self::AGENT_TOKEN);
+	public function issueToken($type = self::AGENT_TOKEN, $email = null);
 }
 ?>

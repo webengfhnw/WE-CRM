@@ -283,6 +283,18 @@ The following code snipped shows how an HTML form input field value can be set, 
 <input class="form-control" type="email" name="email" value="<?php echo !empty($customer["email"]) ? $customer["email"] : ''; ?>">
 ```
 
+### Stage 12: Auth and Remember Me
+
+### Stage 13: Email and Password Reset
+- SendGrid API
+
+### Stage 14: PDF
+- HyPDF API
+
+### Stage 15: REST Service API
+
+### Stage 16: JavaScript & jQuery Client
+
 ## Evaluation and Deployment
 
 ### Project Set-Up
