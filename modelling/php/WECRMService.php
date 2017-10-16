@@ -29,10 +29,12 @@ interface WECRMService {
 
 	/**
 	 * @access public
+	 * @param String email
 	 * @return Agent
+	 * @ParamType email String
 	 * @ReturnType Agent
 	 */
-	public function readAgent();
+	public function readAgent($email = null);
 
 	/**
 	 * @access public
@@ -91,13 +93,11 @@ interface WECRMService {
 	/**
 	 * @access public
 	 * @param String token
-	 * @param int type
 	 * @return boolean
 	 * @ParamType token String
-	 * @ParamType type int
 	 * @ReturnType boolean
 	 */
-	public function validateToken($token, $type = self::AGENT_TOKEN);
+	public function validateToken($token);
 
 	/**
 	 * @access public

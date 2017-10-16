@@ -25,6 +25,10 @@ class AuthToken {
 	 * @AssociationMultiplicity 1
 	 */
 	private $agentid;
+	/**
+	 * @AttributeType int
+	 */
+	private $type;
 
 	/**
 	 * @access public
@@ -88,22 +92,22 @@ class AuthToken {
 
 	/**
 	 * @access public
-	 * @return Timestamp
-	 * @ReturnType Timestamp
+	 * @return String
+	 * @ReturnType String
 	 */
 	public function getExpiration() {
-		// Not yet implemented
+		return $this->expiration;
 	}
 
 	/**
 	 * @access public
-	 * @param Timestamp expiration
+	 * @param String expiration
 	 * @return void
-	 * @ParamType expiration Timestamp
+	 * @ParamType expiration String
 	 * @ReturnType void
 	 */
-	public function setExpiration(Timestamp $expiration) {
-		// Not yet implemented
+	public function setExpiration($expiration) {
+		$this->expiration = $expiration;
 	}
 
 	/**
@@ -124,6 +128,26 @@ class AuthToken {
 	 */
 	public function setAgentid($agentid) {
 		$this->agentid = $agentid;
+	}
+
+	/**
+	 * @access public
+	 * @return int
+	 * @ReturnType int
+	 */
+	public function getType() {
+		return $this->type;
+	}
+
+	/**
+	 * @access public
+	 * @param int type
+	 * @return void
+	 * @ParamType type int
+	 * @ReturnType void
+	 */
+	public function setType($type) {
+		$this->type = $type;
 	}
 }
 ?>

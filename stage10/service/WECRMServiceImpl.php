@@ -88,13 +88,18 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
+     * @param String email
      * @return Agent
+     * @ParamType email String
      * @ReturnType Agent
      */
-    public function readAgent() {
+    public function readAgent($email = null) {
         if($this->verifyAuth()) {
             $agentDAO = new AgentDAO();
             return $agentDAO->read($this->currentAgentId);
+        } elseif (isset($email)){
+            $agentDAO = new AgentDAO();
+            return $agentDAO->findByEmail($email);
         }
         return null;
     }
@@ -210,25 +215,15 @@ class WECRMServiceImpl implements WECRMService {
     /**
      * @access public
      * @param String token
-     * @param int type
      * @return boolean
      * @ParamType token String
-     * @ParamType type int
      * @ReturnType boolean
      */
-    public function validateToken($token, $type = self::AGENT_TOKEN) {
-        switch ($type){
-            case self::AGENT_TOKEN :
-                $tokenArray = explode(":", $token);
-                if(count($tokenArray)>1) {
-                    $this->currentAgentId = $tokenArray[0];
-                    return true;
-                }
-                break;
-            case self::RESET_TOKEN :
-                break;
-            case self::JWT_TOKEN :
-                break;
+    public function validateToken($token) {
+        $tokenArray = explode(":", $token);
+        if(count($tokenArray)>1) {
+            $this->currentAgentId = $tokenArray[0];
+            return true;
         }
         return false;
     }
