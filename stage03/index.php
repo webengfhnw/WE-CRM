@@ -7,47 +7,48 @@
  */
 require_once("router/router.php");
 require_once("view/layout.php");
+require_once("config/config.php");
 
-/* TODO: start the session.
- */
+session_start();
 
-$authFunction = function() {
-    /* TODO: check is a session has been set.
-    *  real authentication will be implemented later.
-    */
+$authFunction = function () {
+    if (isset($_SESSION["agentLogin"])) {
+        return true;
+    }
     redirect("/login");
     return false;
 };
 
-$errorFunction = function() {
+$errorFunction = function () {
     errorHeader();
-    /* TODO: add 404 page.
-    */
+    require_once("view/404.php");
 };
 
-route("GET", "/login", function() {
-    /* TODO: add agentLogin page.
-    */
+route("GET", "/login", function () {
+    require_once("view/agentLogin.php");
 });
 
-route("GET", "/register", function() {
-    /* TODO: add agentEdit page.
-    */
+route("GET", "/register", function () {
+    require_once("view/agentEdit.php");
 });
 
-route("POST", "/register", function() {
+route("POST", "/register", function () {
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    require("database/database.php");
+    /** TODO: adapt the register function form the testbed here */
     redirect("/logout");
 });
 
-route("POST", "/login", function() {
-    /* TODO: add the email address to the session.
-    */
+route("POST", "/login", function () {
+    $email = $_POST["email"];
+    require("database/database.php");
+    /** TODO: adapt the login function form the testbed here */
     redirect("/");
 });
 
-route("GET", "/logout", function() {
-    /* TODO: remove the session.
-    */
+route("GET", "/logout", function () {
+    session_destroy();
     redirect("/login");
 });
 
@@ -77,7 +78,4 @@ route_auth("POST", "/customer/update", $authFunction, function() {
     redirect("/");
 });
 
-/* TODO: call the router.
- * 1. Find out how the retrieve the request method and the path info from the PHP server variable.
- * 2. call: call_route("... request method and path info ...");
- */
+call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);

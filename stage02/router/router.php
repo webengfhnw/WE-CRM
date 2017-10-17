@@ -14,33 +14,33 @@ else {
     $_SERVER['PATH_INFO'] = "/";
 }
 
-function route($method, $path, $function) {
-    route_auth($method, $path, null, $function);
+function route($method, $path, $routeFunction) {
+    route_auth($method, $path, null, $routeFunction);
 }
 
-function route_auth($method, $path, $auth, $function) {
+function route_auth($method, $path, $auth, $routeFunction) {
     global $routes;
 
     /* TODO: add paths to $routes[] array.
      * 1. Maybe you will have to trim the $path first.
-     * 2. Create a multi dimensional array (suggestion: $routes[$method][$path]) and store the auth and function Lambdas as one array.
+     * 2. Create a multi dimensional array (suggestion: $routes[$method][$path]) and store the authFunction and routeFunction Lambdas as one array.
      */
 }
 
 function call_route($method, $path) {
     global $routes;
-    global $error;
+    global $errorFunction;
     $path = trim(parse_url($path, PHP_URL_PATH), '/');
     /* TODO: check if method (GET, POST...) or path exists in array.
      * If one of both does not exist call the error Lambda:
-     * call_user_func($error); return;
+     * $errorFunction(); return;
      */
     $route = $routes[$method][$path]; // get the route
     /* TODO: check if authentication is required. If yes, call the authentication function.
      * If authentication fails, return immediately.
      */
     /* TODO: call the callback function.
-     * $route["function"]
+     * $route["routeFunction"]();
      */
 }
 
