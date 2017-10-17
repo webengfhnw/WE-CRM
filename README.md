@@ -304,6 +304,7 @@ TODO: write
 
 #### Visual Paradigm
 #####  Default Parameter Direction Configuration
+Go to `Window -> Project Options`
 ![](images/VP-default-parameter-direction.png)
 
 #####  Postgresql Database Generation
