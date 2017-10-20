@@ -88,18 +88,13 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
-     * @param String email
      * @return Agent
-     * @ParamType email String
      * @ReturnType Agent
      */
-    public function readAgent($email = null) {
+    public function readAgent() {
         if($this->verifyAuth()) {
             $agentDAO = new AgentDAO();
             return $agentDAO->read($this->currentAgentId);
-        } elseif (isset($email)){
-            $agentDAO = new AgentDAO();
-            return $agentDAO->findByEmail($email);
         }
         return null;
     }

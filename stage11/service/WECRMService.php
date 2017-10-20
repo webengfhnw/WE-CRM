@@ -36,14 +36,12 @@ interface WECRMService {
      */
     public function verifyAgent($email, $password);
 
-    /**
-     * @access public
-     * @param String email
-     * @return Agent
-     * @ParamType email String
-     * @ReturnType Agent
-     */
-    public function readAgent($email = null);
+	/**
+	 * @access public
+	 * @return Agent
+	 * @ReturnType Agent
+	 */
+	public function readAgent();
 
     /**
      * @access public

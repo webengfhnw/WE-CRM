@@ -29,12 +29,10 @@ interface WECRMService {
 
 	/**
 	 * @access public
-	 * @param String email
 	 * @return Agent
-	 * @ParamType email String
 	 * @ReturnType Agent
 	 */
-	public function readAgent($email = null);
+	public function readAgent();
 
 	/**
 	 * @access public
