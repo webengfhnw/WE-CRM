@@ -449,7 +449,7 @@ The basic idea is to assign a view `.php` file to a view by passing the informat
 ```PHP
 $contentView = new View("customerEdit.php");
 ```
-
+___
 ```PHP
 class View {
 
@@ -467,7 +467,7 @@ $contentView = new View("customerEdit.php");
 $contentView->customer = WECRMServiceImpl::getInstance()->readCustomer($id);
 echo $contentView->render();
 ```
-
+___
 ```PHP
 class View {
 
@@ -490,7 +490,7 @@ The data that has been injected can be accessed within a view `.php` file by usi
 ```PHP
 <input class="form-control" type="text" name="id" readonly="" value="<?php echo isset($this->customer) ? $this->customer->getId() : ''; ?>">
 ```
-
+___
 ```PHP
 class View {
 
@@ -515,7 +515,7 @@ To prevent XSS (Cross-Site Scripting) attacks any character in a user input that
 ```PHP
 <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getName()) : ''; ?>">
 ```
-
+___
 ```PHP
 class View {
 
