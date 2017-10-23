@@ -471,6 +471,7 @@ ___
 ```PHP
 class View {
 
+    private $view;
     private $variables = array();
 
     public function __set($key, $variable) {
