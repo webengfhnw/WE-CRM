@@ -8,9 +8,6 @@
 
 namespace config;
 
-/* TODO: Try to understand how the autoloader class works - you may use the debugger.
- */
-
 class Autoloader
 {
     public static function autoload($className) {
@@ -25,8 +22,5 @@ class Autoloader
         }
     }
 }
-
-/* TODO: Google spl_autoload_register, what does this function do?
- */
 
 spl_autoload_register('config\Autoloader::autoload');
