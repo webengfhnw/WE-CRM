@@ -233,12 +233,6 @@ class WECRMServiceImpl implements WECRMService {
      * @ReturnType String
      */
     public function issueToken($type = self::AGENT_TOKEN, $email = null) {
-        switch ($type){
-            case self::AGENT_TOKEN :
-                return $this->currentAgentId .":". bin2hex(random_bytes(20));
-            case self::RESET_TOKEN :
-                break;
-        }
-        return null;
+        return $this->currentAgentId .":". bin2hex(random_bytes(20));
     }
 }
