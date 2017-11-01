@@ -12,8 +12,9 @@ class Router
 {
     protected static $routes = [];
 
-    public static function init($indexFileName){
-        $GLOBALS["ROOT_URL"] = str_replace($indexFileName,"",$_SERVER['PHP_SELF']);
+    public static function init(){
+        $protocol = !isset($_SERVER['HTTPS'])||(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] !== "https") ? 'http' : 'https';
+        $GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
         if(!empty($_SERVER['REDIRECT_ORIGINAL_PATH'])) {
             $_SERVER['PATH_INFO'] = $_SERVER['REDIRECT_ORIGINAL_PATH'];
         }
@@ -28,7 +29,7 @@ class Router
 
     public static function route_auth($method, $path, $authFunction, $routeFunction) {
         if(empty(self::$routes))
-            self::init("/index.php");
+            self::init();
         $path = trim($path, '/');
         self::$routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
     }

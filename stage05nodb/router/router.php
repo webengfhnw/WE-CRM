@@ -12,7 +12,8 @@
  */
 
 $routes = [];
-$GLOBALS["ROOT_URL"] = str_replace("/index.php","",$_SERVER['PHP_SELF']);
+$protocol = !isset($_SERVER['HTTPS'])||(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] !== "https") ? 'http' : 'https';
+$GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
 if(!empty($_SERVER['REDIRECT_ORIGINAL_PATH'])) {
     $_SERVER['PATH_INFO'] = $_SERVER['REDIRECT_ORIGINAL_PATH'];
 }
