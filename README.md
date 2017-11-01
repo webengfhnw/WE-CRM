@@ -570,9 +570,11 @@ ___
 ```PHP
 class View {
 
-    public static function noHTML($input, $encoding = "UTF-8")
+    public static function noHTML($input, $bEncodeAll = true, $encoding = "UTF-8")
     {
-        return htmlentities($input, ENT_QUOTES | ENT_HTML5, $encoding);
+        if($bEncodeAll)
+            return htmlentities($input, ENT_QUOTES | ENT_HTML5, $encoding);
+        return htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, $encoding);
     }
 }
 ```
