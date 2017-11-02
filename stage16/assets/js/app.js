@@ -2,7 +2,7 @@
  * Created by andreas.martin on 17.11.2016.
  */
 
-let serviceEndpointURL = window.location.protocol + "//" + window.location.host + "/WE-CRM/stage15/api/";
+let serviceEndpointURL = window.location.protocol + "//" + window.location.host + window.location.pathname.substr(0, window.location.pathname.indexOf("stage16")) +"stage15/api/";
 
 function getToken(email, password, callback) {
     $.ajax({
