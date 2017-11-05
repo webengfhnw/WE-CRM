@@ -8,6 +8,8 @@
 
 namespace router;
 
+use http\HTTPHeader;
+
 class Router
 {
     protected static $routes = [];
@@ -66,11 +68,11 @@ class Router
     }
 
     public static function errorHeader() {
-        header("HTTP/1.0 404 Not Found");
+        HTTPHeader::getHeader(HTTPHeader::HTTP_404_NOT_FOUND);
     }
 
     public static function redirect($redirect_path) {
-        header("Location: " . $GLOBALS["ROOT_URL"] . $redirect_path);
+        HTTPHeader::redirect($redirect_path);
     }
 
 }

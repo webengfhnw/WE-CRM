@@ -12,6 +12,8 @@ use domain\Customer;
 use domain\Agent;
 use dao\CustomerDAO;
 use dao\AgentDAO;
+use http\HTTPException;
+use http\HTTPStatusCode;
 
 /**
  * @access public
@@ -90,13 +92,14 @@ class WECRMServiceImpl implements WECRMService {
      * @access public
      * @return Agent
      * @ReturnType Agent
+     * @throws HTTPException
      */
     public function readAgent() {
         if($this->verifyAuth()) {
             $agentDAO = new AgentDAO();
             return $agentDAO->read($this->currentAgentId);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**
@@ -140,6 +143,7 @@ class WECRMServiceImpl implements WECRMService {
      * @return Customer
      * @ParamType customer Customer
      * @ReturnType Customer
+     * @throws HTTPException
      */
     public function createCustomer(Customer $customer) {
         if($this->verifyAuth()) {
@@ -147,7 +151,7 @@ class WECRMServiceImpl implements WECRMService {
             $customer->setAgentId($this->currentAgentId);
             return $customerDAO->create($customer);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**
@@ -156,13 +160,14 @@ class WECRMServiceImpl implements WECRMService {
      * @return Customer
      * @ParamType customerId int
      * @ReturnType Customer
+     * @throws HTTPException
      */
     public function readCustomer($customerId) {
         if($this->verifyAuth()) {
             $customerDAO = new CustomerDAO();
             return $customerDAO->read($customerId);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**
@@ -171,13 +176,14 @@ class WECRMServiceImpl implements WECRMService {
      * @return Customer
      * @ParamType customer Customer
      * @ReturnType Customer
+     * @throws HTTPException
      */
     public function updateCustomer(Customer $customer) {
         if($this->verifyAuth()) {
             $customerDAO = new CustomerDAO();
             return $customerDAO->update($customer);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**
@@ -198,13 +204,14 @@ class WECRMServiceImpl implements WECRMService {
      * @access public
      * @return Customer[]
      * @ReturnType Customer[]
+     * @throws HTTPException
      */
     public function findAllCustomer() {
         if($this->verifyAuth()){
             $customerDAO = new CustomerDAO();
             return $customerDAO->findByAgent($this->currentAgentId);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**

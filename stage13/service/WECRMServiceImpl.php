@@ -13,8 +13,9 @@ use domain\Agent;
 use domain\AuthToken;
 use dao\CustomerDAO;
 use dao\AgentDAO;
+use http\HTTPException;
+use http\HTTPStatusCode;
 use dao\AuthTokenDAO;
-use \Exception;
 
 /**
  * @access public
@@ -241,7 +242,7 @@ class WECRMServiceImpl implements WECRMService {
      * @ParamType type int
      * @ParamType email String
      * @ReturnType String
-     * @throws Exception
+     * @throws HTTPException
      *
      * https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
      * https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication
@@ -260,7 +261,7 @@ class WECRMServiceImpl implements WECRMService {
             $token->setAgentid((new AgentDAO())->findByEmail($email)->getId());
             $timestamp = (new \DateTime('now'))->modify('+1 hour');
         }else{
-            throw new Exception('RESET_TOKEN without email');
+            throw new HTTPException(HTTPStatusCode::HTTP_406_NOT_ACCEPTABLE, 'RESET_TOKEN without email');
         }
         $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
         $validator = random_bytes(20);

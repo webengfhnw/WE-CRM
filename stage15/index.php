@@ -16,6 +16,7 @@ use controller\AgentPasswordResetController;
 use controller\EmailController;
 use controller\PDFController;
 use service\WECRMServiceEndpoint;
+use http\HTTPException;
 
 session_start();
 
@@ -154,4 +155,9 @@ Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, functi
     WECRMServiceEndpoint::delete($id);
 });
 
-Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+try {
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+} catch (HTTPException $exception) {
+    $exception->getHeader();
+    ErrorController::show404();
+}
