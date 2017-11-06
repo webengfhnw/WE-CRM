@@ -28,7 +28,8 @@ This is a reference project elaborated by the students step-by-step in every FHN
     - [Stage 5: namespace/use, Auto-Loading and Class Oriented Router](#stage-5-namespaceuse-auto-loading-and-class-oriented-router)
         - [namespace/use and Auto-Loading](#namespaceuse-and-auto-loading)
         - [Class Oriented Router](#class-oriented-router)
-    - [Stage 6: Database and Config Classes](#stage-6-database-and-config-classes)
+    - [Stage 6: Database, Config Classes, Exception Handling and HTTP Status](#stage-6-database-config-classes-exception-handling-and-http-status)
+        - [Exception Handling and HTTP Status](#exception-handling-and-http-status)
     - [Stage 7: Domain and Data Access Objects (DAO)](#stage-7-domain-and-data-access-objects-dao)
         - [Domain Objects](#domain-objects)
         - [Data Access Objects (DAO)](#data-access-objects-dao)
@@ -392,13 +393,85 @@ Finally, the router will be called by defining the following method in the entry
 Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
 ```
 
-### Stage 6: Database and Config Classes
+### Stage 6: Database, Config Classes, Exception Handling and HTTP Status
 
 In stage 6, the procedural database and configuration developments will be transferred to a class oriented implementation.
 
 The config class consists of static methods delivering configuration parameters defined in the `.env` file (INI-based syntax).
 
 The database class has been implemented to hold an instance of PDO. This instance will be created once of the class attribute is `NULL`.
+
+#### Exception Handling and HTTP Status
+
+Besides, stage 6 contains classes for exception handling. Exceptions are an adequate way to handle with errors. The exceptions are thrown using a `throw` statement followed by an exception class:
+
+```PHP
+function inverse($x) {
+    if (!$x)
+        throw new Exception('Division by zero.');
+    return 1/$x;
+}
+```
+
+Using the try-catch structure, an exception can be handled using the thrown object:
+
+```PHP
+try {
+    inverse(0);
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage();
+}
+```
+
+Since PHP is an HTTP-oriented programming environment, it makes sense to use the HTTP status codes for dealing with exceptions. The file `HTTPStatusHeader.php` contains a list of constants representing common HTTP status codes (based on [Henrique Moody](https://gist.github.com/henriquemoody/6580488) derived from [Wikipedia - List of HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)). Since HTTP status codes are used in standard header definition such as redirects, an `HTTPHeader` class has been implemented as well. Therefore the `HTTPException` and the `HTTPHeader` implementations are using the same HTTP status codes methods, which requires the use of Traits. Traits are an elegant way to overcome typical problems associated with multiple inheritances. The following incomplete and combined listing show the power of Traits:
+
+ ```PHP
+interface HTTPStatusCode
+{
+    const HTTP_200_OK = "OK";
+    // ...
+}
+
+trait HTTPStatusHeader
+{
+    protected static function createHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null)
+    {
+        // ...
+    }
+}
+
+class HTTPHeader implements HTTPStatusCode
+{
+    use HTTPStatusHeader;
+
+    public static function getHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true, $statusPhrase = null){
+        self::createHeader($statusCode, $statusPhrase);
+        // ...
+    }
+}
+
+class HTTPException extends Exception implements HTTPStatusCode
+{
+    use HTTPStatusHeader;
+
+    public function __construct($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null, $body = null)
+    {
+        self::createHeader($statusCode, $statusPhrase);
+        // ...
+    }
+}
+```
+
+As shown above, the `HTTPException` class has been extended from `Exception` and trough the Trait functionality with the `HTTPStatusHeader` as well. 
+
+As a result of the new `HTTPException` class, the router is adapted to throw exceptions, and the router configuration now deals with the thrown exception by showing the corresponding HTTP status code:
+```PHP
+try {
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
+} catch (HTTPException $exception) {
+    $exception->getHeader();
+}
+```
 
 ### Stage 7: Domain and Data Access Objects (DAO)
 
@@ -653,17 +726,34 @@ class LayoutRendering
 
 ### Stage 11: Validation
 
-
+In stage 11, a PHP input field validator is implemented. Validation refers to the possibility to verify certain fields such as an email field containing a valid email address (name@domain.nic). Validation can be realised on the client and back-end side. This PHP validation is realised on the PHP back-end, by implementing domain-specific validation classes.
 
 ### Stage 12: Auth and Remember Me
 
+- extending auth controller with token
+- auth token dao
+- auth token domain
+- auth token in service
+- remember me in login view
+
 ### Stage 13: Email and Password Reset
+
+Adding SENDGRID_APIKEY to config.env and extend Config Class
+Add SENDGRID_APIKEY to heroku env
+
 - SendGrid API
+- reset token in service
+- email service client
+- password forget in login view
 
 ### Stage 14: PDF
 - HyPDF API
 
 ### Stage 15: REST Service API
+
+- change router to work with REST paths
+- abstractJSONDTO for customer
+- service endpoint
 
 ### Stage 16: JavaScript & jQuery Client
 
@@ -675,7 +765,8 @@ TODO: write
 
 #### Visual Paradigm
 #####  Default Parameter Direction Configuration
-Go to `Window -> Project Options`
+`Window -> Project Options`
+
 ![](images/VP-default-parameter-direction.png)
 
 #####  Postgresql Database Generation

@@ -8,6 +8,9 @@
 
 namespace router;
 
+use http\Exception;
+use http\HTTPException;
+use http\HTTPStatusCode;
 use http\HTTPHeader;
 
 class Router
@@ -44,7 +47,7 @@ class Router
         self::$routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
     }
 
-    public static function call_route($method, $path, $errorFunction) {
+    public static function call_route($method, $path) {
         $path = trim(parse_url($path, PHP_URL_PATH), '/');
         $path_pieces = explode('/', $path);
         $parameters = [];
@@ -56,7 +59,7 @@ class Router
             }
         }
         if(!array_key_exists($method, self::$routes) || !array_key_exists($path, self::$routes[$method])) {
-            $errorFunction(); return;
+            throw new HTTPException(HTTPStatusCode::HTTP_404_NOT_FOUND);
         }
         $route = self::$routes[$method][$path];
         if(isset($route["authFunction"])) {
@@ -68,7 +71,7 @@ class Router
     }
 
     public static function errorHeader() {
-        HTTPHeader::getHeader(HTTPHeader::HTTP_404_NOT_FOUND);
+        HTTPHeader::getHeader(HTTPStatusCode::HTTP_404_NOT_FOUND);
     }
 
     public static function redirect($redirect_path) {

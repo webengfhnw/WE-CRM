@@ -8,6 +8,7 @@
 require_once("config/Autoloader.php");
 
 use router\Router;
+use http\HTTPException;
 use domain\Customer;
 use service\WECRMServiceImpl;
 use view\View;
@@ -30,11 +31,6 @@ $authFunction = function () {
     }
     Router::redirect("/login");
     return false;
-};
-
-$errorFunction = function () {
-    Router::errorHeader();
-    echo (new View("404.php"))->render();
 };
 
 Router::route("GET", "/login", function () {
@@ -113,4 +109,9 @@ Router::route_auth("POST", "/customer/update", $authFunction, function () {
     Router::redirect("/");
 });
 
-Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+try {
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
+} catch (HTTPException $exception) {
+    $exception->getHeader();
+    echo (new View("404.php"))->render();
+}
