@@ -18,7 +18,7 @@ class HTTPHeader implements HTTPStatusCode
 
 
     public static function redirect($redirect_path, $statusCode = HTTPStatusCode::HTTP_301_MOVED_PERMANENTLY) {
-        header("Location: " . $GLOBALS["ROOT_URL"] . $redirect_path, true, $statusCode);
+        header("Location: " . $GLOBALS["ROOT_URL"] . $redirect_path, true, self::getStatusCodeNumber($statusCode));
         exit;
     }
 }

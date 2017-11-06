@@ -25,11 +25,6 @@ $authFunction = function () {
     return false;
 };
 
-$errorFunction = function () {
-    Router::errorHeader();
-    ErrorController::show404();
-};
-
 Router::route("GET", "/login", function () {
     AgentController::loginView();
 });

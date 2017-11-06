@@ -27,11 +27,6 @@ $authFunction = function () {
     return false;
 };
 
-$errorFunction = function () {
-    Router::errorHeader();
-    ErrorController::show404();
-};
-
 Router::route("GET", "/login", function () {
     AgentController::loginView();
 });
@@ -156,7 +151,7 @@ Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, functi
 });
 
 try {
-    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
 } catch (HTTPException $exception) {
     $exception->getHeader();
     ErrorController::show404();
