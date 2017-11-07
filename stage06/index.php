@@ -9,6 +9,7 @@ require_once("config/Autoloader.php");
 require_once("view/layout.php");
 
 use router\Router;
+use http\HTTPException;
 /** TODO: Use the Database class */
 use database\Database;
 
@@ -20,11 +21,6 @@ $authFunction = function () {
     }
     Router::redirect("/login");
     return false;
-};
-
-$errorFunction = function () {
-    Router::errorHeader();
-    require_once("view/404.php");
 };
 
 Router::route("GET", "/login", function () {
@@ -162,4 +158,9 @@ Router::route_auth("POST", "/customer/update", $authFunction, function () {
     Router::redirect("/");
 });
 
-Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+try {
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
+} catch (HTTPException $exception) {
+    $exception->getHeader();
+    require_once("view/404.php");
+}
