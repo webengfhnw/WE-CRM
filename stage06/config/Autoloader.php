@@ -5,7 +5,7 @@
  * Date: 22.09.2017
  * Time: 17:13
  */
-
+// this maps the namespace function with folder structuer
 namespace config;
 
 class Autoloader

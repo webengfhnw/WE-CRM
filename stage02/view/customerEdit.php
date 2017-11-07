@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WE-CRM</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/footer.css">
-    <link rel="stylesheet" href="assets/css/navigation.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
-</head>
-
-<body>
     <div>
         <nav class="navbar navbar-default navigation-clean">
             <div class="container">
@@ -22,10 +7,10 @@
                 </div>
                 <div class="collapse navbar-collapse" id="navcol-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li role="presentation"><a href="customers.html">My Customers</a></li>
+                        <li role="presentation"><a href="customers.php">My Customers</a></li>
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#">My Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li role="presentation"><a href="agentEdit.html">Edit Profile</a></li>
+                                <li role="presentation"><a href="agentEdit.php">Edit Profile</a></li>
                                 <li role="presentation"><a href="#">Logout </a></li>
                             </ul>
                         </li>
@@ -37,7 +22,7 @@
     <div class="container">
         <div class="page-header">
             <h2 class="text-center">A <strong>customer</strong>. </h2></div>
-        <form action="customers.html" method="post">
+        <form action="customers.php" method="post">
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><span>ID </span></div>
@@ -67,14 +52,3 @@
             </div>
         </form>
     </div>
-    <div class="footer-basic">
-        <footer>
-            <p class="copyright">WE © 2017</p>
-        </footer>
-    </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/script.js"></script>
-</body>
-
-</html>

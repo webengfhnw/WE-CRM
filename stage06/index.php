@@ -10,6 +10,7 @@ require_once("view/layout.php");
 
 use router\Router;
 /** TODO: Use the Database class */
+use database\Database;
 
 session_start();
 
@@ -37,9 +38,9 @@ Router::route("GET", "/register", function () {
 Router::route("POST", "/register", function () {
     $name = $_POST["name"];
     $email = $_POST["email"];
-    require("database/database.php");
-    $pdoInstance = connect();
     /** TODO: Use the Database class here */
+    $pdoInstance =Database::connect();
+
     $stmt = $pdoInstance->prepare('
         INSERT INTO agent (name, email, password)
           SELECT :name,:email,:password
@@ -56,9 +57,7 @@ Router::route("POST", "/register", function () {
 
 Router::route("POST", "/login", function () {
     $email = $_POST["email"];
-    require("database/database.php");
-    $pdoInstance = connect();
-    /** TODO: Use the Database class here */
+    $pdoInstance =Database::connect();
     $stmt = $pdoInstance->prepare('
             SELECT * FROM agent WHERE email = :email;');
     $stmt->bindValue(':email', $email);
@@ -87,8 +86,7 @@ Router::route("GET", "/logout", function () {
 });
 
 Router::route_auth("GET", "/", $authFunction, function () {
-    require("database/database.php");
-    $pdoInstance = connect();
+    $pdoInstance =Database::connect();
     /** TODO: Use the Database class here */
     $stmt = $pdoInstance->prepare('
             SELECT * FROM customer WHERE agentid = :agentId ORDER BY id;');
@@ -109,8 +107,7 @@ Router::route_auth("GET", "/customer/create", $authFunction, function () {
 
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
-    require("database/database.php");
-    $pdoInstance = connect();
+    $pdoInstance =Database::connect();
     /** TODO: Use the Database class here */
     $stmt = $pdoInstance->prepare('
             SELECT * FROM customer WHERE id = :id;');
@@ -123,8 +120,7 @@ Router::route_auth("GET", "/customer/edit", $authFunction, function () {
 
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     $id = $_GET["id"];
-    require("database/database.php");
-    $pdoInstance = connect();
+    $pdoInstance =Database::connect();
     /** TODO: Use the Database class here */
     $stmt = $pdoInstance->prepare('
             DELETE FROM customer
@@ -141,9 +137,7 @@ Router::route_auth("POST", "/customer/update", $authFunction, function () {
     $email = $_POST["email"];
     $mobile = $_POST["mobile"];
     if ($id === "") {
-        require("database/database.php");
-        $pdoInstance = connect();
-        /** TODO: Use the Database class here */
+        $pdoInstance =Database::connect();
         $stmt = $pdoInstance->prepare('
             INSERT INTO customer (name, email, mobile, agentid)
             VALUES (:name, :email , :mobile, :agentid)');
@@ -153,9 +147,7 @@ Router::route_auth("POST", "/customer/update", $authFunction, function () {
         $stmt->bindValue(':agentid', $_SESSION["agentLogin"]["id"]);
         $stmt->execute();
     } else {
-        require("database/database.php");
-        $pdoInstance = connect();
-        /** TODO: Use the Database class here */
+        $pdoInstance =Database::connect();
         $stmt = $pdoInstance->prepare('
             UPDATE customer SET name = :name,
                 email = :email,

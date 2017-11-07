@@ -15,7 +15,7 @@ class Database
 {
     private static $pdoInstance = null;
 
-    protected function __construct()
+    private function __construct()
     {
         self::$pdoInstance = new PDO (Config::pdoConfig("dsn"), Config::pdoConfig("user"), Config::pdoConfig("password"));
         self::$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -24,6 +24,17 @@ class Database
     public static function connect()
     {
         /** TODO: Implement the instantiation of the PDO instance and return it */
+        if(self::$pdoInstance){
+            return self::$pdoInstance;
+        }
+        // this calls a constructor within a class
+        new self();
+
+        return self::$pdoInstance;
+
+
     }
 
+
 }
+

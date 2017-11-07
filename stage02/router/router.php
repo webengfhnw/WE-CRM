@@ -48,6 +48,7 @@ function redirect($redirect_path) {
     /* TODO: create a redirection function, which redirects to a path.
      * You may need the root URL: $GLOBALS["ROOT_URL"]
      */
+
 }
 
 function errorHeader() {
