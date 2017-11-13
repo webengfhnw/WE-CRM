@@ -162,6 +162,9 @@ class AuthServiceImpl implements AuthService {
             if(time()<=(new \DateTime($authToken->getExpiration()))->getTimestamp()){
                 if (hash_equals(hash('sha384', hex2bin($tokenArray[1])), $authToken->getValidator())) {
                     $this->currentAgentId = $authToken->getAgentid();
+                    if($authToken->getType()===self::RESET_TOKEN){
+                        $authTokenDAO->delete($authToken);
+                    }
                     return true;
                 }
             }
