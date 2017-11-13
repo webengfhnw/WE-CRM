@@ -13,6 +13,8 @@ This is a reference project elaborated by the students step-by-step in every FHN
     - [Domain Model](#domain-model)
     - [Data Access Model](#data-access-model)
     - [Business Logic Model](#business-logic-model)
+    - [Layering Structure](#layering-structure)
+    - [Layering Models](#layering-models)
 - [Implementation](#implementation)
     - [Stage 1: Building a Static Website with Bootstrap](#stage-1-building-a-static-website-with-bootstrap)
     - [Stage 2: PHP Files, Basic Router and Session](#stage-2-php-files-basic-router-and-session)
@@ -101,6 +103,14 @@ TODO: write
 ### Business Logic Model
 
 ![](modelling/images/WE-CRM-Business-Logic.png)
+
+### Layering Structure
+
+![](modelling/images/WE-CRM-Layering-Structure.png)
+
+### Layering Models
+
+![](modelling/images/WE-CRM-Layering-Models.png)
 
 ## Implementation
 
