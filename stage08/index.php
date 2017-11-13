@@ -11,16 +11,14 @@ require_once("view/layout.php");
 use router\Router;
 use http\HTTPException;
 use domain\Customer;
-use domain\Agent;
-use dao\CustomerDAO;
-use dao\AgentDAO;
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
+use service\CustomerServiceImpl;
 
 session_start();
 
 $authFunction = function () {
     if (isset($_SESSION["agentLogin"])) {
-        if(WECRMServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
+        if(AuthServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
             return true;
         }
     }
@@ -37,31 +35,15 @@ Router::route("GET", "/register", function () {
 });
 
 Router::route("POST", "/register", function () {
-    /* TODO: refactor and use WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]); */
-    $agent = new Agent();
-    $agent->setName($_POST["name"]);
-    $agent->setEmail($_POST["email"]);
-    $agent->setPassword(password_hash($_POST["password"], PASSWORD_DEFAULT));
-    $agentDAO = new AgentDAO();
-    $agentDAO->create($agent);
+    AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     Router::redirect("/logout");
 });
 
 Router::route("POST", "/login", function () {
-    /* TODO: refactor and use $weCRMService->verifyAgent($_POST["email"],$_POST["password"]) */
-    $email = $_POST["email"];
-    $agentDAO = new AgentDAO();
-    $agent = $agentDAO->findByEmail($email);
-    if (isset($agent)) {
-        if (password_verify($_POST["password"], $agent->getPassword())) {
-            $_SESSION["agentLogin"]["name"] = $agent->getName();
-            $_SESSION["agentLogin"]["email"] = $email;
-            $_SESSION["agentLogin"]["id"] = $agent->getId();
-            if (password_needs_rehash($agent->getPassword(), PASSWORD_DEFAULT)) {
-                $agent->setPassword(password_hash($_POST["password"], PASSWORD_DEFAULT));
-                $agentDAO->update($agent);
-            }
-        }
+    $weCRMService = AuthServiceImpl::getInstance();
+    if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
+    {
+        $_SESSION["agentLogin"]["token"] = $weCRMService->issueToken();
     }
     Router::redirect("/");
 });
@@ -71,20 +53,23 @@ Router::route("GET", "/logout", function () {
     Router::redirect("/login");
 });
 
+/* TODO: Generate and implement the customer service */
+/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/", $authFunction, function () {
+    $customerDAO = new CustomerDAO();
     global $customers;
-    $customers = WECRMServiceImpl::getInstance()->findAllCustomer();
+    $customers = $customerDAO->findByAgent($_SESSION["agentLogin"]["id"]);
     layoutSetContent("customers.php");
 });
 
 Router::route_auth("GET", "/agent/edit", $authFunction, function () {
     global $agent;
-    $agent = WECRMServiceImpl::getInstance()->readAgent();
+    $agent = AuthServiceImpl::getInstance()->readAgent();
     require_once("view/agentEdit.php");
 });
 
 Router::route_auth("POST", "/agent/edit", $authFunction, function () {
-    WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+    AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     Router::redirect("/logout");
 });
 
@@ -92,15 +77,17 @@ Router::route_auth("GET", "/customer/create", $authFunction, function () {
     layoutSetContent("customerEdit.php");
 });
 
+/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
+    $customerDAO = new CustomerDAO();
     global $customer;
-    $customer = WECRMServiceImpl::getInstance()->readCustomer($id);
+    $customer = $customerDAO->read($id);
     layoutSetContent("customerEdit.php");
 });
 
+/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
-    /* TODO: WECRMServiceImpl::getInstance()->deleteCustomer($id); */
     $id = $_GET["id"];
     $customerDAO = new CustomerDAO();
     $customer = new Customer();
@@ -109,16 +96,19 @@ Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     Router::redirect("/");
 });
 
+/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("POST", "/customer/update", $authFunction, function () {
     $customer = new Customer();
     $customer->setId($_POST["id"]);
     $customer->setName($_POST["name"]);
     $customer->setEmail($_POST["email"]);
     $customer->setMobile($_POST["mobile"]);
+    $customerDAO = new CustomerDAO();
     if ($customer->getId() === "") {
-        WECRMServiceImpl::getInstance()->createCustomer($customer);
+        $customer->setAgentId($_SESSION["agentLogin"]["id"]);
+        $customerDAO->create($customer);
     } else {
-        WECRMServiceImpl::getInstance()->updateCustomer($customer);
+        $customerDAO->update($customer);
     }
     Router::redirect("/");
 });

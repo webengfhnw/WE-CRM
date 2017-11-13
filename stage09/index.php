@@ -10,7 +10,8 @@ require_once("config/Autoloader.php");
 use router\Router;
 use http\HTTPException;
 use domain\Customer;
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
+use service\CustomerServiceImpl;
 use view\View;
 
 session_start();
@@ -25,7 +26,7 @@ function layoutRendering(View $contentView){
 
 $authFunction = function () {
     if (isset($_SESSION["agentLogin"])) {
-        if(WECRMServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
+        if(AuthServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
             return true;
         }
     }
@@ -42,12 +43,12 @@ Router::route("GET", "/register", function () {
 });
 
 Router::route("POST", "/register", function () {
-    WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+    AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     Router::redirect("/logout");
 });
 
 Router::route("POST", "/login", function () {
-    $weCRMService = WECRMServiceImpl::getInstance();
+    $weCRMService = AuthServiceImpl::getInstance();
     if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
     {
         $_SESSION["agentLogin"]["token"] = $weCRMService->issueToken();
@@ -62,18 +63,18 @@ Router::route("GET", "/logout", function () {
 
 Router::route_auth("GET", "/", $authFunction, function () {
     $contentView = new View("customers.php");
-    $contentView->customers = WECRMServiceImpl::getInstance()->findAllCustomer();
+    $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
     layoutRendering($contentView);
 });
 
 Router::route_auth("GET", "/agent/edit", $authFunction, function () {
     $view = new View("agentEdit.php");
-    $view->agent = WECRMServiceImpl::getInstance()->readAgent();
+    $view->agent = AuthServiceImpl::getInstance()->readAgent();
     echo $view->render();
 });
 
 Router::route_auth("POST", "/agent/edit", $authFunction, function () {
-    WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+    AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     Router::redirect("/logout");
 });
 
@@ -85,13 +86,13 @@ Router::route_auth("GET", "/customer/create", $authFunction, function () {
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
     $contentView = new View("customerEdit.php");
-    $contentView->customer = WECRMServiceImpl::getInstance()->readCustomer($id);
+    $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
     layoutRendering($contentView);
 });
 
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     $id = $_GET["id"];
-    WECRMServiceImpl::getInstance()->deleteCustomer($id);
+    (new CustomerServiceImpl())->deleteCustomer($id);
     Router::redirect("/");
 });
 
@@ -102,9 +103,9 @@ Router::route_auth("POST", "/customer/update", $authFunction, function () {
     $customer->setEmail($_POST["email"]);
     $customer->setMobile($_POST["mobile"]);
     if ($customer->getId() === "") {
-        WECRMServiceImpl::getInstance()->createCustomer($customer);
+        (new CustomerServiceImpl())->createCustomer($customer);
     } else {
-        WECRMServiceImpl::getInstance()->updateCustomer($customer);
+        (new CustomerServiceImpl())->updateCustomer($customer);
     }
     Router::redirect("/");
 });
