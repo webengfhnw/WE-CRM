@@ -53,13 +53,13 @@ class ServiceEndpoint
     }
 
     public static function findAllCustomer(){
-        $responseData = AuthServiceImpl::getInstance()->findAllCustomer();
+        $responseData = (new CustomerServiceImpl())->findAllCustomer();
         header("Content-Type: application/json", NULL, 200);
         echo json_encode($responseData);
     }
 
     public static function readCustomer($id){
-        $responseData = AuthServiceImpl::getInstance()->readCustomer($id);
+        $responseData = (new CustomerServiceImpl())->readCustomer($id);
         header("Content-Type: application/json", NULL, 200);
         echo json_encode($responseData);
     }
@@ -70,10 +70,10 @@ class ServiceEndpoint
         $customerValidator = new CustomerValidator($customer);
         if($customerValidator->isValid()) {
             if (is_null($customerId)) {
-                AuthServiceImpl::getInstance()->createCustomer($customer);
+                (new CustomerServiceImpl())->createCustomer($customer);
             } else {
                 $customer->setId($customerId);
-                AuthServiceImpl::getInstance()->updateCustomer($customer);
+                (new CustomerServiceImpl())->updateCustomer($customer);
             }
         }
         else{
@@ -87,7 +87,7 @@ class ServiceEndpoint
     }
 
     public static function delete($id){
-        AuthServiceImpl::getInstance()->deleteCustomer($id);
+        (new CustomerServiceImpl())->deleteCustomer($id);
         header("Content-Type: application/json", NULL, 204);
     }
 
