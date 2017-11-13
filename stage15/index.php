@@ -15,7 +15,7 @@ use controller\ErrorController;
 use controller\AgentPasswordResetController;
 use controller\EmailController;
 use controller\PDFController;
-use service\WECRMServiceEndpoint;
+use service\ServiceEndpoint;
 use http\HTTPException;
 
 session_start();
@@ -109,45 +109,45 @@ Router::route_auth("GET", "/customer/pdf", $authFunction, function () {
 });
 
 $authAPIBasicFunction = function () {
-    if (WECRMServiceEndpoint::authenticateBasic())
+    if (ServiceEndpoint::authenticateBasic())
         return true;
     Router::errorHeader();
     return false;
 };
 
 Router::route_auth("GET", "/api/token/", $authAPIBasicFunction, function () {
-    WECRMServiceEndpoint::loginBasicToken();
+    ServiceEndpoint::loginBasicToken();
 });
 
 $authAPITokenFunction = function () {
-    if (WECRMServiceEndpoint::authenticateToken())
+    if (ServiceEndpoint::authenticateToken())
         return true;
     Router::errorHeader();
     return false;
 };
 
 Router::route_auth("GET", "/api/token/validate", $authAPITokenFunction, function () {
-    WECRMServiceEndpoint::validateToken();
+    ServiceEndpoint::validateToken();
 });
 
 Router::route_auth("GET", "/api/customer/", $authAPITokenFunction, function () {
-    WECRMServiceEndpoint::findAllCustomer();
+    ServiceEndpoint::findAllCustomer();
 });
 
 Router::route_auth("GET", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
-    WECRMServiceEndpoint::readCustomer($id);
+    ServiceEndpoint::readCustomer($id);
 });
 
 Router::route_auth("PUT", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
-    WECRMServiceEndpoint::update($id);
+    ServiceEndpoint::update($id);
 });
 
 Router::route_auth("POST", "/api/customer/", $authAPITokenFunction, function () {
-    WECRMServiceEndpoint::create();
+    ServiceEndpoint::create();
 });
 
 Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
-    WECRMServiceEndpoint::delete($id);
+    ServiceEndpoint::delete($id);
 });
 
 try {

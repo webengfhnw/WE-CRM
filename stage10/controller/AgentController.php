@@ -8,23 +8,23 @@
 
 namespace controller;
 
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
 use view\View;
 
 class AgentController
 {
     public static function edit(){
         $view = new View("agentEdit.php");
-        $view->agent = WECRMServiceImpl::getInstance()->readAgent();
+        $view->agent = AuthServiceImpl::getInstance()->readAgent();
         echo $view->render();
     }
 
     public static function update(){
-        WECRMServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+        AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     }
 
     public static function register(){
-        WECRMServiceImpl::getInstance()->registerAgent($_POST["name"],$_POST["email"], $_POST["password"]);
+        AuthServiceImpl::getInstance()->editAgent($_POST["name"],$_POST["email"], $_POST["password"]);
     }
 
     public static function registerView(){

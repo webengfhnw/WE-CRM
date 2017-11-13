@@ -9,13 +9,12 @@
 namespace service;
 
 use domain\Agent;
-use domain\Customer;
 
 /**
  * @access public
  * @author andreas.martin
  */
-interface WECRMService {
+interface AuthService {
     /**
      * @AttributeType int
      */
@@ -36,12 +35,12 @@ interface WECRMService {
      */
     public function verifyAgent($email, $password);
 
-	/**
-	 * @access public
-	 * @return Agent
-	 * @ReturnType Agent
-	 */
-	public function readAgent();
+    /**
+     * @access public
+     * @return Agent
+     * @ReturnType Agent
+     */
+    public function readAgent();
 
     /**
      * @access public
@@ -55,47 +54,6 @@ interface WECRMService {
      * @ReturnType boolean
      */
     public function editAgent($name, $email, $password);
-
-    /**
-     * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     */
-    public function createCustomer(Customer $customer);
-
-    /**
-     * @access public
-     * @param int customerId
-     * @return Customer
-     * @ParamType customerId int
-     * @ReturnType Customer
-     */
-    public function readCustomer($customerId);
-
-    /**
-     * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     */
-    public function updateCustomer(Customer $customer);
-
-    /**
-     * @access public
-     * @param int customerId
-     * @ParamType customerId int
-     */
-    public function deleteCustomer($customerId);
-
-    /**
-     * @access public
-     * @return Customer[]
-     * @ReturnType Customer[]
-     */
-    public function findAllCustomer();
 
     /**
      * @access public

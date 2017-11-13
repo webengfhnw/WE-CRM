@@ -8,14 +8,14 @@
 
 namespace controller;
 
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
 
 class AuthController
 {
 
     public static function authenticate(){
         if (isset($_SESSION["agentLogin"])) {
-            if(WECRMServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
+            if(AuthServiceImpl::getInstance()->validateToken($_SESSION["agentLogin"]["token"])) {
                 return true;
             }
         }
@@ -23,7 +23,7 @@ class AuthController
     }
 
     public static function login(){
-        $weCRMService = WECRMServiceImpl::getInstance();
+        $weCRMService = AuthServiceImpl::getInstance();
         if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
         {
             $_SESSION["agentLogin"]["token"] = $weCRMService->issueToken();

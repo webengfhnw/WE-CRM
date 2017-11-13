@@ -8,7 +8,7 @@
 
 namespace controller;
 
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
 use view\View;
 use validator\AgentValidator;
 use service\EmailServiceClient;
@@ -27,12 +27,12 @@ class AgentPasswordResetController
     }
     
     public static function reset(){
-        if(WECRMServiceImpl::getInstance()->validateToken($_POST["token"])){
-            $agent = WECRMServiceImpl::getInstance()->readAgent();
+        if(AuthServiceImpl::getInstance()->validateToken($_POST["token"])){
+            $agent = AuthServiceImpl::getInstance()->readAgent();
             $agent->setPassword($_POST["password"]);
             $agentValidator = new AgentValidator($agent);
             if($agentValidator->isValid()){
-                if(WECRMServiceImpl::getInstance()->editAgent($agent->getName(),$agent->getEmail(), $agent->getPassword())){
+                if(AuthServiceImpl::getInstance()->editAgent($agent->getName(),$agent->getEmail(), $agent->getPassword())){
                     return true;
                 }
             }
@@ -46,7 +46,7 @@ class AgentPasswordResetController
     }
 
     public static function resetEmail(){
-        $token = WECRMServiceImpl::getInstance()->issueToken(WECRMServiceImpl::RESET_TOKEN, $_POST["email"]);
+        $token = AuthServiceImpl::getInstance()->issueToken(AuthServiceImpl::RESET_TOKEN, $_POST["email"]);
         $emailView = new View("agentPasswordResetEmail.php");
         $emailView->resetLink = $GLOBALS["ROOT_URL"] . "/password/reset?token=" . $token;
         return EmailServiceClient::sendEmail($_POST["email"], "Password Reset Email", $emailView->render());

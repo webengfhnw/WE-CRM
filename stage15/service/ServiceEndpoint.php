@@ -11,7 +11,7 @@ namespace service;
 use domain\Customer;
 use validator\CustomerValidator;
 
-class WECRMServiceEndpoint
+class ServiceEndpoint
 {
 
     public static function authenticateToken(){
@@ -19,7 +19,7 @@ class WECRMServiceEndpoint
             if(strripos($_SERVER["HTTP_AUTHORIZATION"], " ")){
                 list($type, $data) = explode(" ", $_SERVER["HTTP_AUTHORIZATION"], 2);
                 if (strcasecmp($type, "Bearer") == 0) {
-                    if(WECRMServiceImpl::getInstance()->validateToken($data)) {
+                    if(AuthServiceImpl::getInstance()->validateToken($data)) {
                         return true;
                     }
                 }
@@ -34,7 +34,7 @@ class WECRMServiceEndpoint
                 list($type, $data) = explode(" ", $_SERVER["HTTP_AUTHORIZATION"], 2);
                 if (strcasecmp($type, "Basic") == 0) {
                     list($name, $password) = explode(':', base64_decode($data));
-                    if (WECRMServiceImpl::getInstance()->verifyAgent($name, $password)) {
+                    if (AuthServiceImpl::getInstance()->verifyAgent($name, $password)) {
                         return true;
                     }
                 }
@@ -44,7 +44,7 @@ class WECRMServiceEndpoint
     }
 
     public static function loginBasicToken(){
-        $weCRMService = WECRMServiceImpl::getInstance();
+        $weCRMService = AuthServiceImpl::getInstance();
         header("Authorization: " . $weCRMService->issueToken(), NULL, 204);
     }
 
@@ -53,13 +53,13 @@ class WECRMServiceEndpoint
     }
 
     public static function findAllCustomer(){
-        $responseData = WECRMServiceImpl::getInstance()->findAllCustomer();
+        $responseData = AuthServiceImpl::getInstance()->findAllCustomer();
         header("Content-Type: application/json", NULL, 200);
         echo json_encode($responseData);
     }
 
     public static function readCustomer($id){
-        $responseData = WECRMServiceImpl::getInstance()->readCustomer($id);
+        $responseData = AuthServiceImpl::getInstance()->readCustomer($id);
         header("Content-Type: application/json", NULL, 200);
         echo json_encode($responseData);
     }
@@ -70,10 +70,10 @@ class WECRMServiceEndpoint
         $customerValidator = new CustomerValidator($customer);
         if($customerValidator->isValid()) {
             if (is_null($customerId)) {
-                WECRMServiceImpl::getInstance()->createCustomer($customer);
+                AuthServiceImpl::getInstance()->createCustomer($customer);
             } else {
                 $customer->setId($customerId);
-                WECRMServiceImpl::getInstance()->updateCustomer($customer);
+                AuthServiceImpl::getInstance()->updateCustomer($customer);
             }
         }
         else{
@@ -87,7 +87,7 @@ class WECRMServiceEndpoint
     }
 
     public static function delete($id){
-        WECRMServiceImpl::getInstance()->deleteCustomer($id);
+        AuthServiceImpl::getInstance()->deleteCustomer($id);
         header("Content-Type: application/json", NULL, 204);
     }
 

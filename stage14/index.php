@@ -108,7 +108,7 @@ Router::route_auth("GET", "/customer/pdf", $authFunction, function () {
 });
 
 try {
-    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
 } catch (HTTPException $exception) {
     $exception->getHeader();
     ErrorController::show404();

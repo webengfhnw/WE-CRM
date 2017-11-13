@@ -8,10 +8,8 @@
 
 namespace service;
 
-use domain\Customer;
 use domain\Agent;
 use domain\AuthToken;
-use dao\CustomerDAO;
 use dao\AgentDAO;
 use http\HTTPException;
 use http\HTTPStatusCode;
@@ -21,9 +19,9 @@ use dao\AuthTokenDAO;
  * @access public
  * @author andreas.martin
  */
-class WECRMServiceImpl implements WECRMService {
+class AuthServiceImpl implements AuthService {
     /**
-     * @AttributeType WECRMService
+     * @AttributeType AuthServiceImpl
      */
     private static $instance = null;
     /**
@@ -33,9 +31,9 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
-     * @return WECRMService
+     * @return AuthServiceImpl
      * @static
-     * @ReturnType WECRMService
+     * @ReturnType AuthServiceImpl
      */
     public static function getInstance() {
         if (!isset(self::$instance)) {
@@ -55,14 +53,24 @@ class WECRMServiceImpl implements WECRMService {
     private function __clone() { }
 
     /**
-     * @access protected
+     * @access public
      * @return boolean
      * @ReturnType boolean
      */
-    protected function verifyAuth() {
+    public function verifyAuth() {
         if(isset($this->currentAgentId))
             return true;
         return false;
+    }
+
+    /**
+     * @access public
+     * @return int
+     * @ReturnType int
+     */
+    public function getCurrentAgentId()
+    {
+        return $this->currentAgentId;
     }
 
     /**
@@ -141,83 +149,6 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     * @throws HTTPException
-     */
-    public function createCustomer(Customer $customer) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            $customer->setAgentId($this->currentAgentId);
-            return $customerDAO->create($customer);
-        }
-        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
-    }
-
-    /**
-     * @access public
-     * @param int customerId
-     * @return Customer
-     * @ParamType customerId int
-     * @ReturnType Customer
-     * @throws HTTPException
-     */
-    public function readCustomer($customerId) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->read($customerId);
-        }
-        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
-    }
-
-    /**
-     * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     * @throws HTTPException
-     */
-    public function updateCustomer(Customer $customer) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->update($customer);
-        }
-        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
-    }
-
-    /**
-     * @access public
-     * @param int customerId
-     * @ParamType customerId int
-     */
-    public function deleteCustomer($customerId) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            $customer = new Customer();
-            $customer->setId($customerId);
-            $customerDAO->delete($customer);
-        }
-    }
-
-    /**
-     * @access public
-     * @return Customer[]
-     * @ReturnType Customer[]
-     * @throws HTTPException
-     */
-    public function findAllCustomer() {
-        if($this->verifyAuth()){
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->findByAgent($this->currentAgentId);
-        }
-        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
-    }
-
-    /**
-     * @access public
      * @param String token
      * @return boolean
      * @ParamType token String
@@ -247,6 +178,7 @@ class WECRMServiceImpl implements WECRMService {
      * @ParamType type int
      * @ParamType email String
      * @ReturnType String
+     * @throws HTTPException
      *
      * https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
      * https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication
@@ -255,9 +187,18 @@ class WECRMServiceImpl implements WECRMService {
     public function issueToken($type = self::AGENT_TOKEN, $email = null) {
         $token = new AuthToken();
         $token->setSelector(bin2hex(random_bytes(5)));
-        $token->setType(self::AGENT_TOKEN);
-        $token->setAgentid($this->currentAgentId);
-        $timestamp = (new \DateTime('now'))->modify('+30 days');
+        if($type===self::AGENT_TOKEN) {
+            $token->setType(self::AGENT_TOKEN);
+            $token->setAgentid($this->currentAgentId);
+            $timestamp = (new \DateTime('now'))->modify('+30 days');
+        }
+        elseif(isset($email)){
+            $token->setType(self::RESET_TOKEN);
+            $token->setAgentid((new AgentDAO())->findByEmail($email)->getId());
+            $timestamp = (new \DateTime('now'))->modify('+1 hour');
+        }else{
+            throw new HTTPException(HTTPStatusCode::HTTP_406_NOT_ACCEPTABLE, 'RESET_TOKEN without email');
+        }
         $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
         $validator = random_bytes(20);
         $token->setValidator(hash('sha384', $validator));

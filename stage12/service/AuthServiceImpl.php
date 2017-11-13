@@ -10,16 +10,20 @@ namespace service;
 
 use domain\Customer;
 use domain\Agent;
+use domain\AuthToken;
 use dao\CustomerDAO;
 use dao\AgentDAO;
+use http\HTTPException;
+use http\HTTPStatusCode;
+use dao\AuthTokenDAO;
 
 /**
  * @access public
  * @author andreas.martin
  */
-class WECRMServiceImpl implements WECRMService {
+class AuthServiceImpl implements AuthService {
     /**
-     * @AttributeType WECRMService
+     * @AttributeType AuthServiceImpl
      */
     private static $instance = null;
     /**
@@ -29,9 +33,9 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
-     * @return WECRMService
+     * @return AuthServiceImpl
      * @static
-     * @ReturnType WECRMService
+     * @ReturnType AuthServiceImpl
      */
     public static function getInstance() {
         if (!isset(self::$instance)) {
@@ -51,14 +55,24 @@ class WECRMServiceImpl implements WECRMService {
     private function __clone() { }
 
     /**
-     * @access protected
+     * @access public
      * @return boolean
      * @ReturnType boolean
      */
-    protected function verifyAuth() {
+    public function verifyAuth() {
         if(isset($this->currentAgentId))
             return true;
         return false;
+    }
+
+    /**
+     * @access public
+     * @return int
+     * @ReturnType int
+     */
+    public function getCurrentAgentId()
+    {
+        return $this->currentAgentId;
     }
 
     /**
@@ -90,13 +104,14 @@ class WECRMServiceImpl implements WECRMService {
      * @access public
      * @return Agent
      * @ReturnType Agent
+     * @throws HTTPException
      */
     public function readAgent() {
         if($this->verifyAuth()) {
             $agentDAO = new AgentDAO();
             return $agentDAO->read($this->currentAgentId);
         }
-        return null;
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
     }
 
     /**
@@ -136,79 +151,6 @@ class WECRMServiceImpl implements WECRMService {
 
     /**
      * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     */
-    public function createCustomer(Customer $customer) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            $customer->setAgentId($this->currentAgentId);
-            return $customerDAO->create($customer);
-        }
-        return null;
-    }
-
-    /**
-     * @access public
-     * @param int customerId
-     * @return Customer
-     * @ParamType customerId int
-     * @ReturnType Customer
-     */
-    public function readCustomer($customerId) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->read($customerId);
-        }
-        return null;
-    }
-
-    /**
-     * @access public
-     * @param Customer customer
-     * @return Customer
-     * @ParamType customer Customer
-     * @ReturnType Customer
-     */
-    public function updateCustomer(Customer $customer) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->update($customer);
-        }
-        return null;
-    }
-
-    /**
-     * @access public
-     * @param int customerId
-     * @ParamType customerId int
-     */
-    public function deleteCustomer($customerId) {
-        if($this->verifyAuth()) {
-            $customerDAO = new CustomerDAO();
-            $customer = new Customer();
-            $customer->setId($customerId);
-            $customerDAO->delete($customer);
-        }
-    }
-
-    /**
-     * @access public
-     * @return Customer[]
-     * @ReturnType Customer[]
-     */
-    public function findAllCustomer() {
-        if($this->verifyAuth()){
-            $customerDAO = new CustomerDAO();
-            return $customerDAO->findByAgent($this->currentAgentId);
-        }
-        return null;
-    }
-
-    /**
-     * @access public
      * @param String token
      * @return boolean
      * @ParamType token String
@@ -216,9 +158,16 @@ class WECRMServiceImpl implements WECRMService {
      */
     public function validateToken($token) {
         $tokenArray = explode(":", $token);
-        if(count($tokenArray)>1) {
-            $this->currentAgentId = $tokenArray[0];
-            return true;
+        $authTokenDAO = new AuthTokenDAO();
+        $authToken = $authTokenDAO->findBySelector($tokenArray[0]);
+        if (!empty($authToken)) {
+            if(time()<=(new \DateTime($authToken->getExpiration()))->getTimestamp()){
+                if (hash_equals(hash('sha384', hex2bin($tokenArray[1])), $authToken->getValidator())) {
+                    $this->currentAgentId = $authToken->getAgentid();
+                    return true;
+                }
+            }
+            $authTokenDAO->delete($authToken);
         }
         return false;
     }
@@ -231,8 +180,22 @@ class WECRMServiceImpl implements WECRMService {
      * @ParamType type int
      * @ParamType email String
      * @ReturnType String
+     *
+     * https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+     * https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication
+     * https://stackoverflow.com/a/31419246
      */
     public function issueToken($type = self::AGENT_TOKEN, $email = null) {
-        return $this->currentAgentId .":". bin2hex(random_bytes(20));
+        $token = new AuthToken();
+        $token->setSelector(bin2hex(random_bytes(5)));
+        $token->setType(self::AGENT_TOKEN);
+        $token->setAgentid($this->currentAgentId);
+        $timestamp = (new \DateTime('now'))->modify('+30 days');
+        $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
+        $validator = random_bytes(20);
+        $token->setValidator(hash('sha384', $validator));
+        $authTokenDAO = new AuthTokenDAO();
+        $authTokenDAO->create($token);
+        return $token->getSelector() .":". bin2hex($validator);
     }
 }

@@ -8,7 +8,8 @@
 
 namespace controller;
 
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
+use service\CustomerServiceImpl;
 use view\View;
 use service\EmailServiceClient;
 
@@ -16,7 +17,7 @@ class EmailController
 {
     public static function sendMeMyCustomers(){
         $emailView = new View("customerListEmail.php");
-        $emailView->customers = WECRMServiceImpl::getInstance()->findAllCustomer();
-        return EmailServiceClient::sendEmail(WECRMServiceImpl::getInstance()->readAgent()->getEmail(), "My current customers", $emailView->render());
+        $emailView->customers = (new CustomerServiceImpl())->findAllCustomer();
+        return EmailServiceClient::sendEmail(AuthServiceImpl::getInstance()->readAgent()->getEmail(), "My current customers", $emailView->render());
     }
 }

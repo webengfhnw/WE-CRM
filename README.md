@@ -522,16 +522,18 @@ class AgentDAO extends BasicDAO {
 
 ### Stage 8: Business Services
 
-In stage 8, a service interface and a service implementation based on the [Business Logic Model](#business-logic-model) is given. In this reference project, the term service referred to business service has been selected. Sometimes the term business logic acting on a business logic layer is used.
+In stage 8, two service interfaces and service implementations based on the [Business Logic Model](#business-logic-model) are given. In this reference project, the term service referred to business service has been selected. Sometimes the term business logic acting on a business logic layer is used.
 
-Since this reference project is as small and simplified as possible for teaching purposes, a one-class singleton strategy has been chosen. In a bigger application scenario, it would make sense to build several business services for different use-cases.
+Since this reference project is as small and simplified as possible for teaching purposes, a one-class singleton strategy has been chosen for authentication (`AuthService`) and one service has been implemented for the customer use-cases (`CustomerService`). In a bigger application scenario, it would make sense to build several business services for different use-cases.
 
 Business services contain the business decisions as in PHP transferred business rules. An example such a rule could be that an agent is only allowed to edit the customers she or he is responsible for.
 
-As shown in the [Business Logic Model](#business-logic-model), the service interface just lists the required methods, which must be implemented in the service implementation. In this reference project the service implementation is realized using the singleton pattern:
+As shown in the [Business Logic Model](#business-logic-model), the service interface just lists the required methods, which must be implemented in the service implementation. 
+
+It is rarely the case that the usage of a singleton makes sense in PHP, since, compared to Java, PHP is strictly stateless (except session) and every request is in an isolated process. Nevertheless, in this reference project the authentication service implementation is realized using the singleton pattern:
 
 ```PHP
-class WECRMServiceImpl implements WECRMService {
+class AuthServiceImpl implements AuthService {
 
     private static $instance = null;
 
@@ -556,7 +558,21 @@ class WECRMServiceImpl implements WECRMService {
 }
 ```
 
-It is rarely the case that the usage of a singleton makes sense in PHP, since, compared to Java, PHP is strictly stateless (except session) and every request is in an isolated process.
+The business logic, which is referred to the customer use-case(s), is implemented in the customer service:
+
+```PHP
+class CustomerServiceImpl implements CustomerService
+{
+    public function createCustomer(Customer $customer) {
+        if(AuthServiceImpl::getInstance()->verifyAuth()) {
+            $customerDAO = new CustomerDAO();
+            $customer->setAgentId(AuthServiceImpl::getInstance()->getCurrentAgentId());
+            return $customerDAO->create($customer);
+        }
+        throw new HTTPException(HTTPStatusCode::HTTP_401_UNAUTHORIZED);
+    }
+}
+```
 
 ### Stage 9: Template View Pattern and XSS
 
@@ -587,7 +603,7 @@ class View {
 Once the view has been instantiated, data can be injected into the view by using a magic `__set()` method. Finally, the view will be rendered by using the `render()` method:
 ```PHP
 $contentView = new View("customerEdit.php");
-$contentView->customer = WECRMServiceImpl::getInstance()->readCustomer($id);
+$contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
 echo $contentView->render();
 ```
 ___
@@ -676,14 +692,14 @@ class CustomerController
 
     public static function readAll(){
         $contentView = new View("customers.php");
-        $contentView->customers = WECRMServiceImpl::getInstance()->findAllCustomer();
+        $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
         LayoutRendering::basicLayout($contentView);
     }
 
     public static function edit(){
         $id = $_GET["id"];
         $contentView = new View("customerEdit.php");
-        $contentView->customer = WECRMServiceImpl::getInstance()->readCustomer($id);
+        $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
         LayoutRendering::basicLayout($contentView);
     }
 
@@ -694,15 +710,15 @@ class CustomerController
         $customer->setEmail($_POST["email"]);
         $customer->setMobile($_POST["mobile"]);
         if ($customer->getId() === "") {
-            WECRMServiceImpl::getInstance()->createCustomer($customer);
+            (new CustomerServiceImpl())->createCustomer($customer);
         } else {
-            WECRMServiceImpl::getInstance()->updateCustomer($customer);
+            (new CustomerServiceImpl())->updateCustomer($customer);
         }
     }
 
     public static function delete(){
         $id = $_GET["id"];
-        WECRMServiceImpl::getInstance()->deleteCustomer($id);
+        (new CustomerServiceImpl())->deleteCustomer($id);
     }
 }
 ```

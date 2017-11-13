@@ -8,7 +8,7 @@
 
 namespace controller;
 
-use service\WECRMServiceImpl;
+use service\AuthServiceImpl;
 use validator\AgentValidator;
 use view\View;
 use domain\Agent;
@@ -17,7 +17,7 @@ class AgentController
 {
     public static function editView(){
         $view = new View("agentEdit.php");
-        $view->agent = WECRMServiceImpl::getInstance()->readAgent();
+        $view->agent = AuthServiceImpl::getInstance()->readAgent();
         $view->pageTitle = "WE-CRM";
         $view->pageHeading = "<strong>WE-CRM | Update</strong> your account.";
         $view->pageSubmitText = "Update";
@@ -45,7 +45,7 @@ class AgentController
         $agent->setPassword($_POST["password"]);
         $agentValidator = new AgentValidator($agent);
         if($agentValidator->isValid()){
-            if(WECRMServiceImpl::getInstance()->editAgent($agent->getName(),$agent->getEmail(), $agent->getPassword())){
+            if(AuthServiceImpl::getInstance()->editAgent($agent->getName(),$agent->getEmail(), $agent->getPassword())){
                 return true;
             }else{
                 $agentValidator->setEmailError("Email already exists");
