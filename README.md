@@ -742,7 +742,86 @@ class LayoutRendering
 
 ### Stage 11: Validation
 
-In stage 11, a PHP input field validator is implemented. Validation refers to the possibility to verify certain fields such as an email field containing a valid email address (name@domain.nic). Validation can be realised on the client and back-end side. This PHP validation is realised on the PHP back-end, by implementing domain-specific validation classes.
+In stage 11, a PHP input field validator is implemented. Validation refers to the possibility to verify certain fields such as an email field containing a valid email address (name@domain.nic). Validation can be realised on the client and back-end side. This PHP validation is realised on the PHP back-end, by implementing domain-specific validation classes:
+
+```PHP
+class CustomerValidator
+{
+    private $valid = true;
+    private $emailError = null;
+
+    public function __construct(Customer $customer)
+    {
+        $this->validate($customer);
+    }
+
+    public function validate(Customer $customer)
+    {
+        if (!is_null($customer)) {
+            if (!filter_var($customer->getEmail(), FILTER_VALIDATE_EMAIL)) {
+                $this->emailError = 'Please enter a valid email address';
+                $this->valid = false;
+            }
+        } else {
+            $this->valid = false;
+        }
+        return $this->valid;
+
+    }
+
+    public function isValid()
+    {
+        return $this->valid;
+    }
+
+    public function isEmailError()
+    {
+        return isset($this->emailError);
+    }
+
+    public function getEmailError()
+    {
+        return $this->emailError;
+    }
+}
+```
+
+Such a validator can then be used in a controller to verify if the provided date is valid:
+
+```PHP
+class CustomerController
+{
+    public static function update(){
+        $customer = new Customer();
+        // ...
+        $customerValidator = new CustomerValidator($customer);
+        if($customerValidator->isValid()) {
+            // ...
+        }
+        else{
+            $contentView = new View("customerEdit.php");
+            $contentView->customer = $customer;
+            $contentView->customerValidator = $customerValidator;
+            LayoutRendering::basicLayout($contentView);
+            return false;
+        }
+        return true;
+    }
+
+}
+```
+
+If data is invalid, error messages can be displayed:
+
+```HTML
+<div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? "has-error" : ""; ?>">
+    <div class="input-group">
+        <div class="input-group-addon"><span>Email </span></div>
+        <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getEmail()) : ''; ?>">
+    </div>
+    <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? $this->customerValidator->getEmailError() : ""; ?></p>
+</div>
+```
 
 ### Stage 12: Auth and Remember Me
 
