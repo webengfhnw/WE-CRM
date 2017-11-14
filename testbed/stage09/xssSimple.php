@@ -21,7 +21,7 @@
     $data = "";
     if (isset($_POST["comment"]))
         $data = $_POST["comment"];
-    echo "Comment: " . $data ?>
+    echo "Comment: " . htmlentities($data); ?>
 </span>
 </body>
 </html>
