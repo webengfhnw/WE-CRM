@@ -15,9 +15,8 @@ use domain\Agent;
 use dao\CustomerDAO;
 use dao\AgentDAO;
 /** TODO: Generate domain objects */
-/** TODO: Transfer some router methods to use domain objects */
-/** TODO: Generate and implement DAOs */
-/** TODO: Transfer all router methods to use domain objects and DAOs */
+/** TODO: Generate and implement DAOs (you may copy some boilerplate code from stage 08) */
+/** TODO: Transfer "POST /register" and "GET /" routes to use domain objects and DAOs */
 
 session_start();
 
@@ -36,7 +35,7 @@ Router::route("GET", "/login", function () {
 Router::route("GET", "/register", function () {
     require_once("view/agentEdit.php");
 });
-
+/** TODO: Transfer "POST /register" to use domain objects and DAOs */
 Router::route("POST", "/register", function () {
     $name = $_POST["name"];
     $email = $_POST["email"];
@@ -57,23 +56,16 @@ Router::route("POST", "/register", function () {
 
 Router::route("POST", "/login", function () {
     $email = $_POST["email"];
-    $pdoInstance = Database::connect();
-    $stmt = $pdoInstance->prepare('
-            SELECT * FROM agent WHERE email = :email;');
-    $stmt->bindValue(':email', $email);
-    $stmt->execute();
-    if ($stmt->rowCount() > 0) {
-        $agent = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
-        if (password_verify($_POST["password"], $agent["password"])) {
-            $_SESSION["agentLogin"]["name"] = $agent["name"];
+    $agentDAO = new AgentDAO();
+    $agent = $agentDAO->findByEmail($email);
+    if (isset($agent)) {
+        if (password_verify($_POST["password"], $agent->getPassword())) {
+            $_SESSION["agentLogin"]["name"] = $agent->getName();
             $_SESSION["agentLogin"]["email"] = $email;
-            $_SESSION["agentLogin"]["id"] = $agent["id"];
-            if (password_needs_rehash($agent["password"], PASSWORD_DEFAULT)) {
-                $stmt = $pdoInstance->prepare('
-                UPDATE agent SET password=:password WHERE id = :id;');
-                $stmt->bindValue(':id', $agent["id"]);
-                $stmt->bindValue(':password', password_hash($_POST["password"], PASSWORD_DEFAULT));
-                $stmt->execute();
+            $_SESSION["agentLogin"]["id"] = $agent->getId();
+            if (password_needs_rehash($agent->getPassword(), PASSWORD_DEFAULT)) {
+                $agent->setPassword(password_hash($_POST["password"], PASSWORD_DEFAULT));
+                $agentDAO->update($agent);
             }
         }
     }
@@ -84,7 +76,7 @@ Router::route("GET", "/logout", function () {
     session_destroy();
     Router::redirect("/login");
 });
-
+/** TODO: Transfer "GET /" to use domain objects and DAOs */
 Router::route_auth("GET", "/", $authFunction, function () {
     $pdoInstance = Database::connect();
     $stmt = $pdoInstance->prepare('
@@ -106,55 +98,33 @@ Router::route_auth("GET", "/customer/create", $authFunction, function () {
 
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
-    $pdoInstance = Database::connect();
-    $stmt = $pdoInstance->prepare('
-            SELECT * FROM customer WHERE id = :id;');
-    $stmt->bindValue(':id', $id);
-    $stmt->execute();
+    $customerDAO = new CustomerDAO();
     global $customer;
-    $customer = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
+    $customer = $customerDAO->read($id);
     layoutSetContent("customerEdit.php");
 });
 
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     $id = $_GET["id"];
-    $pdoInstance = Database::connect();
-    $stmt = $pdoInstance->prepare('
-            DELETE FROM customer
-            WHERE id = :id
-        ');
-    $stmt->bindValue(':id', $id);
-    $stmt->execute();
+    $customerDAO = new CustomerDAO();
+    $customer = new Customer();
+    $customer->setId($id);
+    $customerDAO->delete($customer);
     Router::redirect("/");
 });
 
 Router::route_auth("POST", "/customer/update", $authFunction, function () {
-    $id = $_POST["id"];
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $mobile = $_POST["mobile"];
-    if ($id === "") {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
-            INSERT INTO customer (name, email, mobile, agentid)
-            VALUES (:name, :email , :mobile, :agentid)');
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':mobile', $mobile);
-        $stmt->bindValue(':agentid', $_SESSION["agentLogin"]["id"]);
-        $stmt->execute();
+    $customer = new Customer();
+    $customer->setId($_POST["id"]);
+    $customer->setName($_POST["name"]);
+    $customer->setEmail($_POST["email"]);
+    $customer->setMobile($_POST["mobile"]);
+    $customerDAO = new CustomerDAO();
+    if ($customer->getId() === "") {
+        $customer->setAgentId($_SESSION["agentLogin"]["id"]);
+        $customerDAO->create($customer);
     } else {
-        $pdoInstance = Database::connect();
-        $stmt = $pdoInstance->prepare('
-            UPDATE customer SET name = :name,
-                email = :email,
-                mobile = :mobile
-            WHERE id = :id');
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':mobile', $mobile);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
+        $customerDAO->update($customer);
     }
     Router::redirect("/");
 });

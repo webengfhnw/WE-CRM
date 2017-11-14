@@ -6,15 +6,23 @@
  * Time: 21:30
  */
 require_once("config/Autoloader.php");
-require_once("view/layout.php");
 
 use router\Router;
 use http\HTTPException;
 use domain\Customer;
 use service\AuthServiceImpl;
 use service\CustomerServiceImpl;
+use view\TemplateView;
 
 session_start();
+
+function layoutRendering(TemplateView $contentView){
+    $view = new TemplateView("layout.php");
+    $view->header = (new TemplateView("header.php"))->render();
+    $view->content = $contentView->render();
+    $view->footer = (new TemplateView("footer.php"))->render();
+    echo $view->render();
+}
 
 $authFunction = function () {
     if (isset($_SESSION["agentLogin"])) {
@@ -27,11 +35,11 @@ $authFunction = function () {
 };
 
 Router::route("GET", "/login", function () {
-    require_once("view/agentLogin.php");
+    echo (new TemplateView("agentLogin.php"))->render();
 });
 
 Router::route("GET", "/register", function () {
-    require_once("view/agentRegister.php");
+    echo (new TemplateView("agentRegister.php"))->render();
 });
 
 Router::route("POST", "/register", function () {
@@ -53,19 +61,16 @@ Router::route("GET", "/logout", function () {
     Router::redirect("/login");
 });
 
-/* TODO: Generate and implement the customer service */
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/", $authFunction, function () {
-    $customerDAO = new CustomerDAO();
-    global $customers;
-    $customers = $customerDAO->findByAgent($_SESSION["agentLogin"]["id"]);
-    layoutSetContent("customers.php");
+    $contentView = new TemplateView("customers.php");
+    $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
+    layoutRendering($contentView);
 });
 
 Router::route_auth("GET", "/agent/edit", $authFunction, function () {
-    global $agent;
-    $agent = AuthServiceImpl::getInstance()->readAgent();
-    require_once("view/agentEdit.php");
+    $view = new TemplateView("agentEdit.php");
+    $view->agent = AuthServiceImpl::getInstance()->readAgent();
+    echo $view->render();
 });
 
 Router::route_auth("POST", "/agent/edit", $authFunction, function () {
@@ -74,41 +79,33 @@ Router::route_auth("POST", "/agent/edit", $authFunction, function () {
 });
 
 Router::route_auth("GET", "/customer/create", $authFunction, function () {
-    layoutSetContent("customerEdit.php");
+    $contentView = new TemplateView("customerEdit.php");
+    layoutRendering($contentView);
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
-    $customerDAO = new CustomerDAO();
-    global $customer;
-    $customer = $customerDAO->read($id);
-    layoutSetContent("customerEdit.php");
+    $contentView = new TemplateView("customerEdit.php");
+    $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
+    layoutRendering($contentView);
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     $id = $_GET["id"];
-    $customerDAO = new CustomerDAO();
-    $customer = new Customer();
-    $customer->setId($id);
-    $customerDAO->delete($customer);
+    (new CustomerServiceImpl())->deleteCustomer($id);
     Router::redirect("/");
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("POST", "/customer/update", $authFunction, function () {
     $customer = new Customer();
     $customer->setId($_POST["id"]);
     $customer->setName($_POST["name"]);
     $customer->setEmail($_POST["email"]);
     $customer->setMobile($_POST["mobile"]);
-    $customerDAO = new CustomerDAO();
     if ($customer->getId() === "") {
-        $customer->setAgentId($_SESSION["agentLogin"]["id"]);
-        $customerDAO->create($customer);
+        (new CustomerServiceImpl())->createCustomer($customer);
     } else {
-        $customerDAO->update($customer);
+        (new CustomerServiceImpl())->updateCustomer($customer);
     }
     Router::redirect("/");
 });
@@ -117,5 +114,5 @@ try {
     Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
 } catch (HTTPException $exception) {
     $exception->getHeader();
-    require_once("view/404.php");
+    echo (new TemplateView("404.php"))->render();
 }
