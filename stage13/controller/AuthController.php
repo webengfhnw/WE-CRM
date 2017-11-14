@@ -28,10 +28,10 @@ class AuthController
     }
 
     public static function login(){
-        $weCRMService = AuthServiceImpl::getInstance();
-        if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
+        $authService = AuthServiceImpl::getInstance();
+        if($authService->verifyAgent($_POST["email"],$_POST["password"]))
         {
-            $token = $weCRMService->issueToken();
+            $token = $authService->issueToken();
             $_SESSION["agentLogin"]["token"] = $token;
             if(isset($_POST["remember"])) {
                 setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/");

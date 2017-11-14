@@ -44,8 +44,8 @@ class ServiceEndpoint
     }
 
     public static function loginBasicToken(){
-        $weCRMService = AuthServiceImpl::getInstance();
-        header("Authorization: " . $weCRMService->issueToken(), NULL, 204);
+        $authService = AuthServiceImpl::getInstance();
+        header("Authorization: " . $authService->issueToken(), NULL, 204);
     }
 
     public static function validateToken(){
