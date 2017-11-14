@@ -835,11 +835,53 @@ If data is invalid, error messages can be displayed:
 
 ### Stage 12: Auth and Remember Me
 
-- extending auth controller with token
-- auth token dao
-- auth token domain
-- auth token in service
-- remember me in login view
+In this stage 12, the token-based securing of the business services will be extended, and a remember me functionality will be implemented. The business services are secured using an internal token, which is bound to the session, since stage 09. In this stage, the generated token will be securely stored in the database. Therefore an `AuthToken` domain object (as shown in the [Domain Model](#domain-model)) with a corresponding `AuthTokenDAO` (as shown in the [Data Access Model](#data-access-model)) will be crated.
+
+The `AuthServiceImpl` will then be extended to issue and persist a token based on the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence) and the [OWASP](https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication):
+```PHP
+public function issueToken($type = self::AGENT_TOKEN, $email = null) {
+    $token = new AuthToken();
+    $token->setSelector(bin2hex(random_bytes(5)));
+    $token->setType(self::AGENT_TOKEN);
+    $token->setAgentid($this->currentAgentId);
+    $timestamp = (new \DateTime('now'))->modify('+30 days');
+    $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
+    $validator = random_bytes(20);
+    $token->setValidator(hash('sha384', $validator));
+    $authTokenDAO = new AuthTokenDAO();
+    $authTokenDAO->create($token);
+    return $token->getSelector() .":". bin2hex($validator);
+}
+```
+
+The token, which is managed by the `AuthToken` domain object (as shown in the [Domain Model](#domain-model)), is separated into a `selector` and a `validator`. The `selector` is a random key to select a token from the database. This `selector` is not hashed and not the user id to avoid exposing the number of users of the system. The `validator` is a random key that must be hashed before storing in the database. 
+
+The `AuthController` will then be extended to set a remember me cookie containing the issued token:
+
+```PHP
+public static function login(){
+    $authService = AuthServiceImpl::getInstance();
+    if($authService->verifyAgent($_POST["email"],$_POST["password"]))
+    {
+        $token = $authService->issueToken();
+        $_SESSION["agentLogin"]["token"] = $token;
+        if(isset($_POST["remember"])) {
+            setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/");
+        }
+    }
+}
+```
+
+Finally, the remember me feature can be added to the login view:
+
+```HTML
+<div class="form-group">
+    <div class="checkbox">
+        <label class="control-label">
+            <input type="checkbox" name="remember" />Remember me for 30 days</label>
+    </div>
+</div>
+```
 
 ### Stage 13: Email and Password Reset
 
