@@ -9,7 +9,7 @@
 namespace controller;
 
 use service\AuthServiceImpl;
-use view\View;
+use view\TemplateView;
 use validator\AgentValidator;
 use service\EmailServiceClient;
 
@@ -17,13 +17,13 @@ class AgentPasswordResetController
 {
 
     public static function resetView(){
-        $resetView = new View("agentPasswordReset.php");
+        $resetView = new TemplateView("agentPasswordReset.php");
         $resetView->token = $_GET["token"];
         echo $resetView->render();
     }
     
     public static function requestView(){
-        echo (new View("agentPasswordResetRequest.php"))->render();
+        echo (new TemplateView("agentPasswordResetRequest.php"))->render();
     }
     
     public static function reset(){
@@ -37,7 +37,7 @@ class AgentPasswordResetController
                 }
             }
             $agent->setPassword("");
-            $resetView = new View("agentPasswordReset.php");
+            $resetView = new TemplateView("agentPasswordReset.php");
             $resetView->token = $_POST["token"];
             echo $resetView->render();
             return false;
@@ -47,7 +47,7 @@ class AgentPasswordResetController
 
     public static function resetEmail(){
         $token = AuthServiceImpl::getInstance()->issueToken(AuthServiceImpl::RESET_TOKEN, $_POST["email"]);
-        $emailView = new View("agentPasswordResetEmail.php");
+        $emailView = new TemplateView("agentPasswordResetEmail.php");
         $emailView->resetLink = $GLOBALS["ROOT_URL"] . "/password/reset?token=" . $token;
         return EmailServiceClient::sendEmail($_POST["email"], "Password Reset Email", $emailView->render());
     }

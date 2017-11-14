@@ -8,14 +8,14 @@
 
 require_once("config/Autoloader.php");
 
-use view\View;
+use view\TemplateView;
 
-$contentView = new View("view/dynamicContent.php");
+$contentView = new TemplateView("view/dynamicContent.php");
 $contentView->title = "My title";
 $contentView->text = "My text";
 
-$view = new View("view/layout.php");
-$view->header = (new View("view/header.php"))->render();
+$view = new TemplateView("view/layout.php");
+$view->header = (new TemplateView("view/header.php"))->render();
 $view->content = $contentView->render();
-$view->footer = (new View("view/footer.php"))->render();
+$view->footer = (new TemplateView("view/footer.php"))->render();
 echo $view->render();

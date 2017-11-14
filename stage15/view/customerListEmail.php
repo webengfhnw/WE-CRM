@@ -5,7 +5,7 @@
  * Date: 13.09.2017
  * Time: 16:59
  */
-use view\View;
+use view\TemplateView;
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,9 +24,9 @@ use view\View;
     foreach($this->customers as $customer): ?>
     <tr>
         <td><?php echo $customer->getId(); ?> </td>
-        <td><?php echo View::noHTML($customer->getName()); ?></td>
-        <td><?php echo View::noHTML($customer->getEmail(), false); ?> </td>
-        <td><?php echo View::noHTML($customer->getMobile()); ?> </td>
+        <td><?php echo TemplateView::noHTML($customer->getName()); ?></td>
+        <td><?php echo TemplateView::noHTML($customer->getEmail(), false); ?> </td>
+        <td><?php echo TemplateView::noHTML($customer->getMobile()); ?> </td>
     </tr>
     <?php endforeach; ?>
     </tbody>

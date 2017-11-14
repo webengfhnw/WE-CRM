@@ -5,7 +5,7 @@
  * Date: 13.09.2017
  * Time: 21:28
  */
-use view\View;
+use view\TemplateView;
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,7 +27,7 @@ use view\View;
     <div class="page-header">
         <h2 class="text-center"><strong>Oops, I forgot my password.</strong></h2></div>
     <form action="<?php echo $GLOBALS["ROOT_URL"]; ?>/password/reset" method="post">
-        <input type="hidden" name="token" value="<?php echo View::noHTML($this->token);?>"/>
+        <input type="hidden" name="token" value="<?php echo TemplateView::noHTML($this->token);?>"/>
         <div class="form-group <?php echo isset($this->agentValidator) && $this->agentValidator->isPasswordError() ? "has-error" : ""; ?>">
             <input class="form-control" type="password" name="password" placeholder="Password">
             <p class="help-block"><?php echo isset($this->agentValidator) && $this->agentValidator->isPasswordError() ? $this->agentValidator->getPasswordError() : ""; ?></p>

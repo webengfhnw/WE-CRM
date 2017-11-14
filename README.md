@@ -592,15 +592,15 @@ Since this reference project does not rely on a template engine such as Blade or
 
 The one template view pattern does not really exist. This implementation has been inspired by the Book [PHP Design Patterns](https://books.google.ch/books?id=2R5IBAAAQBAJ&pg=PA453) and the example of [Alejandro Gervasio](https://www.sitepoint.com/flexible-view-manipulation-1/).
 
-In following the View class is explained - the complete View class can be found within the stage09\view folder.
+In following the TemplateView class is explained - the complete TemplateView class can be found within the stage09\view folder.
 
 The basic idea is to assign a view `.php` file to a view by passing the information through the constructor:
 ```PHP
-$contentView = new View("customerEdit.php");
+$contentView = new TemplateView("customerEdit.php");
 ```
 ___
 ```PHP
-class View {
+class TemplateView {
 
     private $view;
 
@@ -612,13 +612,13 @@ class View {
 
 Once the view has been instantiated, data can be injected into the view by using a magic `__set()` method. Finally, the view will be rendered by using the `render()` method:
 ```PHP
-$contentView = new View("customerEdit.php");
+$contentView = new TemplateView("customerEdit.php");
 $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
 echo $contentView->render();
 ```
 ___
 ```PHP
-class View {
+class TemplateView {
 
     private $view;
     private $variables = array();
@@ -642,7 +642,7 @@ The data that has been injected can be accessed within a view `.php` file by usi
 ```
 ___
 ```PHP
-class View {
+class TemplateView {
 
     private $variables = array();
 
@@ -660,14 +660,14 @@ class View {
 
 #### XSS
 
-To prevent XSS (Cross-Site Scripting) attacks any character in a user input that can affect the structure of the HTML document must be escaped on output (when displaying to a user). Following the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/06/preventing-xss-vulnerabilities-in-php-everything-you-need-know) the View class consists of a static method that can be used in a view `.php` file:
+To prevent XSS (Cross-Site Scripting) attacks any character in a user input that can affect the structure of the HTML document must be escaped on output (when displaying to a user). Following the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/06/preventing-xss-vulnerabilities-in-php-everything-you-need-know) the TemplateView class consists of a static method that can be used in a view `.php` file:
 
 ```PHP
 <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getName()) : ''; ?>">
 ```
 ___
 ```PHP
-class View {
+class TemplateView {
 
     public static function noHTML($input, $bEncodeAll = true, $encoding = "UTF-8")
     {

@@ -11,25 +11,25 @@ namespace controller;
 use domain\Customer;
 use validator\CustomerValidator;
 use service\CustomerServiceImpl;
-use view\View;
+use view\TemplateView;
 use view\LayoutRendering;
 
 class CustomerController
 {
     public static function create(){
-        $contentView = new View("customerEdit.php");
+        $contentView = new TemplateView("customerEdit.php");
         LayoutRendering::basicLayout($contentView);
     }
 
     public static function readAll(){
-        $contentView = new View("customers.php");
+        $contentView = new TemplateView("customers.php");
         $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
         LayoutRendering::basicLayout($contentView);
     }
 
     public static function edit(){
         $id = $_GET["id"];
-        $contentView = new View("customerEdit.php");
+        $contentView = new TemplateView("customerEdit.php");
         $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
         LayoutRendering::basicLayout($contentView);
     }
@@ -49,7 +49,7 @@ class CustomerController
             }
         }
         else{
-            $contentView = new View("customerEdit.php");
+            $contentView = new TemplateView("customerEdit.php");
             $contentView->customer = $customer;
             $contentView->customerValidator = $customerValidator;
             LayoutRendering::basicLayout($contentView);

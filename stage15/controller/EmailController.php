@@ -10,13 +10,13 @@ namespace controller;
 
 use service\AuthServiceImpl;
 use service\CustomerServiceImpl;
-use view\View;
+use view\TemplateView;
 use service\EmailServiceClient;
 
 class EmailController
 {
     public static function sendMeMyCustomers(){
-        $emailView = new View("customerListEmail.php");
+        $emailView = new TemplateView("customerListEmail.php");
         $emailView->customers = (new CustomerServiceImpl())->findAllCustomer();
         return EmailServiceClient::sendEmail(AuthServiceImpl::getInstance()->readAgent()->getEmail(), "My current customers", $emailView->render());
     }

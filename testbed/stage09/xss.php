@@ -7,16 +7,16 @@
  */
 require_once("config/Autoloader.php");
 
-use view\View;
+use view\TemplateView;
 
-$contentView = new View("view/xssForm.php");
+$contentView = new TemplateView("view/xssForm.php");
 if(array_key_exists("comment", $_POST))
-    $contentView->comment = View::noHTML($_POST["comment"]);
+    $contentView->comment = TemplateView::noHTML($_POST["comment"]);
 else
     $contentView->comment = "";
 
-$view = new View("view/layout.php");
-$view->header = (new View("view/header.php"))->render();
+$view = new TemplateView("view/layout.php");
+$view->header = (new TemplateView("view/header.php"))->render();
 $view->content = $contentView->render();
-$view->footer = (new View("view/footer.php"))->render();
+$view->footer = (new TemplateView("view/footer.php"))->render();
 echo $view->render();
