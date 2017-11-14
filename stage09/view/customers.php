@@ -5,7 +5,7 @@
  * Date: 13.09.2017
  * Time: 16:59
  */
-use view\View;
+use view\TemplateView;
 ?>
 <div class="container">
     <div class="page-header">
@@ -26,9 +26,9 @@ use view\View;
             foreach($this->customers as $customer): ?>
             <tr>
                 <td><?php echo $customer->getId(); ?> </td>
-                <td><?php echo View::noHTML($customer->getName()); ?></td>
-                <td><?php echo View::noHTML($customer->getEmail()); ?> </td>
-                <td><?php echo View::noHTML($customer->getMobile()); ?> </td>
+                <td><?php echo TemplateView::noHTML($customer->getName()); ?></td>
+                <td><?php echo TemplateView::noHTML($customer->getEmail()); ?> </td>
+                <td><?php echo TemplateView::noHTML($customer->getMobile()); ?> </td>
                 <td>
                     <div class="btn-group btn-group-sm" role="group">
                         <a class="btn btn-default" role="button" href="customer/edit?id=<?php echo $customer->getId(); ?>"> <i class="fa fa-edit"></i></a>

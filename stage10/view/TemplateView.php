@@ -9,7 +9,7 @@
 namespace view;
 
 
-class View{
+class TemplateView{
 
     private $view;
     private $variables = array();

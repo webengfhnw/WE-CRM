@@ -10,7 +10,7 @@ namespace controller;
 
 use domain\Customer;
 use service\CustomerServiceImpl;
-use view\View;
+use view\TemplateView;
 use view\LayoutRendering;
 
 class CustomerController

@@ -12,11 +12,11 @@ namespace view;
 class LayoutRendering
 {
 
-    public static function basicLayout(View $contentView){
-        $view = new View("layout.php");
-        $view->header = (new View("header.php"))->render();
+    public static function basicLayout(TemplateView $contentView){
+        $view = new TemplateView("layout.php");
+        $view->header = (new TemplateView("header.php"))->render();
         $view->content = $contentView->render();
-        $view->footer = (new View("footer.php"))->render();
+        $view->footer = (new TemplateView("footer.php"))->render();
         echo $view->render();
     }
 

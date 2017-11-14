@@ -9,12 +9,12 @@
 namespace controller;
 
 use service\AuthServiceImpl;
-use view\View;
+use view\TemplateView;
 
 class AgentController
 {
     public static function edit(){
-        $view = new View("agentEdit.php");
+        $view = new TemplateView("agentEdit.php");
         $view->agent = AuthServiceImpl::getInstance()->readAgent();
         echo $view->render();
     }
@@ -28,10 +28,10 @@ class AgentController
     }
 
     public static function registerView(){
-        echo (new View("agentRegister.php"))->render();
+        echo (new TemplateView("agentRegister.php"))->render();
     }
 
     public static function loginView(){
-        echo (new View("agentLogin.php"))->render();
+        echo (new TemplateView("agentLogin.php"))->render();
     }
 }

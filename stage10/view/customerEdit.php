@@ -5,7 +5,7 @@
  * Date: 13.09.2017
  * Time: 17:06
  */
-use view\View;
+use view\TemplateView;
 ?>
 <div class="container">
     <div class="page-header">
@@ -20,19 +20,19 @@ use view\View;
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Name </span></div>
-                <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getName()) : ''; ?>">
+                <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getName()) : ''; ?>">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Email </span></div>
-                <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getEmail()) : ''; ?>">
+                <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getEmail()) : ''; ?>">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Mobile </span></div>
-                <input class="form-control" type="text" name="mobile" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getMobile()) : ''; ?>">
+                <input class="form-control" type="text" name="mobile" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getMobile()) : ''; ?>">
             </div>
         </div>
         <div class="btn-group" role="group">

@@ -5,7 +5,7 @@
  * Date: 13.09.2017
  * Time: 16:59
  */
-use view\View;
+use view\TemplateView;
 ?>
 <div class="container" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="page-header">

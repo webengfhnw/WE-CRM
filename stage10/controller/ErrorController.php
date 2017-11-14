@@ -8,11 +8,11 @@
 
 namespace controller;
 
-use view\View;
+use view\TemplateView;
 
 class ErrorController
 {
     public static function show404(){
-        echo (new View("404.php"))->render();
+        echo (new TemplateView("404.php"))->render();
     }
 }

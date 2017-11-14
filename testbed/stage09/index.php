@@ -8,6 +8,6 @@
 
 require_once("config/Autoloader.php");
 
-use view\View;
+use view\TemplateView;
 
 /* TODO: Create a View class and use it here to compose a view*/
