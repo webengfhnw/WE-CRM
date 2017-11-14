@@ -83,9 +83,20 @@ route("GET", "/logout", function () {
 });
 
 route_auth("GET", "/", $authFunction, function () {
-    require("database/database.php");
-    $pdoInstance = connect();
+
+
     /** TODO: create a prepared SQL statement to retrieve all customers */
+
+        $agentID = $_SESSION["agentLogin"]["agentId"];
+
+        require("database/database.php");
+        $pdoInstance = connect();
+        $stmt = $pdoInstance->prepare('
+            SELECT * FROM customer WHERE agentid = :id;');
+        $stmt->bindValue(':id', $agentID);
+        $stmt->execute();
+       global $customers;
+    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     /** TODO: extend the customers.php file to show the data */
     layoutSetContent("customers.php");
 });

@@ -25,7 +25,7 @@
                         <li class="active" role="presentation"><a href="#">My Customers</a></li>
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#">My Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li role="presentation"><a href="agentEdit.html">Edit Profile</a></li>
+                                <li role="presentation"><a href="agentEdit.php">Edit Profile</a></li>
                                 <li role="presentation"><a href="#">Logout </a></li>
                             </ul>
                         </li>
@@ -56,7 +56,7 @@
                         <td>+41797007070 </td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <a class="btn btn-default" role="button" href="customerEdit.html"> <i class="fa fa-edit"></i></a>
+                                <a class="btn btn-default" role="button" href="customerEdit.php"> <i class="fa fa-edit"></i></a>
                                 <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customers.html"> <i class="glyphicon glyphicon-trash"></i></button>
                             </div>
                         </td>
@@ -68,7 +68,7 @@
                         <td>+41788008080 </td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <a class="btn btn-default" role="button" href="customerEdit.html"> <i class="fa fa-edit"></i></a>
+                                <a class="btn btn-default" role="button" href="customerEdit.php"> <i class="fa fa-edit"></i></a>
                                 <button class="btn btn-default" type="button" data-target="#confirm-modal" data-toggle="modal" data-href="customers.html"> <i class="glyphicon glyphicon-trash"></i></button>
                             </div>
                         </td>
@@ -77,7 +77,7 @@
             </table>
         </div>
         <div class="btn-group" role="group">
-            <a class="btn btn-default" role="button" href="customerEdit.html"> <i class="fa fa-plus-square-o"></i></a>
+            <a class="btn btn-default" role="button" href="customerEdit.php"> <i class="fa fa-plus-square-o"></i></a>
             <button class="btn btn-default" type="button"> <i class="fa fa-file-pdf-o"></i></button>
             <button class="btn btn-default" type="button"> <i class="fa fa-envelope-o"></i></button>
         </div>

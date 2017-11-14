@@ -17,7 +17,7 @@
     <div class="container" style="display:flex;flex-direction:column;justify-content:center;">
         <div class="page-header">
             <h2 class="text-center"><strong>WE-CRM | Create</strong> / <strong>Update</strong> your account. </h2></div>
-        <form action="agentLogin.html" method="post">
+        <form action="agentLogin.php" method="post">
             <div class="form-group">
                 <input class="form-control" type="text" name="name" placeholder="Name">
             </div>
