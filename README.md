@@ -663,7 +663,7 @@ class TemplateView {
 To prevent XSS (Cross-Site Scripting) attacks any character in a user input that can affect the structure of the HTML document must be escaped on output (when displaying to a user). Following the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/06/preventing-xss-vulnerabilities-in-php-everything-you-need-know) the TemplateView class consists of a static method that can be used in a view `.php` file:
 
 ```PHP
-<input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getName()) : ''; ?>">
+<input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getName()) : ''; ?>">
 ```
 ___
 ```PHP
@@ -696,19 +696,19 @@ In the following the in stage 10 implemented `CustomerController`:
 class CustomerController
 {
     public static function create(){
-        $contentView = new View("customerEdit.php");
+        $contentView = new TemplateView("customerEdit.php");
         LayoutRendering::basicLayout($contentView);
     }
 
     public static function readAll(){
-        $contentView = new View("customers.php");
+        $contentView = new TemplateView("customers.php");
         $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
         LayoutRendering::basicLayout($contentView);
     }
 
     public static function edit(){
         $id = $_GET["id"];
-        $contentView = new View("customerEdit.php");
+        $contentView = new TemplateView("customerEdit.php");
         $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
         LayoutRendering::basicLayout($contentView);
     }
@@ -741,10 +741,10 @@ namespace view;
 class LayoutRendering
 {
     public static function basicLayout(View $contentView){
-        $view = new View("layout.php");
-        $view->header = (new View("header.php"))->render();
+        $view = new TemplateView("layout.php");
+        $view->header = (new TemplateView("header.php"))->render();
         $view->content = $contentView->render();
-        $view->footer = (new View("footer.php"))->render();
+        $view->footer = (new TemplateView("footer.php"))->render();
         echo $view->render();
     }
 }
@@ -809,7 +809,7 @@ class CustomerController
             // ...
         }
         else{
-            $contentView = new View("customerEdit.php");
+            $contentView = new TemplateView("customerEdit.php");
             $contentView->customer = $customer;
             $contentView->customerValidator = $customerValidator;
             LayoutRendering::basicLayout($contentView);
@@ -827,7 +827,7 @@ If data is invalid, error messages can be displayed:
 <div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? "has-error" : ""; ?>">
     <div class="input-group">
         <div class="input-group-addon"><span>Email </span></div>
-        <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? View::noHTML($this->customer->getEmail()) : ''; ?>">
+        <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getEmail()) : ''; ?>">
     </div>
     <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? $this->customerValidator->getEmailError() : ""; ?></p>
 </div>
