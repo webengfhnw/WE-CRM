@@ -6,6 +6,11 @@
  * Time: 17:06
  */
 use view\TemplateView;
+use domain\Customer;
+use validator\CustomerValidator;
+
+isset($this->customer) ? $customer = $this->customer : $customer = new Customer();
+isset($this->customerValidator) ? $customerValidator = $this->customerValidator : $customerValidator = new CustomerValidator();
 ?>
 <div class="container">
     <div class="page-header">
@@ -14,29 +19,29 @@ use view\TemplateView;
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>ID </span></div>
-                <input class="form-control" type="text" name="id" readonly="" value="<?php echo isset($this->customer) ? $this->customer->getId() : ''; ?>">
+                <input class="form-control" type="text" name="id" readonly="" value="<?php echo $customer->getId() ?>">
             </div>
         </div>
-        <div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isNameError() ? "has-error" : ""; ?>">
+        <div class="form-group <?php echo $customerValidator->isNameError() ? "has-error" : ""; ?>">
             <div class="input-group">
                 <div class="input-group-addon"><span>Name </span></div>
-                <input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getName()) : ''; ?>">
+                <input class="form-control" type="text" name="name" value="<?php echo TemplateView::noHTML($customer->getName()) ?>">
             </div>
-            <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isNameError() ? $this->customerValidator->getNameError() : ""; ?></p>
+            <p class="help-block"><?php echo $customerValidator->getNameError() ?></p>
         </div>
-        <div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? "has-error" : ""; ?>">
+        <div class="form-group <?php echo $customerValidator->isEmailError() ? "has-error" : ""; ?>">
             <div class="input-group">
                 <div class="input-group-addon"><span>Email </span></div>
-                <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getEmail()) : ''; ?>">
+                <input class="form-control" type="email" name="email" value="<?php echo TemplateView::noHTML($customer->getEmail()) ?>">
             </div>
-            <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? $this->customerValidator->getEmailError() : ""; ?></p>
+            <p class="help-block"><?php echo $customerValidator->getEmailError() ?></p>
         </div>
-        <div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isMobileError() ? "has-error" : ""; ?>">
+        <div class="form-group <?php echo $customerValidator->isMobileError() ? "has-error" : ""; ?>">
             <div class="input-group">
                 <div class="input-group-addon"><span>Mobile </span></div>
-                <input class="form-control" type="text" name="mobile" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getMobile()) : ''; ?>">
+                <input class="form-control" type="text" name="mobile" value="<?php echo TemplateView::noHTML($customer->getMobile()) ?>">
             </div>
-            <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isMobileError() ? $this->customerValidator->getMobileError() : ""; ?></p>
+            <p class="help-block"><?php echo $customerValidator->getMobileError() ?></p>
         </div>
         <div class="btn-group" role="group">
             <button class="btn btn-default" type="submit"> <i class="fa fa-save"></i></button>

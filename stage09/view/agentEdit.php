@@ -5,7 +5,9 @@
  * Date: 13.09.2017
  * Time: 21:48
  */
-global $agent;
+use domain\Agent;
+
+isset($this->agent) ? $agent = $this->agent : $agent = new Agent();
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,10 +30,10 @@ global $agent;
         <h2 class="text-center"><strong>WE-CRM | Update</strong> your account. </h2></div>
     <form action="<?php echo $GLOBALS["ROOT_URL"]; ?>/agent/edit" method="post">
         <div class="form-group">
-            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo isset($this->agent) ? $this->agent->getName() : ''; ?>">
+            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo $agent->getName() ?>">
         </div>
         <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo isset($this->agent) ? $this->agent->getEmail() : ''; ?>">
+            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo $agent->getEmail() ?>">
         </div>
         <div class="form-group">
             <input class="form-control" type="password" name="password" placeholder="Password">
