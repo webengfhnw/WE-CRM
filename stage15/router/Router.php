@@ -19,7 +19,8 @@ class Router
 
     public static function init(){
         $protocol = isset($_SERVER['HTTPS'])||(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === "https") ? 'https' : 'http';
-        $GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . ":" . $_SERVER['SERVER_PORT'] . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
+        $_SERVER['SERVER_PORT'] === 80 ? $serverPort = "" : $serverPort = ":" . $_SERVER['SERVER_PORT'];
+        $GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . $serverPort . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
         if(!empty($_SERVER['REDIRECT_ORIGINAL_PATH'])) {
             $_SERVER['PATH_INFO'] = $_SERVER['REDIRECT_ORIGINAL_PATH'];
         }
