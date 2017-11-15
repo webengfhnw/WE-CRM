@@ -17,9 +17,11 @@ class CustomerValidator
     private $emailError = null;
     private $mobileError = null;
 
-    public function __construct(Customer $customer)
+    public function __construct(Customer $customer = null)
     {
-        $this->validate($customer);
+        if (!is_null($customer)) {
+            $this->validate($customer);
+        }
     }
 
     public function validate(Customer $customer)

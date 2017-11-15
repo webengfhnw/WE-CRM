@@ -5,7 +5,11 @@
  * Date: 13.09.2017
  * Time: 21:48
  */
-global $agent;
+use domain\Agent;
+use validator\AgentValidator;
+
+isset($this->agent) ? $agent = $this->agent : $agent = new Agent();
+isset($this->agentValidator) ? $agentValidator = $this->agentValidator : $agentValidator = new AgentValidator()
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,17 +31,17 @@ global $agent;
     <div class="page-header">
         <h2 class="text-center"><?php echo isset($this->pageHeading) ? $this->pageHeading : "<strong>WE-CRM | Create</strong> your account. "; ?></h2></div>
     <form action="<?php echo $GLOBALS["ROOT_URL"]; ?><?php echo isset($this->pageFormAction) ? $this->pageFormAction : "/register"; ?>" method="post">
-        <div class="form-group <?php echo isset($this->agentValidator) && $this->agentValidator->isNameError() ? "has-error" : ""; ?>">
-            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo isset($this->agent) ? $this->agent->getName() : ''; ?>">
-            <p class="help-block"><?php echo isset($this->agentValidator) && $this->agentValidator->isNameError() ? $this->agentValidator->getNameError() : ""; ?></p>
+        <div class="form-group <?php echo $agentValidator->isNameError() ? "has-error" : ""; ?>">
+            <input class="form-control" type="text" name="name" placeholder="Name" value="<?php echo $agent->getName() ?>">
+            <p class="help-block"><?php echo $agentValidator->getNameError() ?></p>
         </div>
-        <div class="form-group <?php echo isset($this->agentValidator) && $this->agentValidator->isEmailError() ? "has-error" : ""; ?>">
-            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo isset($this->agent) ? $this->agent->getEmail() : ''; ?>">
-            <p class="help-block"><?php echo isset($this->agentValidator) && $this->agentValidator->isEmailError() ? $this->agentValidator->getEmailError() : ""; ?></p>
+        <div class="form-group <?php echo $agentValidator->isEmailError() ? "has-error" : ""; ?>">
+            <input class="form-control" type="email" name="email" placeholder="Email" value="<?php echo $agent->getEmail() ?>">
+            <p class="help-block"><?php echo $agentValidator->getEmailError() ?></p>
         </div>
-        <div class="form-group <?php echo isset($this->agentValidator) && $this->agentValidator->isPasswordError() ? "has-error" : ""; ?>">
+        <div class="form-group <?php echo $agentValidator->isPasswordError() ? "has-error" : ""; ?>">
             <input class="form-control" type="password" name="password" placeholder="Password">
-            <p class="help-block"><?php echo isset($this->agentValidator) && $this->agentValidator->isPasswordError() ? $this->agentValidator->getPasswordError() : ""; ?></p>
+            <p class="help-block"><?php echo $agentValidator->getPasswordError() ?></p>
         </div>
         <div class="form-group">
             <button class="btn btn-primary btn-block" type="submit"><?php echo isset($this->pageSubmitText) ? $this->pageSubmitText : "Register"; ?></button>

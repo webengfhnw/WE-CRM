@@ -17,9 +17,11 @@ class AgentValidator
     private $emailError = null;
     private $passwordError = null;
 
-    public function __construct(Agent $agent)
+    public function __construct(Agent $agent = null)
     {
-        $this->validate($agent);
+        if (!is_null($agent)) {
+            $this->validate($agent);
+        }
     }
 
     public function validate(Agent $agent)

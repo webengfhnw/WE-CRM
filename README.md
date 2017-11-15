@@ -637,8 +637,13 @@ class TemplateView {
 ```
 
 The data that has been injected can be accessed within a view `.php` file by using a magic `__get()` method. At the same time it may make sense to validate if a variable has been set:
+
 ```PHP
-<input class="form-control" type="text" name="id" readonly="" value="<?php echo isset($this->customer) ? $this->customer->getId() : ''; ?>">
+isset($this->customer) ? $customer = $this->customer : $customer = new Customer();
+```
+
+```PHP
+<input class="form-control" type="text" name="id" readonly="" value="<?php echo $customer->getId() ?>">
 ```
 ___
 ```PHP
@@ -663,7 +668,7 @@ class TemplateView {
 To prevent XSS (Cross-Site Scripting) attacks any character in a user input that can affect the structure of the HTML document must be escaped on output (when displaying to a user). Following the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/06/preventing-xss-vulnerabilities-in-php-everything-you-need-know) the TemplateView class consists of a static method that can be used in a view `.php` file:
 
 ```PHP
-<input class="form-control" type="text" name="name" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getName()) : ''; ?>">
+<input class="form-control" type="text" name="name" value="<?php echo TemplateView::noHTML($customer->getName()) ?>">
 ```
 ___
 ```PHP
@@ -760,9 +765,11 @@ class CustomerValidator
     private $valid = true;
     private $emailError = null;
 
-    public function __construct(Customer $customer)
+    public function __construct(Customer $customer = null)
     {
-        $this->validate($customer);
+        if (!is_null($customer)) {
+            $this->validate($customer);
+        }
     }
 
     public function validate(Customer $customer)
@@ -824,12 +831,12 @@ class CustomerController
 If data is invalid, error messages can be displayed:
 
 ```HTML
-<div class="form-group <?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? "has-error" : ""; ?>">
+<div class="form-group <?php echo $customerValidator->isEmailError() ? "has-error" : ""; ?>">
     <div class="input-group">
         <div class="input-group-addon"><span>Email </span></div>
-        <input class="form-control" type="email" name="email" value="<?php echo isset($this->customer) ? TemplateView::noHTML($this->customer->getEmail()) : ''; ?>">
+        <input class="form-control" type="email" name="email" value="<?php echo TemplateView::noHTML($customer->getEmail()) ?>">
     </div>
-    <p class="help-block"><?php echo isset($this->customerValidator) && $this->customerValidator->isEmailError() ? $this->customerValidator->getEmailError() : ""; ?></p>
+    <p class="help-block"><?php echo $customerValidator->getEmailError() ?></p>
 </div>
 ```
 
