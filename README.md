@@ -600,6 +600,8 @@ Since this reference project does not rely on a template engine such as Blade or
 
 The one template view pattern does not really exist. This implementation has been inspired by the Book [PHP Design Patterns](https://books.google.ch/books?id=2R5IBAAAQBAJ&pg=PA453) and the example of [Alejandro Gervasio](https://www.sitepoint.com/flexible-view-manipulation-1/).
 
+![](modelling/images/WE-CRM-Template-View-Pattern.png)
+
 In following the TemplateView class is explained - the complete TemplateView class can be found within the stage09\view folder.
 
 The basic idea is to assign a view `.php` file to a view by passing the information through the constructor:
@@ -912,6 +914,8 @@ Add SENDGRID_APIKEY to heroku env
 - HyPDF API
 
 ### Stage 15: REST Service API
+
+![](modelling/images/WE-CRM-API.png)
 
 - change router to work with REST paths
 - abstractJSONDTO for customer
