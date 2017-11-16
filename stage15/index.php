@@ -115,7 +115,7 @@ $authAPIBasicFunction = function () {
     return false;
 };
 
-Router::route_auth("GET", "/api/token/", $authAPIBasicFunction, function () {
+Router::route_auth("GET", "/api/token", $authAPIBasicFunction, function () {
     ServiceEndpoint::loginBasicToken();
 });
 
@@ -126,11 +126,11 @@ $authAPITokenFunction = function () {
     return false;
 };
 
-Router::route_auth("GET", "/api/token/validate", $authAPITokenFunction, function () {
+Router::route_auth("HEAD", "/api/token", $authAPITokenFunction, function () {
     ServiceEndpoint::validateToken();
 });
 
-Router::route_auth("GET", "/api/customer/", $authAPITokenFunction, function () {
+Router::route_auth("GET", "/api/customer", $authAPITokenFunction, function () {
     ServiceEndpoint::findAllCustomer();
 });
 
@@ -139,15 +139,15 @@ Router::route_auth("GET", "/api/customer/{id}", $authAPITokenFunction, function 
 });
 
 Router::route_auth("PUT", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
-    ServiceEndpoint::update($id);
+    ServiceEndpoint::updateCustomer($id);
 });
 
-Router::route_auth("POST", "/api/customer/", $authAPITokenFunction, function () {
-    ServiceEndpoint::create();
+Router::route_auth("POST", "/api/customer", $authAPITokenFunction, function () {
+    ServiceEndpoint::createCustomer();
 });
 
 Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
-    ServiceEndpoint::delete($id);
+    ServiceEndpoint::deleteCustomer($id);
 });
 
 try {

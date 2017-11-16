@@ -444,18 +444,21 @@ interface HTTPStatusCode
 
 trait HTTPStatusHeader
 {
-    protected static function createHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null)
-    {
+    public static function setStatusHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true, $statusPhrase = null){
         // ...
     }
+
+    public static function setHeader($header, $statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true){
+        // ...
+    }
+
 }
 
 class HTTPHeader implements HTTPStatusCode
 {
     use HTTPStatusHeader;
 
-    public static function getHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true, $statusPhrase = null){
-        self::createHeader($statusCode, $statusPhrase);
+    public static function redirect($redirect_path, $statusCode = HTTPStatusCode::HTTP_301_MOVED_PERMANENTLY) {
         // ...
     }
 }
@@ -464,10 +467,15 @@ class HTTPException extends Exception implements HTTPStatusCode
 {
     use HTTPStatusHeader;
 
-    public function __construct($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null, $body = null)
+    public function __construct($statusCode = HTTPStatusCode::HTTP_400_BAD_REQUEST, $statusPhrase = null, $body = null)
     {
         self::createHeader($statusCode, $statusPhrase);
         // ...
+    }
+
+    public function getHeader($replaceHeader = true){
+        self::setHeader($this->header, $this->statusCode, $replaceHeader);
+        return $this->header;
     }
 }
 ```

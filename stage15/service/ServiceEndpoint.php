@@ -10,6 +10,8 @@ namespace service;
 
 use domain\Customer;
 use validator\CustomerValidator;
+use http\HTTPStatusCode;
+use http\HTTPHeader;
 
 class ServiceEndpoint
 {
@@ -45,35 +47,38 @@ class ServiceEndpoint
 
     public static function loginBasicToken(){
         $authService = AuthServiceImpl::getInstance();
-        header("Authorization: " . $authService->issueToken(), NULL, 204);
+        HTTPHeader::setHeader("Authorization: " . $authService->issueToken(), HTTPStatusCode::HTTP_204_NO_CONTENT, false);
     }
 
     public static function validateToken(){
-        header(NULL, NULL, 200);
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_202_ACCEPTED);
     }
 
     public static function findAllCustomer(){
         $responseData = (new CustomerServiceImpl())->findAllCustomer();
-        header("Content-Type: application/json", NULL, 200);
+        HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
         echo json_encode($responseData);
     }
 
     public static function readCustomer($id){
         $responseData = (new CustomerServiceImpl())->readCustomer($id);
-        header("Content-Type: application/json", NULL, 200);
+        HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
         echo json_encode($responseData);
     }
 
-    public static function update($customerId = null){
+    public static function updateCustomer($customerId = null){
         $requestData = json_decode(file_get_contents("php://input"), true);
         $customer = Customer::Deserialize($requestData);
         $customerValidator = new CustomerValidator($customer);
         if($customerValidator->isValid()) {
             if (is_null($customerId)) {
-                (new CustomerServiceImpl())->createCustomer($customer);
+                $customer = (new CustomerServiceImpl())->createCustomer($customer);
+                $location = $GLOBALS["ROOT_URL"] . $_SERVER['PATH_INFO'] . $customer->getId();
+                HTTPHeader::setHeader("Location: " . $location, HTTPStatusCode::HTTP_201_CREATED, true);
             } else {
                 $customer->setId($customerId);
                 (new CustomerServiceImpl())->updateCustomer($customer);
+                HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_204_NO_CONTENT);
             }
         }
         else{
@@ -82,13 +87,13 @@ class ServiceEndpoint
         return true;
     }
 
-    public static function create(){
-        return self::update();
+    public static function createCustomer(){
+        return self::updateCustomer();
     }
 
-    public static function delete($id){
+    public static function deleteCustomer($id){
         (new CustomerServiceImpl())->deleteCustomer($id);
-        header("Content-Type: application/json", NULL, 204);
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_204_NO_CONTENT);
     }
 
 }
