@@ -5,23 +5,19 @@ This is a reference project elaborated by the students step-by-step in every FHN
 - [Analysis](#analysis)
     - [Scenario](#scenario)
     - [Use Case](#use-case)
-    - [Constraints](#constraints)
 - [Design](#design)
-    - [Solution Strategy](#solution-strategy)
-    - [Wireframe](#wireframe)
-    - [Entity Relationship Diagram](#entity-relationship-diagram)
-    - [Domain Model](#domain-model)
-    - [Data Access Model](#data-access-model)
-    - [Business Logic Model](#business-logic-model)
-    - [Layering Structure](#layering-structure)
-    - [Layering Models](#layering-models)
+    - [Information Systems Modelling](#information-systems-modelling)
+    - [Information Systems (Layering) Architecture](#information-systems-layering-architecture)
 - [Implementation](#implementation)
     - [Stage 1: Building a Static Website with Bootstrap](#stage-1-building-a-static-website-with-bootstrap)
+        - [Wireframes](#wireframes)
+        - [HTML-Prototype](#html-prototype)
     - [Stage 2: PHP Files, Basic Router and Session](#stage-2-php-files-basic-router-and-session)
         - [.htaccess](#htaccess)
         - [Procedural Router](#procedural-router)
         - [Session](#session)
     - [Stage 3: Database, .env Config Files and Passwords](#stage-3-database-env-config-files-and-passwords)
+        - [Entity Relationship Diagram](#entity-relationship-diagram)
         - [Database](#database)
         - [.env Config Files](#env-config-files)
         - [PDO](#pdo)
@@ -33,9 +29,13 @@ This is a reference project elaborated by the students step-by-step in every FHN
     - [Stage 6: Database, Config Classes, Exception Handling and HTTP Status](#stage-6-database-config-classes-exception-handling-and-http-status)
         - [Exception Handling and HTTP Status](#exception-handling-and-http-status)
     - [Stage 7: Domain and Data Access Objects (DAO)](#stage-7-domain-and-data-access-objects-dao)
+        - [Domain Model](#domain-model)
         - [Domain Objects](#domain-objects)
+        - [Data Access Model](#data-access-model)
         - [Data Access Objects (DAO)](#data-access-objects-dao)
     - [Stage 8: Business Services](#stage-8-business-services)
+        - [Business Logic Model](#business-logic-model)
+        - [Service Interfaces and Implementations](#service-interfaces-and-implementations)
     - [Stage 9: Template View Pattern and XSS](#stage-9-template-view-pattern-and-xss)
         - [Template View Pattern](#template-view-pattern)
         - [XSS](#xss)
@@ -72,51 +72,29 @@ WE-CRM (Web Engineering Customer-Relationship-Management) is the smallest possib
 - UC-5 [Generate a PDF customer list]: Agents can generate a PDF containing a list of their customers.
 - UC-6 [Send customer list via email]: Agents can send an email containing a list of their customers to their own inbox.
 
-### Constraints
-
-TODO: write
-
 ## Design
 
-### Solution Strategy
-
-TODO: write
-
-### Wireframe
-
-![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png)
-![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
-![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
-
-### Entity Relationship Diagram
-
-![](modelling/images/WE-CRM-ERD.png)
-
-### Domain Model
-
-![](modelling/images/WE-CRM-Domain-Model.png)
-
-### Data Access Model
-
-![](modelling/images/WE-CRM-Data-Access.png)
-
-### Business Logic Model
-
-![](modelling/images/WE-CRM-Business-Logic.png)
-
-### Layering Structure
-
-![](modelling/images/WE-CRM-Layering-Structure.png)
-
-### Layering Models
+### Information Systems Modelling
 
 ![](modelling/images/WE-CRM-Layering-Models.png)
+
+### Information Systems (Layering) Architecture
+
+![](modelling/images/WE-CRM-Layering-Structure.png)
 
 ## Implementation
 
 ### Stage 1: Building a Static Website with Bootstrap
 
 In stage 01 a bootstrap based prototype has been created by using a prototyping application. 
+
+#### Wireframes
+
+![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png)
+![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
+![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
+
+#### HTML-Prototype
 
 In this case, the prototype application Bootstrap Studio has been used to create a basic user interface design based on an HTML grid, Bootstrap CSS and JavaScript, including the selection of web fonts and font-based icons.
 
@@ -205,6 +183,10 @@ session_destroy();
 ### Stage 3: Database, .env Config Files and Passwords
 
 In stage 3 (and stage 4) WE-CRM will be extended with a database functionality. 
+
+#### Entity Relationship Diagram
+
+![](modelling/images/WE-CRM-ERD.png)
 
 #### Database
 
@@ -495,6 +477,10 @@ try {
 
 In stage 7, the [Domain Model](#domain-model), which has been elaborated in [stage 3 (database section)](#database), will be transferred into PHP code and be accessible by implementing data access objects (DAO) in a CRUD (create read, update and delete) style.
 
+#### Domain Model
+
+![](modelling/images/WE-CRM-Domain-Model.png)
+
 #### Domain Objects
 
 Depending on the modelling environment, a [Domain Model](#domain-model) can be transferred into PHP classes. Such domain objects contain no logic, except some very basic logic for setting and getting data (getters/setters).
@@ -508,6 +494,10 @@ $stmt->bindValue(':email', $email);
 $stmt->execute();
 $agent = $stmt->fetchAll(PDO::FETCH_CLASS, "domain\Agent")[0];
 ```
+
+#### Data Access Model
+
+![](modelling/images/WE-CRM-Data-Access.png)
 
 #### Data Access Objects (DAO)
 
@@ -541,6 +531,12 @@ class AgentDAO extends BasicDAO {
 ### Stage 8: Business Services
 
 In stage 8, two service interfaces and service implementations based on the [Business Logic Model](#business-logic-model) are given. In this reference project, the term service referred to business service has been selected. Sometimes the term business logic acting on a business logic layer is used.
+
+#### Business Logic Model
+
+![](modelling/images/WE-CRM-Business-Logic.png)
+
+#### Service Interfaces and Implementations
 
 Since this reference project is as small and simplified as possible for teaching purposes, a one-class singleton strategy has been chosen for authentication (`AuthService`) and one service has been implemented for the customer use-cases (`CustomerService`). In a bigger application scenario, it would make sense to build several business services for different use-cases.
 
