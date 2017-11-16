@@ -44,7 +44,10 @@ class AgentDAO extends BasicDAO {
             SELECT * FROM agent WHERE id = :id;');
         $stmt->bindValue(':id', $agentId);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\Agent")[0];
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\Agent")[0];
+        }
+        return null;
     }
 
 	/**

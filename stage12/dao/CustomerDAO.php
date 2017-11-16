@@ -41,7 +41,10 @@ class CustomerDAO extends BasicDAO {
             SELECT * FROM customer WHERE id = :id;');
         $stmt->bindValue(':id', $customerId);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\Customer")[0];
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\Customer")[0];
+        }
+        return null;
 	}
 
 	/**

@@ -56,7 +56,10 @@ class AuthTokenDAO extends BasicDAO {
             SELECT * FROM authtoken WHERE selector = :selector;');
         $stmt->bindValue(':selector', $selector);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\AuthToken")[0];
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetchAll(\PDO::FETCH_CLASS, "domain\AuthToken")[0];
+        }
+        return null;
     }
 }
 ?>
