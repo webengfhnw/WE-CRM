@@ -55,7 +55,7 @@ class Router
     }
 
     public static function errorHeader() {
-        HTTPHeader::getHeader(HTTPStatusCode::HTTP_404_NOT_FOUND);
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_404_NOT_FOUND);
     }
 
     public static function redirect($redirect_path) {

@@ -12,6 +12,14 @@ namespace http;
 trait HTTPStatusHeader
 {
 
+    public static function setStatusHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true, $statusPhrase = null){
+        header(self::createHeader($statusCode, $statusPhrase), $replaceHeader, self::getStatusCodeNumber($statusCode));
+    }
+
+    public static function setHeader($header, $statusCode = HTTPStatusCode::HTTP_200_OK, $replaceHeader = true){
+        header($header, $replaceHeader, self::getStatusCodeNumber($statusCode));
+    }
+
     protected static function createHeader($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null)
     {
         if (null === $statusPhrase && isset($statusCode)) {

@@ -18,7 +18,7 @@ class HTTPException extends Exception implements HTTPStatusCode
     protected $statusCode;
     protected $body;
 
-    public function __construct($statusCode = HTTPStatusCode::HTTP_200_OK, $statusPhrase = null, $body = null)
+    public function __construct($statusCode = HTTPStatusCode::HTTP_400_BAD_REQUEST, $statusPhrase = null, $body = null)
     {
         $this->statusCode = $statusCode;
         $this->header = self::createHeader($statusCode, $statusPhrase);
@@ -26,7 +26,7 @@ class HTTPException extends Exception implements HTTPStatusCode
     }
 
     public function getHeader($replaceHeader = true){
-        header($this->header, $replaceHeader, self::getStatusCodeNumber($this->statusCode));
+        self::setHeader($this->header, $this->statusCode, $replaceHeader);
         return $this->header;
     }
 
