@@ -109,6 +109,7 @@ Router::route_auth("GET", "/customer/pdf", $authFunction, function () {
 });
 
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, HEAD, OPTIONS");
 
 $authAPIBasicFunction = function () {
     if (ServiceEndpoint::authenticateBasic())
