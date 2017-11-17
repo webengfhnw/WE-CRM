@@ -1,0 +1,10 @@
+.btn-group {
+  white-space:nowrap;
+}
+
+.btn-group > .btn {
+  float:none;
+  display:inline-block;
+  margin-right:-2px;
+}
+
