@@ -46,32 +46,27 @@ class ServiceEndpoint
     }
 
     public static function loginBasicToken(){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         $authService = AuthServiceImpl::getInstance();
         HTTPHeader::setHeader("Authorization: " . $authService->issueToken(), HTTPStatusCode::HTTP_204_NO_CONTENT, false);
     }
 
     public static function validateToken(){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_202_ACCEPTED);
     }
 
     public static function findAllCustomer(){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         $responseData = (new CustomerServiceImpl())->findAllCustomer();
         HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
         echo json_encode($responseData);
     }
 
     public static function readCustomer($id){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         $responseData = (new CustomerServiceImpl())->readCustomer($id);
         HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
         echo json_encode($responseData);
     }
 
     public static function updateCustomer($customerId = null){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         $requestData = json_decode(file_get_contents("php://input"), true);
         $customer = Customer::Deserialize($requestData);
         $customerValidator = new CustomerValidator($customer);
@@ -93,12 +88,10 @@ class ServiceEndpoint
     }
 
     public static function createCustomer(){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         return self::updateCustomer();
     }
 
     public static function deleteCustomer($id){
-        HTTPHeader::setHeader("Access-Control-Allow-Origin: *");
         (new CustomerServiceImpl())->deleteCustomer($id);
         HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_204_NO_CONTENT);
     }
