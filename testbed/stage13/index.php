@@ -38,3 +38,9 @@ $options = ["http" => [
 $context = stream_context_create($options);
 $response = file_get_contents("https://api.sendgrid.com/v3/mail/send", false, $context);
 echo json_decode($response);
+
+/*
+use service\EmailServiceClient;
+
+EmailServiceClient::sendEmail("andreas.martin@fhnw.ch", "Test Email", "<html><body>Hi user<br><br>This is a test email.<br><br>Kind regards<br>Email Service</body></html>");
+*/
