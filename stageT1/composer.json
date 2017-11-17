@@ -8,7 +8,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "": "/"
+            "": ["config/", "controller/", "dao/", "database/", "domain/", "http/", "router/", "service/", "validator/", "view/"]
         }
     }
 }
