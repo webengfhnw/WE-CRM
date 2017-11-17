@@ -108,6 +108,8 @@ Router::route_auth("GET", "/customer/pdf", $authFunction, function () {
     PDFController::generatePDFCustomers();
 });
 
+header("Access-Control-Allow-Origin: *");
+
 $authAPIBasicFunction = function () {
     if (ServiceEndpoint::authenticateBasic())
         return true;
