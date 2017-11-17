@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE-CRM-JS</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/navigation.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+<div>
+    <nav class="navbar navbar-default navigation-clean">
+        <div class="container">
+            <div class="navbar-header"><a class="navbar-brand navbar-link" href="index.html">WE-CRM </a>
+                <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navcol-1"><span
+                        class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                        class="icon-bar"></span><span class="icon-bar"></span></button>
+            </div>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li role="presentation"><a href="customers.html">My Customers</a></li>
+                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"
+                                            href="#">My Profile <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation"><a href="index.html?logout=true">Logout </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="container">
+    <div class="page-header">
+        <h2 class="text-center">A <strong>customer</strong>. </h2></div>
+    <form id="form" action="" method="post">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span>ID </span></div>
+                <input class="form-control" type="text" name="id" readonly="">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span>Name </span></div>
+                <input class="form-control" type="text" name="name">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span>Email </span></div>
+                <input class="form-control" type="email" name="email">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span>Mobile </span></div>
+                <input class="form-control" type="text" name="mobile">
+            </div>
+        </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-default" type="submit"><i class="fa fa-save"></i></button>
+        </div>
+    </form>
+</div>
+<div class="footer-basic">
+    <footer>
+        <p class="copyright">WE © 2017</p>
+    </footer>
+</div>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/script.js"></script>
+<script language="JavaScript">
+    validateToken(function (result) {
+        if (!result) {
+            window.location.replace("agentLogin.html");
+        }
+    });
+</script>
+<script language="JavaScript">
+    let customerID = null;
+
+    function postOrPutCustomer() {
+        if (customerID === null) {
+            postCustomer(getCustomerJSON(null, $('input[name=name]').val(), $('input[name=email]').val(), $('input[name=mobile]').val()), function (result) {
+                window.location.replace("customers.html");
+            });
+        } else {
+            putCustomer(customerID, getCustomerJSON(customerID, $('input[name=name]').val(), $('input[name=email]').val(), $('input[name=mobile]').val()), function (result) {
+                window.location.replace("customers.html");
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        customerID = getURLParameter('id');
+        if (customerID !== null) {
+            getCustomer(customerID, function (result) {
+                $('input[name=id]').val(result["id"]);
+                $('input[name=name]').val(result["name"]);
+                $('input[name=email]').val(result["email"]);
+                $('input[name=mobile]').val(result["mobile"]);
+            });
+        }
+
+        $("#form").submit(function (event) {
+            postOrPutCustomer();
+            event.preventDefault();
+        });
+    });
+</script>
+</body>
+
+</html>
