@@ -108,11 +108,11 @@ Router::route_auth("GET", "/customer/pdf", $authFunction, function () {
     PDFController::generatePDFCustomers();
 });
 
-if($_SERVER['REQUEST_METHOD']==="OPTIONS") {
+if($_SERVER['REQUEST_METHOD']=="OPTIONS") {
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD");
     header("Access-Control-Allow-Headers: Authorization, Location, Origin, Content-Type, X-Requested-With");
-    header("HTTP/1.0 204 No Response");
+    header("HTTP/1.0 204 No Response", true, 204);
 }
 
 
