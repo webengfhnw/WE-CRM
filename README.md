@@ -90,9 +90,10 @@ In stage 01 a bootstrap based prototype has been created by using a prototyping 
 
 #### Wireframes
 
-![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png)
-![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png)
-![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png)
+|  |  |  |
+| - | - | - | 
+| ![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png) | ![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png) | ![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png) |
+|  |  |  | 
 
 #### HTML-Prototype
 
@@ -848,22 +849,52 @@ If data is invalid, error messages can be displayed:
 
 ### Stage 12: Auth and Remember Me
 
-In this stage 12, the token-based securing of the business services will be extended, and a remember me functionality will be implemented. The business services are secured using an internal token, which is bound to the session, since stage 09. In this stage, the generated token will be securely stored in the database. Therefore an `AuthToken` domain object (as shown in the [Domain Model](#domain-model)) with a corresponding `AuthTokenDAO` (as shown in the [Data Access Model](#data-access-model)) will be crated.
+In this stage 12, the token-based securing of the business services will be extended, and a remember me functionality will be implemented. The business services are secured using an internal token, which is bound to the session, since stage 09. In this stage, the generated token will be securely stored in the database. Therefore an `AuthToken` domain object (as shown in the [Domain Model](#domain-model)) with a corresponding `AuthTokenDAO` (as shown in the [Data Access Model](#data-access-model)) will be crated. The `AuthToken` database table has been implemented as follows:
 
-The `AuthServiceImpl` will then be extended to issue and persist a token based on the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence) and the [OWASP](https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication):
+```SQL
+CREATE TABLE AuthToken (
+  ID         SERIAL NOT NULL, 
+  AgentID    int4 NOT NULL, 
+  Selector   varchar(255) NOT NULL, 
+  Validator  varchar(255) NOT NULL, 
+  Expiration timestamp NOT NULL, 
+  Type       int4 NOT NULL, 
+  PRIMARY KEY (ID));
+ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+```
+
+The `AuthServiceImpl` will then be extended to issue, persist and validate a token based on the guidelines of the [Paragon Initiative Enterprises Blog](https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence) and the [OWASP](https://www.owasp.org/index.php/PHP_Security_Cheat_Sheet#Authentication):
 ```PHP
-public function issueToken($type = self::AGENT_TOKEN, $email = null) {
-    $token = new AuthToken();
-    $token->setSelector(bin2hex(random_bytes(5)));
-    $token->setType(self::AGENT_TOKEN);
-    $token->setAgentid($this->currentAgentId);
-    $timestamp = (new \DateTime('now'))->modify('+30 days');
-    $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
-    $validator = random_bytes(20);
-    $token->setValidator(hash('sha384', $validator));
-    $authTokenDAO = new AuthTokenDAO();
-    $authTokenDAO->create($token);
-    return $token->getSelector() .":". bin2hex($validator);
+class AuthServiceImpl implements AuthService {
+    public function issueToken($type = self::AGENT_TOKEN, $email = null) {
+        $token = new AuthToken();
+        $token->setSelector(bin2hex(random_bytes(5)));
+        $token->setType(self::AGENT_TOKEN);
+        $token->setAgentid($this->currentAgentId);
+        $timestamp = (new \DateTime('now'))->modify('+30 days');
+        $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
+        $validator = random_bytes(20);
+        $token->setValidator(hash('sha384', $validator));
+        $authTokenDAO = new AuthTokenDAO();
+        $authTokenDAO->create($token);
+        return $token->getSelector() .":". bin2hex($validator);
+    }
+
+    public function validateToken($token) {
+        $tokenArray = explode(":", $token);
+        $authTokenDAO = new AuthTokenDAO();
+        $authToken = $authTokenDAO->findBySelector($tokenArray[0]);
+        if (!empty($authToken)) {
+            if(time()<=(new \DateTime($authToken->getExpiration()))->getTimestamp()){
+                if (hash_equals(hash('sha384', hex2bin($tokenArray[1])), $authToken->getValidator())) {
+                    $this->currentAgentId = $authToken->getAgentid();
+                    return true;
+                }
+            }
+            $authTokenDAO->delete($authToken);
+        }
+        return false;
+    }
 }
 ```
 
