@@ -23,7 +23,7 @@ use view\TemplateView;
             </thead>
             <tbody>
             <?php
-            foreach($this->customers as $customer): ?>
+            foreach($this->customers as $customer): /* @var Customer $customer */ ?>
             <tr>
                 <td><?php echo $customer->getId(); ?> </td>
                 <td><?php echo TemplateView::noHTML($customer->getName()); ?></td>

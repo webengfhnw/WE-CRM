@@ -48,10 +48,10 @@ Router::route("POST", "/register", function () {
 });
 
 Router::route("POST", "/login", function () {
-    $weCRMService = AuthServiceImpl::getInstance();
-    if($weCRMService->verifyAgent($_POST["email"],$_POST["password"]))
+    $authService = AuthServiceImpl::getInstance();
+    if($authService->verifyAgent($_POST["email"],$_POST["password"]))
     {
-        $_SESSION["agentLogin"]["token"] = $weCRMService->issueToken();
+        $_SESSION["agentLogin"]["token"] = $authService->issueToken();
     }
     Router::redirect("/");
 });

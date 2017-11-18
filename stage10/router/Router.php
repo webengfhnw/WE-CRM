@@ -19,7 +19,8 @@ class Router
 
     public static function init(){
         $protocol = isset($_SERVER['HTTPS'])||(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === "https") ? 'https' : 'http';
-        $GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
+        strpos($_SERVER['SERVER_PORT'],"80") !== false ? $serverPort = "" : $serverPort = ":" . $_SERVER['SERVER_PORT'];
+        $GLOBALS["ROOT_URL"] = $protocol . "://" . $_SERVER['SERVER_NAME'] . $serverPort . strstr($_SERVER['PHP_SELF'], $_SERVER['ORIGINAL_PATH'], true);
         if(!empty($_SERVER['REDIRECT_ORIGINAL_PATH'])) {
             $_SERVER['PATH_INFO'] = $_SERVER['REDIRECT_ORIGINAL_PATH'];
         }
@@ -54,7 +55,7 @@ class Router
     }
 
     public static function errorHeader() {
-        HTTPHeader::getHeader(HTTPStatusCode::HTTP_404_NOT_FOUND);
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_404_NOT_FOUND);
     }
 
     public static function redirect($redirect_path) {
