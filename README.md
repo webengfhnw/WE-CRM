@@ -52,7 +52,7 @@ This is a reference project elaborated by the students step-by-step in every FHN
         - [JSON Serialization](#json-serialization)
         - [Service Endpoint](#service-endpoint)
         - [API Routes](#api-routes)
-    - [Stage 16: JavaScript & jQuery Client](#stage-16-javascript-jquery-client)
+    - [Stage 16: JavaScript and jQuery Client](#stage-16-javascript-and-jquery-client)
         - [API Login and Local Token Storage](#api-login-and-local-token-storage)
         - [AJAX Calls for API Consumption](#ajax-calls-for-api-consumption)
 - [Deployment](#deployment)
@@ -1362,7 +1362,7 @@ Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, functi
 });
 ```
 
-### Stage 16: JavaScript & jQuery Client
+### Stage 16: JavaScript and jQuery Client
 
 In stage 16, a JavaScirpt/jQuery based API consumer is implemented. The implementation is realized by AJAX calls provided as functions in an `app.js` file:
 
