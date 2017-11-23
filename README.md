@@ -21,7 +21,7 @@ This is a reference project elaborated by the students step-by-step in every FHN
         - [Database](#database)
         - [.env Config Files](#env-config-files)
         - [PDO](#pdo)
-    - [Passwords](#passwords)
+        - [Passwords](#passwords)
     - [Stage 4: Dynamic Views](#stage-4-dynamic-views)
     - [Stage 5: namespace/use, Auto-Loading and Class Oriented Router](#stage-5-namespaceuse-auto-loading-and-class-oriented-router)
         - [namespace/use and Auto-Loading](#namespaceuse-and-auto-loading)
@@ -43,10 +43,19 @@ This is a reference project elaborated by the students step-by-step in every FHN
     - [Stage 11: Validation](#stage-11-validation)
     - [Stage 12: Auth and Remember Me](#stage-12-auth-and-remember-me)
     - [Stage 13: Email and Password Reset](#stage-13-email-and-password-reset)
+        - [Email](#email)
+        - [Password Reset](#password-reset)
     - [Stage 14: PDF](#stage-14-pdf)
     - [Stage 15: REST Service API](#stage-15-rest-service-api)
+        - [API Model](#api-model)
+        - [API Authorization](#api-authorization)
+        - [JSON Serialization](#json-serialization)
+        - [Service Endpoint](#service-endpoint)
+        - [API Routes](#api-routes)
     - [Stage 16: JavaScript & jQuery Client](#stage-16-javascript-jquery-client)
-- [Evaluation and Deployment](#evaluation-and-deployment)
+        - [API Login and Local Token Storage](#api-login-and-local-token-storage)
+        - [AJAX Calls for API Consumption](#ajax-calls-for-api-consumption)
+- [Deployment](#deployment)
     - [Project Set-Up](#project-set-up)
         - [Visual Paradigm](#visual-paradigm)
             - [Default Parameter Direction Configuration](#default-parameter-direction-configuration)
@@ -90,10 +99,9 @@ In stage 01 a bootstrap based prototype has been created by using a prototyping 
 
 #### Wireframes
 
-|  |  |  |
+| Log-in | Customers | Edit |
 | - | - | - | 
 | ![](modelling/images/WE-CRM-Wireframe%20-%20Log-In.png) | ![](modelling/images/WE-CRM-Wireframe%20-%20Customers.png) | ![](modelling/images/WE-CRM-Wireframe%20-%20Edit.png) |
-|  |  |  | 
 
 #### HTML-Prototype
 
@@ -285,7 +293,7 @@ $stmt->execute();
 $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ```
 
-### Passwords
+#### Passwords
 
 Passwords are extremely sensitive data.
 1. They must be transmitted over HTTPS only - never HTTP only!
@@ -929,32 +937,574 @@ Finally, the remember me feature can be added to the login view:
 
 ### Stage 13: Email and Password Reset
 
-Adding SENDGRID_APIKEY to config.env and extend Config Class
-Add SENDGRID_APIKEY to heroku env
+In stage 13, an email sending and password reset functionalities will be implemented.
 
-- SendGrid API
-- reset token in service
-- email service client
-- password forget in login view
+#### Email
+
+Although there exists a mail functionality in PHP, an external mail service/API is used here. An external API can offer additional functionalities and can provide an easier implementation. In this reference project, the SendGrid API is used for sending emails. Before using the SendGrid API an Account and an API-Key is required. This API key must be stored in an external configuration file and kept outside of version control. It is advisable that the API key will be stored in the [.env Config File](#env-config-files) as follows:
+
+```ini
+[email]
+sendgrid-apikey=
+```
+
+To make use of the externalized API key, the config class should be extended:
+
+```PHP
+class Config
+{
+    protected static $iniFile = "config/config.env";
+    protected static $config = [];
+
+    public static function init()
+    {
+        if (file_exists(self::$iniFile)) {
+            $data = parse_ini_file(self::$iniFile, true);
+            //...
+            self::$config["email"]["sendgrid-apikey"] = $data["email"]["sendgrid-apikey"];
+        } else {
+            if (isset($_ENV["SENDGRID_APIKEY"])) {
+                self::$config["email"]["sendgrid-apikey"] = getenv('SENDGRID_APIKEY');
+            }
+        }
+    }
+
+//...
+
+    public static function emailConfig($key)
+    {
+        if (empty(self::$config))
+            self::init();
+        return self::$config["email"][$key];
+    }
+
+}
+```
+
+If running this reference project on Heroku, the SendGrid API Key should be stored in an environment variable, e.g. `SENDGRID_APIKEY`.
+
+Based on the [SendGrid API documentation](https://sendgrid.com/docs/API_Reference/index.html) the email service is implemented using plain PHP as follows:
+
+```PHP
+class EmailServiceClient
+{
+
+    public static function sendEmail($toEmail, $subject, $htmlData){
+        $jsonObj = self::createEmailJSONObj();
+        $jsonObj->personalizations[0]->to[0]->email = $toEmail;
+        $jsonObj->subject = $subject;
+        $jsonObj->content[0]->value = $htmlData;
+
+        $options = ["http" => [
+            "method" => "POST",
+            "header" => ["Content-Type: application/json",
+                "Authorization: Bearer ".Config::emailConfig("sendgrid-apikey").""],
+            "content" => json_encode($jsonObj)
+        ]];
+        $context = stream_context_create($options);
+        $response = file_get_contents("https://api.sendgrid.com/v3/mail/send", false, $context);
+        if(strpos($http_response_header[0],"202"))
+            return true;
+        return false;
+    }
+
+    protected static function createEmailJSONObj(){
+        return json_decode('{
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": "email"
+                }
+              ]
+            }
+          ],
+          "from": {
+            "email": "noreply@fhnw.ch",
+            "name": "WE-CRM"
+          },
+          "subject": "subject",
+          "content": [
+            {
+              "type": "text/html",
+              "value": "value"
+            }
+          ]
+        }');
+    }
+}
+```
+
+#### Password Reset
+
+A password reset functionality without a two-factor authentication can't be implemented securely since email is always the weak point. Nevertheless, it is strongly recommended to implement a token-based password reset functionality similar to the [Remember Me](#stage-12-auth-and-remember-me) implementation.
+
+The `AuthServiceImpl` has been extended to issue `RESET_TOKEN`:
+```PHP
+class AuthServiceImpl implements AuthService {
+
+//...
+    
+    public function issueToken($type = self::AGENT_TOKEN, $email = null) {
+        $token = new AuthToken();
+        $token->setSelector(bin2hex(random_bytes(5)));
+        if($type===self::AGENT_TOKEN) {
+            $token->setType(self::AGENT_TOKEN);
+            $token->setAgentid($this->currentAgentId);
+            $timestamp = (new \DateTime('now'))->modify('+30 days');
+        }
+        elseif(isset($email)){
+            $token->setType(self::RESET_TOKEN);
+            $token->setAgentid((new AgentDAO())->findByEmail($email)->getId());
+            $timestamp = (new \DateTime('now'))->modify('+1 hour');
+        }else{
+            throw new HTTPException(HTTPStatusCode::HTTP_406_NOT_ACCEPTABLE, 'RESET_TOKEN without email');
+        }
+        $token->setExpiration($timestamp->format("Y-m-d H:i:s"));
+        $validator = random_bytes(20);
+        $token->setValidator(hash('sha384', $validator));
+        $authTokenDAO = new AuthTokenDAO();
+        $authTokenDAO->create($token);
+        return $token->getSelector() .":". bin2hex($validator);
+    }
+}
+```
+
+The `AuthServiceImpl` and the `EmailServiceClient` can then be used in the `AgentPasswordResetController` to provide the password-reset functionality:
+
+```PHP
+class AgentPasswordResetController
+{
+
+    public static function resetView(){
+        $resetView = new TemplateView("agentPasswordReset.php");
+        $resetView->token = $_GET["token"];
+        echo $resetView->render();
+    }
+    
+    public static function requestView(){
+        echo (new TemplateView("agentPasswordResetRequest.php"))->render();
+    }
+    
+    public static function reset(){
+        if(AuthServiceImpl::getInstance()->validateToken($_POST["token"])){
+            $agent = AuthServiceImpl::getInstance()->readAgent();
+            $agent->setPassword($_POST["password"]);
+            $agentValidator = new AgentValidator($agent);
+            if($agentValidator->isValid()){
+                if(AuthServiceImpl::getInstance()->editAgent($agent->getName(),$agent->getEmail(), $agent->getPassword())){
+                    return true;
+                }
+            }
+            $agent->setPassword("");
+            $resetView = new TemplateView("agentPasswordReset.php");
+            $resetView->token = $_POST["token"];
+            echo $resetView->render();
+            return false;
+        }
+        return false;
+    }
+
+    public static function resetEmail(){
+        $token = AuthServiceImpl::getInstance()->issueToken(AuthServiceImpl::RESET_TOKEN, $_POST["email"]);
+        $emailView = new TemplateView("agentPasswordResetEmail.php");
+        $emailView->resetLink = $GLOBALS["ROOT_URL"] . "/password/reset?token=" . $token;
+        return EmailServiceClient::sendEmail($_POST["email"], "Password Reset Email", $emailView->render());
+    }
+
+}
+```
 
 ### Stage 14: PDF
-- HyPDF API
+
+In this stage 14, a PDF creation service is used, which is called HyPDF. HyPDF provides an API for generating PDF files from text or HTML.
+
+Similar to stage 13, the HyPDF username and password must be stored outside of the source code, preferably in a config file:
+
+```PHP
+class Config
+{
+    protected static $iniFile = "config/config.env";
+    protected static $config = [];
+
+    public static function init()
+    {
+        if (file_exists(self::$iniFile)) {
+            $data = parse_ini_file(self::$iniFile, true);
+            //...
+            self::$config["pdf"]["hypdf-user"] = $data["pdf"]["hypdf-user"];
+            self::$config["pdf"]["hypdf-password"] = $data["pdf"]["hypdf-password"];
+        } else {
+            if (isset($_ENV["HYPDF_USER"])) {
+                self::$config["pdf"]["hypdf-user"] = getenv('HYPDF_USER');
+            }
+            if (isset($_ENV["HYPDF_PASSWORD"])) {
+                self::$config["pdf"]["hypdf-password"] = getenv('HYPDF_PASSWORD');
+            }
+        }
+    }
+
+//...
+
+    public static function pdfConfig($key)
+    {
+        if (empty(self::$config))
+            self::init();
+        return self::$config["pdf"][$key];
+    }
+}
+```
+
+To generate a PDF out of an HTML file, the HyPDF API can be used as follows:
+
+```PHP
+class PDFServiceClient
+{
+
+    public static function sendPDF($htmlData){
+        $jsonObj = self::createPDFJSONObj();
+        $jsonObj->user = Config::pdfConfig("hypdf-user");
+        $jsonObj->password = Config::pdfConfig("hypdf-password");
+        $jsonObj->content = $htmlData;
+
+        $options = ["http" => [
+            "method" => "POST",
+            "header" => ["Content-Type: application/json"],
+            "content" => json_encode($jsonObj)
+        ]];
+        $context = stream_context_create($options);
+        $response = file_get_contents("https://www.hypdf.com/htmltopdf", false, $context);
+        if(strpos($http_response_header[0],"200"))
+            return $response;
+        return false;
+    }
+
+    protected static function createPDFJSONObj(){
+        return json_decode('{"content": "HTML", "user": "HYPDF_USER", "password": "YOUR_HYPDF_PASSWORD", "test": "true"}');
+    }
+}
+```
+
+The return value of the `sendPDF` method contains a PDF, which can be echoed back to the browser.
 
 ### Stage 15: REST Service API
 
+In this stage 15, an own REST Service API is provided and implemented. 
+
+#### API Model
+
 ![](modelling/images/WE-CRM-API.png)
 
-- change router to work with REST paths
-- abstractJSONDTO for customer
-- service endpoint
+#### API Authorization
+First, the API authorization is implemented in the `ServiceEndpoint` using basic authentication with username and password at a first stage to retrieve an access token, and then a token based authorization for the subsequent API calls:
+
+```PHP
+class ServiceEndpoint
+{
+
+    public static function authenticateToken(){
+        if (isset($_SERVER["HTTP_AUTHORIZATION"])){
+            if(strripos($_SERVER["HTTP_AUTHORIZATION"], " ")){
+                list($type, $data) = explode(" ", $_SERVER["HTTP_AUTHORIZATION"], 2);
+                if (strcasecmp($type, "Bearer") == 0) {
+                    if(AuthServiceImpl::getInstance()->validateToken($data)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function authenticateBasic(){
+        if (isset($_SERVER["HTTP_AUTHORIZATION"])){
+            if(strripos($_SERVER["HTTP_AUTHORIZATION"], " ")) {
+                list($type, $data) = explode(" ", $_SERVER["HTTP_AUTHORIZATION"], 2);
+                if (strcasecmp($type, "Basic") == 0) {
+                    list($name, $password) = explode(':', base64_decode($data));
+                    if (AuthServiceImpl::getInstance()->verifyAgent($name, $password)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    //...
+}
+```
+
+#### JSON Serialization
+
+A serialization and deserialization mechanism is required map the [Domain Objects](#domain-objects) with JSON objects. This reference project provides an abstract data transfer object (DTO), which provides this serialisation mechanism:
+
+```PHP
+abstract class AbstractJSONDTO implements \JsonSerializable
+{
+    //...
+
+    public static function Deserialize($decodedJSON)
+    {
+        $className = get_called_class();
+        $classInstance = new $className();
+
+        foreach ($decodedJSON as $key => $value) {
+            if (property_exists($classInstance, $key)) {
+                $classInstance->{$key} = $value;
+            }
+        }
+
+        return $classInstance;
+    }
+
+    function jsonSerialize()
+    {
+        return get_object_vars($this);
+    }
+}
+```
+
+#### Service Endpoint
+
+Based on the [API Model](#api-model), a `ServiceEndpint` on business layer has been implemented as follows:
+
+```PHP
+class ServiceEndpoint
+{
+
+    //...
+
+    public static function loginBasicToken(){
+        $authService = AuthServiceImpl::getInstance();
+        HTTPHeader::setHeader("Authorization: " . $authService->issueToken(), HTTPStatusCode::HTTP_204_NO_CONTENT, false);
+    }
+
+    public static function validateToken(){
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_202_ACCEPTED);
+    }
+
+    public static function findAllCustomer(){
+        $responseData = (new CustomerServiceImpl())->findAllCustomer();
+        HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
+        echo json_encode($responseData);
+    }
+
+    public static function readCustomer($id){
+        $responseData = (new CustomerServiceImpl())->readCustomer($id);
+        HTTPHeader::setHeader("Content-Type: application/json", HTTPStatusCode::HTTP_200_OK, true);
+        echo json_encode($responseData);
+    }
+
+    public static function updateCustomer($customerId = null){
+        $requestData = json_decode(file_get_contents("php://input"), true);
+        $customer = Customer::Deserialize($requestData);
+        $customerValidator = new CustomerValidator($customer);
+        if($customerValidator->isValid()) {
+            if (is_null($customerId)) {
+                $customer = (new CustomerServiceImpl())->createCustomer($customer);
+                $location = $GLOBALS["ROOT_URL"] . $_SERVER['PATH_INFO'] . $customer->getId();
+                HTTPHeader::setHeader("Location: " . $location, HTTPStatusCode::HTTP_201_CREATED, true);
+            } else {
+                $customer->setId($customerId);
+                (new CustomerServiceImpl())->updateCustomer($customer);
+                HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_204_NO_CONTENT);
+            }
+        }
+        else{
+            return false;
+        }
+        return true;
+    }
+
+    public static function createCustomer(){
+        return self::updateCustomer();
+    }
+
+    public static function deleteCustomer($id){
+        (new CustomerServiceImpl())->deleteCustomer($id);
+        HTTPHeader::setStatusHeader(HTTPStatusCode::HTTP_204_NO_CONTENT);
+    }
+
+}
+```
+
+#### API Routes
+
+In most PHP and node.js frameworks, it is common to keep the API routes separated from the `ServiceEndpoint` implementation. In the following route definitions the [API Model](#api-model) has been realized:
+
+```PHP
+Router::route_auth("GET", "/api/token", $authAPIBasicFunction, function () {
+    ServiceEndpoint::loginBasicToken();
+});
+
+Router::route_auth("HEAD", "/api/token", $authAPITokenFunction, function () {
+    ServiceEndpoint::validateToken();
+});
+
+Router::route_auth("GET", "/api/customer", $authAPITokenFunction, function () {
+    ServiceEndpoint::findAllCustomer();
+});
+
+Router::route_auth("GET", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
+    ServiceEndpoint::readCustomer($id);
+});
+
+Router::route_auth("PUT", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
+    ServiceEndpoint::updateCustomer($id);
+});
+
+Router::route_auth("POST", "/api/customer", $authAPITokenFunction, function () {
+    ServiceEndpoint::createCustomer();
+});
+
+Router::route_auth("DELETE", "/api/customer/{id}", $authAPITokenFunction, function ($id) {
+    ServiceEndpoint::deleteCustomer($id);
+});
+```
 
 ### Stage 16: JavaScript & jQuery Client
 
-## Evaluation and Deployment
+In stage 16, a JavaScirpt/jQuery based API consumer is implemented. The implementation is realized by AJAX calls provided as functions in an `app.js` file:
+
+```HTML
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/app.js"></script>
+```
+
+#### API Login and Local Token Storage
+
+On every HTML view, a token validation will be performed:
+```HTML
+<script language="JavaScript">
+    validateToken(function (result) {
+        if (!result) {
+            window.location.replace("agentLogin.html");
+        }
+    });
+</script>
+```
+
+If the current token in the local storage is not available or invalid, the user is asked to provide email and password, which then performs a basic authorization to receive a valid access token:
+
+```JavaScript
+function getToken(email, password, callback) {
+    $.ajax({
+        type: "GET",
+        headers: {
+            "Authorization": "Basic " + btoa(email + ":" + password)
+        },
+        url: serviceEndpointURL + "/token",
+        success: function (data, textStatus, response) {
+            localStorage.setItem("token", response.getResponseHeader("Authorization"));
+            callback(true);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+            callback(false);
+        }
+    });
+}
+
+function validateToken(callback) {
+    $.ajax({
+        type: "HEAD",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        url: serviceEndpointURL + "/token",
+        success: function (data, textStatus, response) {
+            callback(true);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            callback(false);
+        }
+    });
+}
+```
+
+#### AJAX Calls for API Consumption
+
+It is not required to use third-party libraries for REST clients. Nevertheless, libraries, such as jQuery, can enhance the readability of REST calls significantly. REST APIs can be consumed with jQuery based AJAX calls using the following pattern:
+
+```JavaScript
+function getCustomers(callback) {
+    $.ajax({
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        dataType: "json",
+        url: serviceEndpointURL + "/customer",
+        success: function (data, textStatus, response) {
+            console.log(textStatus);
+            callback(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
+function postCustomer(customer, callback) {
+    $.ajax({
+        type: "POST",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        url: serviceEndpointURL + "/customer",
+        data: customer,
+        success: function (data, textStatus, response) {
+            console.log(textStatus);
+            callback(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
+function getCustomer(customerID, callback) {
+    $.ajax({
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        dataType: "json",
+        url: serviceEndpointURL + "/customer/" + customerID,
+        success: function (data, textStatus, response) {
+            console.log(textStatus);
+            callback(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+```
+
+This reference project uses plain jQuery to append HTML elements to the DOM:
+```JavaScript
+function loadData() {
+    getCustomers(function (result) {
+        $("#tableData").empty();
+        $.each(result, function (i, item) {
+            $("#tableData").append("<tr><td>" + item.id + "</td><td>" + item.name + "</td><td>" + item.email + "</td><td>" + item.mobile + "</td>" +
+                "<td><div class='btn-group btn-group-sm' role='group'>" +
+                "<a class='btn btn-default' role='button' href='customerEdit.html?id=" + item.id + "'> <i class='fa fa-edit'></i></a>" +
+                "<button class='btn btn-default' type='button' data-target='#confirm-modal' data-toggle='modal' data-id='" + item.id + "'> <i class='glyphicon glyphicon-trash'></i></button>" +
+                "</div></td></tr>"
+            )
+            ;
+        });
+    });
+}
+```
+
+Nevertheless, it might be advisable for readability to use a third-party library or a jQuery extension for appending HTML to the DOM.
+
+## Deployment
 
 ### Project Set-Up
-
-TODO: write
 
 #### Visual Paradigm
 #####  Default Parameter Direction Configuration
