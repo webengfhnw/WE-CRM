@@ -17,7 +17,7 @@
     <div class="container" style="display:flex;flex-direction:column;justify-content:center;">
         <div class="page-header">
             <h2 class="text-center"><strong>WE-CRM</strong></h2></div>
-        <form action="customers.html" method="post">
+        <form action="customers.php" method="post">
             <div class="form-group">
                 <input class="form-control" type="email" name="email" placeholder="Email">
             </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
                 <button class="btn btn-primary btn-block" type="submit">Log In</button>
-            </div><a class="text-primary already" href="agentEdit.html">Register here.</a></form>
+            </div><a class="text-primary already" href="agentEdit.php">Register here.</a></form>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>

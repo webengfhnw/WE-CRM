@@ -81,3 +81,5 @@ route_auth("POST", "/customer/update", $authFunction, function() {
  * 1. Find out how the retrieve the request method and the path info from the PHP server variable.
  * 2. call: call_route("... request method and path info ...");
  */
+
+layoutSetContent("customers.php");
