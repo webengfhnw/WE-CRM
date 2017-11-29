@@ -77,11 +77,11 @@
 
     function postOrPutCustomer() {
         if (customerID === null) {
-            postCustomer(getCustomerJSON(null/*, TODO: get form input*/), function (result) {
+            postCustomer(getCustomerJSON(null, $('input[name=name]').val(), $('input[name=email]').val(), $('input[name=mobile]').val()), function (result) {
                 window.location.replace("customers.html");
             });
         } else {
-            putCustomer(customerID, getCustomerJSON(customerID/*, TODO: get form input*/), function (result) {
+            putCustomer(customerID, getCustomerJSON(customerID, $('input[name=name]').val(), $('input[name=email]').val(), $('input[name=mobile]').val()), function (result) {
                 window.location.replace("customers.html");
             });
         }
