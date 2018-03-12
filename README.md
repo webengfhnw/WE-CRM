@@ -179,6 +179,11 @@ Then a session value (such as a user id) can be stored in the session array:
 $_SESSION["key"] = "value";
 ```
 
+It is recommended to regenerate a session id after every authentication state change to prevent session fixation:
+```PHP
+session_regenerate_id(true);
+```
+
 And a value can be accessed again:
 ```PHP
 $value = $_SESSION["key"];
