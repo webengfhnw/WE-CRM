@@ -45,6 +45,7 @@ function login($email, $password){
         $agent = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
         if (password_verify($password, $agent["password"])) {
             session_start();
+            session_regenerate_id(true);
             $_SESSION["agentLogin"]["name"] = $agent["name"];
             $_SESSION["agentLogin"]["email"] = $email;
             $_SESSION["agentLogin"]["id"] = $agent["id"];
