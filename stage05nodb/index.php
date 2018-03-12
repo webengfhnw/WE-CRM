@@ -42,6 +42,7 @@ $errorFunction = function () {
     });
 
     route("POST", "/login", function () {
+        session_regenerate_id(true);
         $_SESSION['agentLogin']=$_POST['email'];
         redirect("/");
     });

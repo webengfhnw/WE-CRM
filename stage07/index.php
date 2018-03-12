@@ -60,6 +60,7 @@ Router::route("POST", "/login", function () {
     $agent = $agentDAO->findByEmail($email);
     if (isset($agent)) {
         if (password_verify($_POST["password"], $agent->getPassword())) {
+            session_regenerate_id(true);
             $_SESSION["agentLogin"]["name"] = $agent->getName();
             $_SESSION["agentLogin"]["email"] = $email;
             $_SESSION["agentLogin"]["id"] = $agent->getId();

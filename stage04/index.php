@@ -62,6 +62,7 @@ route("POST", "/login", function () {
     if ($stmt->rowCount() > 0) {
         $agent = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
         if (password_verify($_POST["password"], $agent["password"])) {
+            session_regenerate_id(true);
             $_SESSION["agentLogin"]["name"] = $agent["name"];
             $_SESSION["agentLogin"]["email"] = $email;
             $_SESSION["agentLogin"]["id"] = $agent["id"];
