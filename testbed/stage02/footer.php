@@ -10,7 +10,7 @@
 ?>
 <div class="footer-basic">
     <footer>
-        <p class="copyright">WE © 2017</p>
+        <p class="copyright">WE © 2018</p>
     </footer>
 </div>
 <script src="assets/js/jquery.min.js"></script>
