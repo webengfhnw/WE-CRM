@@ -14,9 +14,6 @@ use domain\Customer;
 use domain\Agent;
 use dao\CustomerDAO;
 use dao\AgentDAO;
-/** TODO: Generate domain objects */
-/** TODO: Generate and implement DAOs (you may copy some boilerplate code from stage 08) */
-/** TODO: Transfer "POST /register" and "GET /" routes to use domain objects and DAOs */
 
 session_start();
 
@@ -35,22 +32,14 @@ Router::route("GET", "/login", function () {
 Router::route("GET", "/register", function () {
     require_once("view/agentEdit.php");
 });
-/** TODO: Transfer "POST /register" to use domain objects and DAOs */
+
 Router::route("POST", "/register", function () {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $pdoInstance = Database::connect();
-    $stmt = $pdoInstance->prepare('
-        INSERT INTO agent (name, email, password)
-          SELECT :name,:email,:password
-          WHERE NOT EXISTS (
-            SELECT email FROM agent WHERE email = :emailExist
-        );');
-    $stmt->bindValue(':name', $name);
-    $stmt->bindValue(':email', $email);
-    $stmt->bindValue(':emailExist', $email);
-    $stmt->bindValue(':password', password_hash($_POST["password"], PASSWORD_DEFAULT));
-    $stmt->execute();
+    $agent = new Agent();
+    $agent->setName($_POST["name"]);
+    $agent->setEmail($_POST["email"]);
+    $agent->setPassword(password_hash($_POST["password"], PASSWORD_DEFAULT));
+    $agentDAO = new AgentDAO();
+    $agentDAO->create($agent);
     Router::redirect("/logout");
 });
 
@@ -77,15 +66,11 @@ Router::route("GET", "/logout", function () {
     session_destroy();
     Router::redirect("/login");
 });
-/** TODO: Transfer "GET /" to use domain objects and DAOs */
+
 Router::route_auth("GET", "/", $authFunction, function () {
-    $pdoInstance = Database::connect();
-    $stmt = $pdoInstance->prepare('
-            SELECT * FROM customer WHERE agentid = :agentId ORDER BY id;');
-    $stmt->bindValue(':agentId', $_SESSION["agentLogin"]["id"]);
-    $stmt->execute();
+    $customerDAO = new CustomerDAO();
     global $customers;
-    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $customers = $customerDAO->findByAgent($_SESSION["agentLogin"]["id"]);
     layoutSetContent("customers.php");
 });
 

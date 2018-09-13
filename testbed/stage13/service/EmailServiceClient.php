@@ -19,15 +19,14 @@ class EmailServiceClient
         $jsonObj->subject = $subject;
         $jsonObj->content[0]->value = $htmlData;
 
-        /* TODO: Add your SendGrid API key to the config file */
-
         $options = ["http" => [
             "method" => "POST",
             "header" => ["Content-Type: application/json",
-                "Authorization: Bearer ".Config::emailConfig("sendgrid-apikey").""],
+                "Authorization: Bearer ".Config::get("email.sendgrid-apikey").""],
             "content" => json_encode($jsonObj)
         ]];
-        /* TODO: Use stream_context_create and file_get_contents to send the API request */
+        $context = stream_context_create($options);
+        $response = file_get_contents("https://api.sendgrid.com/v3/mail/send", false, $context);
         if(strpos($http_response_header[0],"202"))
             return true;
         return false;

@@ -1,9 +1,15 @@
 # WE-CRM
 
-##### Stage 2: Hands-on TODO
-1. Handle all source code TODOs
-2. Transfer all HTML files to PHP files.
-3. Rebuild the link structure. You may need:
-```PHP
-<?php echo $GLOBALS["ROOT_URL"]; ?> 
-```
+This is a reference project elaborated by the students step-by-step in every FHNW web engineering lecture.
+
+## Heroku Deployment
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+## Maintainer
+
+- [Andreas Martin](https://github.com/andreasmartin)
+
+## License
+
+- [Apache License, Version 2.0](LICENSE)

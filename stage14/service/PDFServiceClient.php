@@ -15,8 +15,8 @@ class PDFServiceClient
 
     public static function sendPDF($htmlData){
         $jsonObj = self::createPDFJSONObj();
-        $jsonObj->user = Config::pdfConfig("hypdf-user");
-        $jsonObj->password = Config::pdfConfig("hypdf-password");
+        $jsonObj->user = Config::get("pdf.hypdf-user");
+        $jsonObj->password = Config::get("pdf.hypdf-password");
         $jsonObj->content = $htmlData;
 
         $options = ["http" => [

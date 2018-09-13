@@ -54,12 +54,9 @@ Router::route("GET", "/logout", function () {
     Router::redirect("/login");
 });
 
-/* TODO: Generate and implement the customer service */
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/", $authFunction, function () {
-    $customerDAO = new CustomerDAO();
     global $customers;
-    $customers = $customerDAO->findByAgent($_SESSION["agentLogin"]["id"]);
+    $customers = (new CustomerServiceImpl())->findAllCustomer();
     layoutSetContent("customers.php");
 });
 
@@ -78,38 +75,29 @@ Router::route_auth("GET", "/customer/create", $authFunction, function () {
     layoutSetContent("customerEdit.php");
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
     $id = $_GET["id"];
-    $customerDAO = new CustomerDAO();
     global $customer;
-    $customer = $customerDAO->read($id);
+    $customer = (new CustomerServiceImpl())->readCustomer($id);
     layoutSetContent("customerEdit.php");
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
     $id = $_GET["id"];
-    $customerDAO = new CustomerDAO();
-    $customer = new Customer();
-    $customer->setId($id);
-    $customerDAO->delete($customer);
+    (new CustomerServiceImpl())->deleteCustomer($id);
     Router::redirect("/");
 });
 
-/* TODO: Refactor the following code and use the customer service */
 Router::route_auth("POST", "/customer/update", $authFunction, function () {
     $customer = new Customer();
     $customer->setId($_POST["id"]);
     $customer->setName($_POST["name"]);
     $customer->setEmail($_POST["email"]);
     $customer->setMobile($_POST["mobile"]);
-    $customerDAO = new CustomerDAO();
     if ($customer->getId() === "") {
-        $customer->setAgentId($_SESSION["agentLogin"]["id"]);
-        $customerDAO->create($customer);
+        (new CustomerServiceImpl())->createCustomer($customer);
     } else {
-        $customerDAO->update($customer);
+        (new CustomerServiceImpl())->updateCustomer($customer);
     }
     Router::redirect("/");
 });

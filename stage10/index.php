@@ -46,13 +46,9 @@ Router::route("GET", "/logout", function () {
     Router::redirect("/login");
 });
 
-/* TODO: Refactor the following code and use the customer controller */
 Router::route_auth("GET", "/", $authFunction, function () {
-    $contentView = new View("customers.php");
-    $contentView->customers = (new CustomerServiceImpl())->findAllCustomer();
-    layoutRendering($contentView);
+    CustomerController::readAll();
 });
-
 
 Router::route_auth("GET", "/agent/edit", $authFunction, function () {
     AgentController::edit();
@@ -63,44 +59,26 @@ Router::route_auth("POST", "/agent/edit", $authFunction, function () {
     Router::redirect("/logout");
 });
 
-/* TODO: Refactor the following code and use the customer controller */
 Router::route_auth("GET", "/customer/create", $authFunction, function () {
-    $contentView = new View("customerEdit.php");
-    layoutRendering($contentView);
+    CustomerController::create();
 });
 
-/* TODO: Refactor the following code and use the customer controller */
 Router::route_auth("GET", "/customer/edit", $authFunction, function () {
-    $id = $_GET["id"];
-    $contentView = new View("customerEdit.php");
-    $contentView->customer = (new CustomerServiceImpl())->readCustomer($id);
-    layoutRendering($contentView);
+    CustomerController::edit();
 });
 
-/* TODO: Refactor the following code and use the customer controller */
 Router::route_auth("GET", "/customer/delete", $authFunction, function () {
-    $id = $_GET["id"];
-    (new CustomerServiceImpl())->deleteCustomer($id);
+    CustomerController::delete();
     Router::redirect("/");
 });
 
-/* TODO: Refactor the following code and use the customer controller */
 Router::route_auth("POST", "/customer/update", $authFunction, function () {
-    $customer = new Customer();
-    $customer->setId($_POST["id"]);
-    $customer->setName($_POST["name"]);
-    $customer->setEmail($_POST["email"]);
-    $customer->setMobile($_POST["mobile"]);
-    if ($customer->getId() === "") {
-        (new CustomerServiceImpl())->createCustomer($customer);
-    } else {
-        (new CustomerServiceImpl())->updateCustomer($customer);
-    }
+    CustomerController::update();
     Router::redirect("/");
 });
 
 try {
-    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+    Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
 } catch (HTTPException $exception) {
     $exception->getHeader();
     ErrorController::show404();

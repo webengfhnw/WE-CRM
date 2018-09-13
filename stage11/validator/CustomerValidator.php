@@ -26,7 +26,27 @@ class CustomerValidator
 
     public function validate(Customer $customer)
     {
-        /*Todo: implement the validation method*/
+        if (!is_null($customer)) {
+            if (empty($customer->getName())) {
+                $this->nameError = 'Please enter a name';
+                $this->valid = false;
+            }
+
+            if (empty($customer->getEmail())) {
+                $this->emailError = 'Please enter an email address';
+                $this->valid = false;
+            } else if (!filter_var($customer->getEmail(), FILTER_VALIDATE_EMAIL)) {
+                $this->emailError = 'Please enter a valid email address';
+                $this->valid = false;
+            }
+
+            if (empty($customer->getMobile())) {
+                $this->mobileError = 'Please enter a mobile number';
+                $this->valid = false;
+            }
+        } else {
+            $this->valid = false;
+        }
         return $this->valid;
 
     }
