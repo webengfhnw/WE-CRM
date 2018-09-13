@@ -10,57 +10,23 @@ This is a reference project elaborated by the students step-by-step in every FHN
     - [Information Systems (Layering) Architecture](#information-systems-layering-architecture)
 - [Implementation](#implementation)
     - [Stage 1: Building a Static Website with Bootstrap](#stage-1-building-a-static-website-with-bootstrap)
-        - [Wireframes](#wireframes)
-        - [HTML-Prototype](#html-prototype)
-    - [Stage 2: PHP Files, Basic Router and Session](#stage-2-php-files-basic-router-and-session)
-        - [.htaccess](#htaccess)
-        - [Procedural Router](#procedural-router)
-        - [Session](#session)
-    - [Stage 3: Database, .env Config Files and Passwords](#stage-3-database-env-config-files-and-passwords)
-        - [Entity Relationship Diagram](#entity-relationship-diagram)
-        - [Database](#database)
-        - [.env Config Files](#env-config-files)
-        - [PDO](#pdo)
-        - [Passwords](#passwords)
-    - [Stage 4: Dynamic Views](#stage-4-dynamic-views)
-    - [Stage 5: namespace/use, Auto-Loading and Class Oriented Router](#stage-5-namespaceuse-auto-loading-and-class-oriented-router)
-        - [namespace/use and Auto-Loading](#namespaceuse-and-auto-loading)
-        - [Class Oriented Router](#class-oriented-router)
-    - [Stage 6: Database, Config Classes, Exception Handling and HTTP Status](#stage-6-database-config-classes-exception-handling-and-http-status)
-        - [Exception Handling and HTTP Status](#exception-handling-and-http-status)
+    - [Stage 2: PHP Files and Session](#stage-2-php-files-and-session)
+    - [Stage 3: namespace/use, Auto-Loading, .htaccess and Router](#stage-3-namespaceuse-auto-loading-htaccess-and-router)
+    - [Stage 4: Database, .env Config Files and Passwords](#stage-4-database-env-config-files-and-passwords)
+    - [Stage 5: Dynamic Views](#stage-5-dynamic-views)
+    - [Stage 6: Exception Handling and HTTP Status](#stage-6-exception-handling-and-http-status)
     - [Stage 7: Domain and Data Access Objects (DAO)](#stage-7-domain-and-data-access-objects-dao)
-        - [Domain Model](#domain-model)
-        - [Domain Objects](#domain-objects)
-        - [Data Access Model](#data-access-model)
-        - [Data Access Objects (DAO)](#data-access-objects-dao)
     - [Stage 8: Business Services](#stage-8-business-services)
-        - [Business Logic Model](#business-logic-model)
-        - [Service Interfaces and Implementations](#service-interfaces-and-implementations)
     - [Stage 9: Template View Pattern and XSS](#stage-9-template-view-pattern-and-xss)
-        - [Template View Pattern](#template-view-pattern)
-        - [XSS](#xss)
     - [Stage 10: Model-View-Controller](#stage-10-model-view-controller)
     - [Stage 11: Validation](#stage-11-validation)
     - [Stage 12: Auth and Remember Me](#stage-12-auth-and-remember-me)
     - [Stage 13: Email and Password Reset](#stage-13-email-and-password-reset)
-        - [Email](#email)
-        - [Password Reset](#password-reset)
     - [Stage 14: PDF](#stage-14-pdf)
     - [Stage 15: REST Service API](#stage-15-rest-service-api)
-        - [API Model](#api-model)
-        - [API Authorization](#api-authorization)
-        - [JSON Serialization](#json-serialization)
-        - [Service Endpoint](#service-endpoint)
-        - [API Routes](#api-routes)
     - [Stage 16: JavaScript and jQuery Client](#stage-16-javascript-and-jquery-client)
-        - [API Login and Local Token Storage](#api-login-and-local-token-storage)
-        - [AJAX Calls for API Consumption](#ajax-calls-for-api-consumption)
 - [Deployment](#deployment)
     - [Project Set-Up](#project-set-up)
-        - [Visual Paradigm](#visual-paradigm)
-            - [Default Parameter Direction Configuration](#default-parameter-direction-configuration)
-            - [Postgresql Database Generation](#postgresql-database-generation)
-        - [Git](#git)
     - [Heroku Deployment](#heroku-deployment)
 - [Maintainer](#maintainer)
 - [License](#license)
@@ -109,62 +75,10 @@ In this case, the prototype application Bootstrap Studio has been used to create
 
 The assets (HTML, CSS, JavaScript, image and font files) has been exported and will be extended in the later stages by PHP logic, and later with jQuery, to build a dynamic website.
 
-### Stage 2: PHP Files, Basic Router and Session
+### Stage 2: PHP Files and Session
 
-In stage 02 the HTML prototype files will be transferred to PHP files, and a basic router functionality will be implemented.
+In stage 02 the HTML prototype files will be transferred to PHP files, and a basic session functionality will be implemented.
 
-#### .htaccess
-
-The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
-
-```apacheconf
-# .htaccess files provide a way to make configuration changes on a per-directory basis
-RewriteEngine On
-
-# this ensures that HTTPS is used except on localhost
-RewriteCond %{HTTP_HOST} !=localhost
-RewriteCond %{HTTPS} off
-RewriteCond %{HTTP:X-Forwarded-Proto} !https
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
-
-# this sends the authorization header to a PHP envirnoment variable
-RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-# this redirects everything except asset requests to the index.php file
-RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
-RewriteRule assets/(.*) view/assets/$1 [QSA,L]
-```
-
-#### Procedural Router
-
-The basic procedural router provides redirection, an error header, the PATH_INFO and a ROOT_URL global. Then, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
-
-The following `route_auth` function stores a route (the configured path) in a multidimensional array using the HTTP method and the path. The route consists of an authentication and a route callback function.
-```PHP
-function route_auth($method, $path, $authFunction, $routeFunction) {
-    global $routes;
-    $path = trim($path, '/');
-    $routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
-}
-```
-The following `call_route` function is used to process every request. Remember this is a basic procedural router, later it will be transferred to OOP style.
-```PHP
-function call_route($method, $path) {
-    global $routes;
-    global $errorFunction;
-    $path = trim(parse_url($path, PHP_URL_PATH), '/');
-    if(!array_key_exists($method, $routes) || !array_key_exists($path, $routes[$method])) {
-        $errorFunction(); return;
-    }
-    $route = $routes[$method][$path];
-    if(isset($route["authFunction"])) {
-        if (!$route["authFunction"]()) {
-            return;
-        }
-    }
-    $route["routeFunction"]();
-}
-```
 #### Session
 
 Sessions are an almost secure (not 100%) way to identify a user over several requests.
@@ -194,9 +108,113 @@ Finally, a session can be destroyed again if required (such as logout):
 session_destroy();
 ```
 
-### Stage 3: Database, .env Config Files and Passwords
+### Stage 3: namespace/use, Auto-Loading, .htaccess and Router
 
-In stage 3 (and stage 4) WE-CRM will be extended with a database functionality. 
+In stage 3, namespaces and the usage statement are substituting the explicit definition of `require` and `include`.
+
+#### namespace/use and Auto-Loading
+
+In PHP a namespace-use scenario is not 100 % equivalent to the package-import scenario is for instance in Java. Namespaces in PHP are providing a similar mechanism for structuring source code, which is stored in separate files, using a namespace, package or folder-like structure. With the use statement, code within a namespace can be accessed if, and this is not equivalent to Java, for instance, a separated code part is included (`require` and `include`).
+
+It is advisable that an autoloader is implemented or a project is relying on a composer-related mechanism such as PSR-4, to overcome the separation of namespaces and files. The following autoloader links the directory structure and a namespace.
+```PHP
+namespace config;
+class Autoloader
+{
+    public static function autoload($className) {
+        //replace namespace backslash to directory separator of the current operating system
+        $className = str_replace('\\', DIRECTORY_SEPARATOR, $className);
+        $fileName = $className . '.php';
+
+        if (file_exists($fileName)) {
+            include_once($fileName);
+        } else {
+            return false;
+        }
+    }
+}
+```
+This own-written autoloader can then be registered using a PHP built-in function:
+```PHP
+spl_autoload_register('config\Autoloader::autoload');
+```
+
+#### .htaccess
+
+The following .htaccess configuration ensures that HTTPS is used (except on localhost) and redirects everything (except asset requests) to the index.php file:
+
+```apacheconf
+# .htaccess files provide a way to make configuration changes on a per-directory basis
+RewriteEngine On
+
+# this ensures that HTTPS is used except on localhost
+RewriteCond %{HTTP_HOST} !=localhost
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
+
+# this sends the authorization header to a PHP envirnoment variable
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# this redirects everything except asset requests to the index.php file
+RewriteRule ^(?!.*assets/)(.*) index.php [QSA,L,E=ORIGINAL_PATH:/$1]
+RewriteRule assets/(.*) view/assets/$1 [QSA,L]
+```
+
+#### Router
+
+The router provides redirection, an error header, the PATH_INFO and a ROOT_URL global. Then, the link structure has been adapted according to the routers (router configuration) using the ROOT_URL global if required.
+
+The following `route_auth` function stores a route (the configured path) in a multidimensional array using the HTTP method and the path. The route consists of an authentication and a route callback function.
+```PHP
+public static function route_auth($method, $path, $authFunction, $routeFunction) {
+    if(empty(self::$routes))
+        self::init();
+    $path = trim($path, '/');
+    self::$routes[$method][$path] = array("authFunction" => $authFunction, "routeFunction" => $routeFunction);
+}
+```
+The following `call_route` function is used to process every request. 
+```PHP
+public static function call_route($method, $path, $errorFunction) {
+    $path = trim(parse_url($path, PHP_URL_PATH), '/');
+    if(!array_key_exists($method, self::$routes) || !array_key_exists($path, self::$routes[$method])) {
+        $errorFunction(); return;
+    }
+    $route = self::$routes[$method][$path];
+    if(isset($route["authFunction"])) {
+        if (!$route["authFunction"]()) {
+            return;
+        }
+    }
+    $route["routeFunction"]();
+}
+```
+
+The router provides the possibility to register routes using a static method:
+```PHP
+ Router::route("POST", "/login", function () {
+    /** TODO */
+    Router::redirect("/");
+});
+```
+
+Besides, it is possible to set an authentication function before the callback function is executed:
+```PHP
+Router::route_auth("GET", "/", $authFunction, function () {
+    /** TODO */
+    layoutSetContent("customers.php");
+});
+```
+
+Finally, the router will be called by defining the following method in the entry point of the web application, which is, in this case, the `index.php` file:
+```PHP
+Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
+```
+
+### Stage 4: Database, .env Config Files and Passwords
+
+In stage 4 (and stage 5) WE-CRM will be extended with a database functionality. 
 
 #### Entity Relationship Diagram
 
@@ -236,7 +254,7 @@ ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENC
 ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
 ```
 
-As a result of this stage, the user (agent) registration and login will be realized using ([Sessions](#session)), ([.env Config Files](#env-config-files)), ([PDO](#pdo)) and dealing with ([Passwords](#session)) securely.
+As a result of this stage, the user (agent) registration and login will be realized using ([Sessions](#session)), ([.env Config Files](#env-config-files)), ([PDO](#pdo)) and dealing with ([Passwords](#passwords)) securely.
 
 #### .env Config Files
 
@@ -244,32 +262,47 @@ As a best practice, database related configuration should be stored outside of t
 
 ```ini
 [database]
-driver=<driver>
-host=<host>
-database=<database>
-user=<user>
-port=5432
-password=<password>
+database.dsn="pgsql:host=<host>;port=<port>;dbname=<database>;sslmode=require"
+database.user=<user>
+database.password=<password>
 ``` 
 
 To read such an INI file, the following PHP functions can be used:
 ```PHP
-$iniFile = "config/config.env";
-if(file_exists($iniFile)) {
-    $dataArray = parse_ini_file($iniFile, true);
-    $dataConfigArray = $dataArray[database];
+class Config
+{
+    protected static $iniFile = "config/config.env";
+    protected static $config = [];
+
+    public static function init()
+    {
+        if (file_exists(self::$iniFile)) {
+            self::$config = parse_ini_file(self::$iniFile);
+        } else if (file_exists("../". self::$iniFile)) {
+            self::$config = parse_ini_file("../". self::$iniFile);
+        } else {
+            self::loadENV();
+        }
+    }
     // ...
 }
 ```
 
 If this application is deployed out of this GitHub repository to Heroku, the Heroku app can be extended with a Postgresql database. The configuration items to this database can be accessed from PHP code, which is running on Heroku, by using environment variables as follows:
 ```PHP
-if(isset($_ENV["DATABASE_URL"])){
-    $dbopts = parse_url(getenv('DATABASE_URL'));
-    $config["pdo"]["dsn"] = "pgsql" . ":host=" . $dbopts["host"] . ";port=" . $dbopts["port"] . "; dbname=" . ltrim($dbopts["path"],'/') . "; sslmode=require";
-    $config["pdo"]["user"] = $dbopts["user"];
-    $config["pdo"]["password"] = $dbopts["pass"];
+private static function loadENV(){
+    if (isset($_ENV["DATABASE_URL"])) {
+        $dbopts = parse_url($_ENV["DATABASE_URL"]);
+        self::$config["database.dsn"] = "pgsql" . ":host=" . $dbopts["host"] . ";port=" . $dbopts["port"] . "; dbname=" . ltrim($dbopts["path"], '/') . "; sslmode=require";
+        self::$config["database.user"] = $dbopts["user"];
+        self::$config["database.password"] = $dbopts["pass"];
+    }
 }
+```
+
+The config class consists of a static method delivering configuration parameters defined in the `.env` file (INI-based syntax):
+```PHP
+Config::get("database.dsn");
 ```
 
 #### PDO
@@ -282,12 +315,15 @@ extension=php_pdo_pgsql.dll
 extension=php_pgsql.dll
 ```
 
-As a good practice, the PDO instantiation should be kept in a different file (in a later stage different class containing static methods).
+As a good practice, the PDO instantiation should be kept in a different class containing static methods.
 
-The initialization of PDO can be realized as following:
+The database class has been implemented to hold an instance of PDO. This instance will be created once if the class attribute is `NULL` - this can be realized as following:
 ```PHP
-$pdoInstance = new PDO ($dsn, $username, $password);
-$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+protected function __construct()
+{
+    self::$pdoInstance = new PDO (Config::get("database.dsn"), Config::get("database.user"), Config::get("database.password"));
+    self::$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}
 ```
 
 Then prepared statements can be executed. In the following example an associative array (`PDO::FETCH_ASSOC`) will be returned. In the later stage 7, objects will be mapped to tables (`PDO::FETCH_CLASS`):
@@ -322,11 +358,11 @@ if (password_verify($_POST["password"], $hashedPassword)) {
 }
 ```
 
-### Stage 4: Dynamic Views
+### Stage 5: Dynamic Views
 
-In stage 4, the web-application is extended with functionality to store and retrieve customer data in a procedural way and similar as described in the ([PDO](#pdo)) section.
+In stage 5, the web-application is extended with functionality to store and retrieve customer data similar as described in the ([PDO](#pdo)) section.
 
-The view files are extended with `<?php ?>` tags injecting the required dynamic data. In this stage, it is still a procedural implementation. The following example shows how a HTML table can be dynamically populated:
+The view files are extended with `<?php ?>` tags injecting the required dynamic data. The following example shows how a HTML table can be dynamically populated:
 ```PHP
 <?php foreach($customers as $customer): ?>
     <tr>
@@ -343,73 +379,9 @@ The following code snipped shows how an HTML form input field value can be set, 
 <input class="form-control" type="email" name="email" value="<?php echo !empty($customer["email"]) ? $customer["email"] : ''; ?>">
 ```
 
-### Stage 5: namespace/use, Auto-Loading and Class Oriented Router
+### Stage 6: Exception Handling and HTTP Status
 
-In stage 5, namespaces and the usage statement are substituting the explicit definition of `require` and `include`. This paradigm shift is valuable in an object or class oriented implementation.
-
-#### namespace/use and Auto-Loading
-
-In PHP a namespace-use scenario is not 100 % equivalent to the package-import scenario is for instance in Java. Namespaces in PHP are providing a similar mechanism for structuring source code, which is stored in separate files, using a namespace, package or folder-like structure. With the use statement, code within a namespace can be accessed if, and this is not equivalent to Java, for instance, a separated code part is included (`require` and `include`).
-
-It is advisable that an autoloader is implemented or a project is relying on a composer-related mechanism such as PSR-4, to overcome the separation of namespaces and files. The following autoloader links the directory structure and a namespace.
-```PHP
-namespace config;
-class Autoloader
-{
-    public static function autoload($className) {
-        //replace namespace backslash to directory separator of the current operating system
-        $className = str_replace('\\', DIRECTORY_SEPARATOR, $className);
-        $fileName = $className . '.php';
-
-        if (file_exists($fileName)) {
-            include_once($fileName);
-        } else {
-            return false;
-        }
-    }
-}
-```
-This own-written autoloader can then be registered using a PHP built-in function:
-```PHP
-spl_autoload_register('config\Autoloader::autoload');
-```
-
-#### Class Oriented Router
-
-In stage 5, the previous procedural router has been transferred to a class oriented router, which provides static methods.
-
-The router provides the possibility to register routes using a static method:
-```PHP
- Router::route("POST", "/login", function () {
-    /** TODO */
-    Router::redirect("/");
-});
-```
-
-Besides, it is possible to set an authentication function before the callback function is executed:
-```PHP
-Router::route_auth("GET", "/", $authFunction, function () {
-    /** TODO */
-    layoutSetContent("customers.php");
-});
-```
-
-Finally, the router will be called by defining the following method in the entry point of the web application, which is, in this case, the `index.php` file:
-```PHP
-Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);
-```
-
-### Stage 6: Database, Config Classes, Exception Handling and HTTP Status
-
-In stage 6, the procedural database and configuration developments will be transferred to a class oriented implementation.
-
-The config class consists of static methods delivering configuration parameters defined in the `.env` file (INI-based syntax).
-
-The database class has been implemented to hold an instance of PDO. This instance will be created once of the class attribute is `NULL`.
-
-#### Exception Handling and HTTP Status
-
-Besides, stage 6 contains classes for exception handling. Exceptions are an adequate way to handle with errors. The exceptions are thrown using a `throw` statement followed by an exception class:
+Stage 6 contains classes for exception handling. Exceptions are an adequate way to handle with errors. The exceptions are thrown using a `throw` statement followed by an exception class:
 
 ```PHP
 function inverse($x) {
@@ -489,7 +461,7 @@ try {
 
 ### Stage 7: Domain and Data Access Objects (DAO)
 
-In stage 7, the [Domain Model](#domain-model), which has been elaborated in [stage 3 (database section)](#database), will be transferred into PHP code and be accessible by implementing data access objects (DAO) in a CRUD (create read, update and delete) style.
+In stage 7, the [Domain Model](#domain-model), which has been elaborated in [stage 4 (database section)](#database), will be transferred into PHP code and be accessible by implementing data access objects (DAO) in a CRUD (create read, update and delete) style.
 
 #### Domain Model
 
@@ -950,43 +922,16 @@ Although there exists a mail functionality in PHP, an external mail service/API 
 
 ```ini
 [email]
-sendgrid-apikey=
+email.sendgrid-apikey=
 ```
 
-To make use of the externalized API key, the config class should be extended:
+If running this reference project on Heroku, the SendGrid API Key should be stored in an environment variable, e.g. `SENDGRID_APIKEY`:
 
 ```PHP
-class Config
-{
-    protected static $iniFile = "config/config.env";
-    protected static $config = [];
-
-    public static function init()
-    {
-        if (file_exists(self::$iniFile)) {
-            $data = parse_ini_file(self::$iniFile, true);
-            //...
-            self::$config["email"]["sendgrid-apikey"] = $data["email"]["sendgrid-apikey"];
-        } else {
-            if (isset($_ENV["SENDGRID_APIKEY"])) {
-                self::$config["email"]["sendgrid-apikey"] = getenv('SENDGRID_APIKEY');
-            }
-        }
-    }
-
-//...
-
-    public static function emailConfig($key)
-    {
-        if (empty(self::$config))
-            self::init();
-        return self::$config["email"][$key];
-    }
-
+if (isset($_ENV["SENDGRID_APIKEY"])) {
+    self::$config["email.sendgrid-apikey"] = $_ENV["SENDGRID_APIKEY"];
 }
 ```
-
-If running this reference project on Heroku, the SendGrid API Key should be stored in an environment variable, e.g. `SENDGRID_APIKEY`.
 
 Based on the [SendGrid API documentation](https://sendgrid.com/docs/API_Reference/index.html) the email service is implemented using plain PHP as follows:
 
@@ -1003,7 +948,7 @@ class EmailServiceClient
         $options = ["http" => [
             "method" => "POST",
             "header" => ["Content-Type: application/json",
-                "Authorization: Bearer ".Config::emailConfig("sendgrid-apikey").""],
+                "Authorization: Bearer ".Config::get("email.sendgrid-apikey").""],
             "content" => json_encode($jsonObj)
         ]];
         $context = stream_context_create($options);
@@ -1125,38 +1070,19 @@ class AgentPasswordResetController
 In this stage 14, a PDF creation service is used, which is called HyPDF. HyPDF provides an API for generating PDF files from text or HTML.
 
 Similar to stage 13, the HyPDF username and password must be stored outside of the source code, preferably in a config file:
+```ini
+[email]
+email.sendgrid-apikey=
+```
+
+If running this reference project on Heroku, the HyPDF username and password should be stored in an environment variable:
 
 ```PHP
-class Config
-{
-    protected static $iniFile = "config/config.env";
-    protected static $config = [];
-
-    public static function init()
-    {
-        if (file_exists(self::$iniFile)) {
-            $data = parse_ini_file(self::$iniFile, true);
-            //...
-            self::$config["pdf"]["hypdf-user"] = $data["pdf"]["hypdf-user"];
-            self::$config["pdf"]["hypdf-password"] = $data["pdf"]["hypdf-password"];
-        } else {
-            if (isset($_ENV["HYPDF_USER"])) {
-                self::$config["pdf"]["hypdf-user"] = getenv('HYPDF_USER');
-            }
-            if (isset($_ENV["HYPDF_PASSWORD"])) {
-                self::$config["pdf"]["hypdf-password"] = getenv('HYPDF_PASSWORD');
-            }
-        }
-    }
-
-//...
-
-    public static function pdfConfig($key)
-    {
-        if (empty(self::$config))
-            self::init();
-        return self::$config["pdf"][$key];
-    }
+if (isset($_ENV["HYPDF_USER"])) {
+    self::$config["pdf.hypdf-user"] = $_ENV["HYPDF_USER"];
+}
+if (isset($_ENV["HYPDF_PASSWORD"])) {
+    self::$config["pdf.hypdf-password"] = $_ENV["HYPDF_PASSWORD"];
 }
 ```
 
@@ -1168,8 +1094,8 @@ class PDFServiceClient
 
     public static function sendPDF($htmlData){
         $jsonObj = self::createPDFJSONObj();
-        $jsonObj->user = Config::pdfConfig("hypdf-user");
-        $jsonObj->password = Config::pdfConfig("hypdf-password");
+        $jsonObj->user = Config::get("pdf.hypdf-user");
+        $jsonObj->password = Config::get("pdf.hypdf-password");
         $jsonObj->content = $htmlData;
 
         $options = ["http" => [

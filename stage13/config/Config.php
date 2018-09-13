@@ -16,36 +16,30 @@ class Config
     public static function init()
     {
         if (file_exists(self::$iniFile)) {
-            $data = parse_ini_file(self::$iniFile, true);
-            $databaseConfig = $data["database"];
-            self::$config["pdo"]["dsn"] = $databaseConfig ["driver"] . ":host=" . $databaseConfig ["host"] . ";port=" . $databaseConfig["port"] . "; dbname=" . $databaseConfig ["database"] . "; sslmode=require";
-            self::$config["pdo"]["user"] = $databaseConfig["user"];
-            self::$config["pdo"]["password"] = $databaseConfig["password"];
-            self::$config["email"]["sendgrid-apikey"] = $data["email"]["sendgrid-apikey"];
+            self::$config = parse_ini_file(self::$iniFile);
+        } else if (file_exists("../". self::$iniFile)) {
+            self::$config = parse_ini_file("../". self::$iniFile);
         } else {
-            if (isset($_ENV["DATABASE_URL"])) {
-                $dbopts = parse_url(getenv('DATABASE_URL'));
-                self::$config["pdo"]["dsn"] = "pgsql" . ":host=" . $dbopts["host"] . ";port=" . $dbopts["port"] . "; dbname=" . ltrim($dbopts["path"], '/') . "; sslmode=require";
-                self::$config["pdo"]["user"] = $dbopts["user"];
-                self::$config["pdo"]["password"] = $dbopts["pass"];
-            }
-            if (isset($_ENV["SENDGRID_APIKEY"])) {
-                self::$config["email"]["sendgrid-apikey"] = getenv('SENDGRID_APIKEY');
-            }
+            self::loadENV();
         }
     }
 
-    public static function pdoConfig($key)
+    public static function get($key)
     {
         if (empty(self::$config))
             self::init();
-        return self::$config["pdo"][$key];
+        return self::$config[$key];
     }
 
-    public static function emailConfig($key)
-    {
-        if (empty(self::$config))
-            self::init();
-        return self::$config["email"][$key];
+    private static function loadENV(){
+        if (isset($_ENV["DATABASE_URL"])) {
+            $dbopts = parse_url($_ENV["DATABASE_URL"]);
+            self::$config["database.dsn"] = "pgsql" . ":host=" . $dbopts["host"] . ";port=" . $dbopts["port"] . "; dbname=" . ltrim($dbopts["path"], '/') . "; sslmode=require";
+            self::$config["database.user"] = $dbopts["user"];
+            self::$config["database.password"] = $dbopts["pass"];
+        }
+        if (isset($_ENV["SENDGRID_APIKEY"])) {
+            self::$config["email.sendgrid-apikey"] = $_ENV["SENDGRID_APIKEY"];
+        }
     }
 }

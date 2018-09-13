@@ -5,9 +5,11 @@
  * Date: 12.09.2017
  * Time: 21:30
  */
-require_once("router/router.php");
+require_once("config/Autoloader.php");
 require_once("view/layout.php");
-require_once("config/config.php");
+
+use router\Router;
+use database\Database;
 
 session_start();
 
@@ -15,28 +17,27 @@ $authFunction = function () {
     if (isset($_SESSION["agentLogin"])) {
         return true;
     }
-    redirect("/login");
+    Router::redirect("/login");
     return false;
 };
 
 $errorFunction = function () {
-    errorHeader();
+    Router::errorHeader();
     require_once("view/404.php");
 };
 
-route("GET", "/login", function () {
+Router::route("GET", "/login", function () {
     require_once("view/agentLogin.php");
 });
 
-route("GET", "/register", function () {
+Router::route("GET", "/register", function () {
     require_once("view/agentEdit.php");
 });
 
-route("POST", "/register", function () {
+Router::route("POST", "/register", function () {
     $name = $_POST["name"];
     $email = $_POST["email"];
-    require("database/database.php");
-    $pdoInstance = connect();
+    $pdoInstance = Database::connect();
     $stmt = $pdoInstance->prepare('
         INSERT INTO agent (name, email, password)
           SELECT :name,:email,:password
@@ -48,13 +49,12 @@ route("POST", "/register", function () {
     $stmt->bindValue(':emailExist', $email);
     $stmt->bindValue(':password', password_hash($_POST["password"], PASSWORD_DEFAULT));
     $stmt->execute();
-    redirect("/logout");
+    Router::redirect("/logout");
 });
 
-route("POST", "/login", function () {
+Router::route("POST", "/login", function () {
     $email = $_POST["email"];
-    require("database/database.php");
-    $pdoInstance = connect();
+    $pdoInstance = Database::connect();
     $stmt = $pdoInstance->prepare('
             SELECT * FROM agent WHERE email = :email;');
     $stmt->bindValue(':email', $email);
@@ -75,91 +75,41 @@ route("POST", "/login", function () {
             }
         }
     }
-    redirect("/");
+    Router::redirect("/");
 });
 
-route("GET", "/logout", function () {
-    session_destroy();
-    redirect("/login");
-});
+    Router::route("GET", "/logout", function () {
+        session_destroy();
+        Router::redirect("/login");
+    });
 
-route_auth("GET", "/", $authFunction, function () {
-    require("database/database.php");
-    $pdoInstance = connect();
-    $stmt = $pdoInstance->prepare('
-            SELECT * FROM customer WHERE agentid = :agentId ORDER BY id;');
-    $stmt->bindValue(':agentId', $_SESSION["agentLogin"]["id"]);
-    $stmt->execute();
-    global $customers;
-    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    layoutSetContent("customers.php");
-});
+    Router::route_auth("GET", "/", $authFunction, function () {
+        layoutSetContent("customers.php");
+    });
 
-route_auth("GET", "/agent/edit", $authFunction, function () {
-    require_once("view/agentEdit.php");
-});
+    Router::route_auth("GET", "/agent/edit", $authFunction, function () {
+        require_once("view/agentEdit.php");
+    });
 
-route_auth("GET", "/customer/create", $authFunction, function () {
-    layoutSetContent("customerEdit.php");
-});
+    Router::route_auth("GET", "/customer/create", $authFunction, function () {
+        layoutSetContent("customerEdit.php");
+    });
 
-route_auth("GET", "/customer/edit", $authFunction, function () {
-    $id = $_GET["id"];
-    require("database/database.php");
-    $pdoInstance = connect();
-    $stmt = $pdoInstance->prepare('
-            SELECT * FROM customer WHERE id = :id;');
-    $stmt->bindValue(':id', $id);
-    $stmt->execute();
-    global $customer;
-    $customer = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
-    layoutSetContent("customerEdit.php");
-});
+    Router::route_auth("GET", "/customer/edit", $authFunction, function () {
+        layoutSetContent("customerEdit.php");
+    });
 
-route_auth("GET", "/customer/delete", $authFunction, function () {
-    $id = $_GET["id"];
-    require("database/database.php");
-    $pdoInstance = connect();
-    $stmt = $pdoInstance->prepare('
-            DELETE FROM customer
-            WHERE id = :id
-        ');
-    $stmt->bindValue(':id', $id);
-    $stmt->execute();
-    redirect("/");
-});
+    Router::route_auth("GET", "/customer/delete", $authFunction, function () {
+        $id = $_GET["id"];
+        Router::redirect("/");
+    });
 
-route_auth("POST", "/customer/update", $authFunction, function () {
-    $id = $_POST["id"];
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $mobile = $_POST["mobile"];
-    if ($id === "") {
-        require("database/database.php");
-        $pdoInstance = connect();
-        $stmt = $pdoInstance->prepare('
-            INSERT INTO customer (name, email, mobile, agentid)
-            VALUES (:name, :email , :mobile, :agentid)');
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':mobile', $mobile);
-        $stmt->bindValue(':agentid', $_SESSION["agentLogin"]["id"]);
-        $stmt->execute();
-    } else {
-        require("database/database.php");
-        $pdoInstance = connect();
-        $stmt = $pdoInstance->prepare('
-            UPDATE customer SET name = :name,
-                email = :email,
-                mobile = :mobile
-            WHERE id = :id');
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':mobile', $mobile);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-    }
-    redirect("/");
-});
+    Router::route_auth("POST", "/customer/update", $authFunction, function () {
+        $id = $_POST["id"];
+        $name = $_POST["name"];
+        $email = $_POST["email"];
+        $mobile = $_POST["mobile"];
+        Router::redirect("/");
+    });
 
-call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO']);
+Router::call_route($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $errorFunction);

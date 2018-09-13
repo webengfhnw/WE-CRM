@@ -5,7 +5,6 @@
  * Date: 13.09.2017
  * Time: 17:06
  */
-global $customer;
 ?>
 <div class="container">
     <div class="page-header">
@@ -14,25 +13,25 @@ global $customer;
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>ID </span></div>
-                <input class="form-control" type="text" name="id" readonly="" value="<?php echo !empty($customer["id"]) ? $customer["id"] : ''; ?>">
+                <input class="form-control" type="text" name="id" readonly="">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Name </span></div>
-                <input class="form-control" type="text" name="name" value="<?php echo !empty($customer["name"]) ? $customer["name"] : ''; ?>">
+                <input class="form-control" type="text" name="name">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon"><span>Email </span></div>
-                <input class="form-control" type="email" name="email" value="<?php echo !empty($customer["email"]) ? $customer["email"] : ''; ?>">
+                <input class="form-control" type="email" name="email">
             </div>
         </div>
         <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><span>Mobile </span></div>
-                    <input class="form-control" type="text" name="mobile" value="<?php echo !empty($customer["mobile"]) ? $customer["mobile"] : ''; ?>">
+                    <input class="form-control" type="text" name="mobile">
                 </div>
         </div>
         <div class="btn-group" role="group">

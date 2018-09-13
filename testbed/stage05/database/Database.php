@@ -2,20 +2,34 @@
 /**
  * Created by PhpStorm.
  * User: andreas.martin
- * Date: 31.10.2017
- * Time: 08:05
+ * Date: 22.09.2017
+ * Time: 15:13
  */
 
 namespace database;
 
+use \PDO;
 use config\Config;
-
-//require_once "config\Config.php";
 
 class Database
 {
+    private static $pdoInstance = null;
+
+    protected function __construct()
+    {
+        self::$pdoInstance = new PDO (Config::get("database.dsn"), Config::get("database.user"), Config::get("database.password"));
+        self::$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
     public static function connect()
     {
-        return Config::pdoConfig("");
+        if (self::$pdoInstance) {
+            return self::$pdoInstance;
+        }
+
+        new self();
+
+        return self::$pdoInstance;
     }
+
 }
