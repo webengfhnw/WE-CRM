@@ -19,5 +19,5 @@ CREATE TABLE AuthToken (
   Expiration timestamp NOT NULL, 
   Type       int(10) NOT NULL, 
   PRIMARY KEY (ID));
-ALTER TABLE Customer ADD INDEX AgentCustomer (AgentID), ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
-ALTER TABLE AuthToken ADD INDEX AgentToken (AgentID), ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE Customer ADD CONSTRAINT AgentCustomer FOREIGN KEY (AgentID) REFERENCES Agent (ID);
+ALTER TABLE AuthToken ADD CONSTRAINT AgentToken FOREIGN KEY (AgentID) REFERENCES Agent (ID);
