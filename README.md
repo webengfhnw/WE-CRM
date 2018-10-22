@@ -148,7 +148,7 @@ The following .htaccess configuration ensures that HTTPS is used (except on loca
 RewriteEngine On
 
 # this ensures that HTTPS is used except on localhost
-RewriteCond %{HTTP_HOST} !=localhost
+RewriteCond %{HTTP_HOST} !^localhost(?::\d+)?$ [NC]
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,L,R=301]
