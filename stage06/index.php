@@ -12,6 +12,7 @@ use router\Router;
 use database\Database;
 use http\HTTPException;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

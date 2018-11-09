@@ -16,6 +16,7 @@ use http\HTTPException;
 use controller\AgentPasswordResetController;
 use controller\EmailController;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

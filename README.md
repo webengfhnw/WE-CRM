@@ -83,8 +83,9 @@ In stage 02 the HTML prototype files will be transferred to PHP files, and a bas
 
 Sessions are an almost secure (not 100%) way to identify a user over several requests.
 
-It is recommended to start a session at the beginning of a PHP script as follows: 
+It is recommended to start a session at the beginning of a PHP script including the definition to have `httponly` session cookies only as follows: 
 ```PHP
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 ```
 
@@ -895,7 +896,7 @@ public static function login(){
         $token = $authService->issueToken();
         $_SESSION["agentLogin"]["token"] = $token;
         if(isset($_POST["remember"])) {
-            setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/");
+            setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/", "", false, true);
         }
     }
 }

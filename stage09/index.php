@@ -14,6 +14,7 @@ use service\AuthServiceImpl;
 use service\CustomerServiceImpl;
 use view\TemplateView;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 function layoutRendering(TemplateView $contentView){

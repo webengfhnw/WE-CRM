@@ -7,6 +7,7 @@
  */
 require_once("layout.php");
 
+ini_set( 'session.cookie_httponly', 1 );
 /* TODO: start the session.
  */
 session_start();
