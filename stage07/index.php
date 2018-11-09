@@ -15,6 +15,7 @@ use domain\Agent;
 use dao\CustomerDAO;
 use dao\AgentDAO;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

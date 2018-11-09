@@ -35,14 +35,14 @@ class AuthController
             $token = $authService->issueToken();
             $_SESSION["agentLogin"]["token"] = $token;
             if(isset($_POST["remember"])) {
-                setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/");
+                setcookie("token", $token, (new \DateTime('now'))->modify('+30 days')->getTimestamp(), "/", "", false, true);
             }
         }
     }
 
     public static function logout(){
         session_destroy();
-        setcookie("token","",time() - 3600, "/");
+        setcookie("token","",time() - 3600, "/", "",false, true);
     }
 
 }

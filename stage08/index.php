@@ -14,6 +14,7 @@ use domain\Customer;
 use service\AuthServiceImpl;
 use service\CustomerServiceImpl;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

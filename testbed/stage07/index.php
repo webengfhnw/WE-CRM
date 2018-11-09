@@ -19,6 +19,7 @@ use dao\AgentDAO;
 /** TODO: Generate and implement DAOs */
 /** TODO: Transfer "POST /register" and "GET /" routes to use domain objects and DAOs */
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

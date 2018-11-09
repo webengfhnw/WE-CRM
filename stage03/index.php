@@ -10,6 +10,7 @@ require_once("view/layout.php");
 
 use router\Router;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {

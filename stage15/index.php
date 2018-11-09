@@ -20,6 +20,7 @@ use http\HTTPException;
 use http\HTTPHeader;
 use http\HTTPStatusCode;
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 $authFunction = function () {
