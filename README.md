@@ -1072,8 +1072,9 @@ In this stage 14, a PDF creation service is used, which is called HyPDF. HyPDF p
 
 Similar to stage 13, the HyPDF username and password must be stored outside of the source code, preferably in a config file:
 ```ini
-[email]
-email.sendgrid-apikey=
+[pdf]
+pdf.hypdf-user=
+pdf.hypdf-password=
 ```
 
 If running this reference project on Heroku, the HyPDF username and password should be stored in an environment variable:
