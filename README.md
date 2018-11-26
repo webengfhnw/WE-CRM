@@ -919,7 +919,7 @@ In stage 13, an email sending and password reset functionalities will be impleme
 
 #### Email
 
-Although there exists a mail functionality in PHP, an external mail service/API is used here. An external API can offer additional functionalities and can provide an easier implementation. In this reference project, the SendGrid API is used for sending emails. Before using the SendGrid API an Account and an API-Key is required. This API key must be stored in an external configuration file and kept outside of version control. It is advisable that the API key will be stored in the [.env Config File](#env-config-files) as follows:
+Although there exists a mail functionality in PHP, an external mail service/API is used here. An external API can offer additional functionalities and can provide an easier implementation. In this reference project, the SendGrid API is used for sending emails. Before using the SendGrid API an account and an API-Key is required. This API key must be stored in an external configuration file and kept outside of version control. It is advisable that the API key will be stored in the [.env Config File](#env-config-files) as follows:
 
 ```ini
 [email]
