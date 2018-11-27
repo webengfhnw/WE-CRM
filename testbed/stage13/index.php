@@ -5,6 +5,8 @@
  * Date: 16.10.2017
  * Time: 14:04
  */
+require_once("config/Autoloader.php");
+
 $jsonData = '{
   "personalizations": [
     {
@@ -37,7 +39,8 @@ $options = ["http" => [
 ]];
 $context = stream_context_create($options);
 $response = file_get_contents("https://api.sendgrid.com/v3/mail/send", false, $context);
-echo json_decode($response);
+if(strpos($http_response_header[0],"202"))
+    echo json_decode($response);
 
 /*
 use service\EmailServiceClient;
