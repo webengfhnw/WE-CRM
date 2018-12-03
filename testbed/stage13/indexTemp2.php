@@ -6,7 +6,7 @@
  * Time: 14:04
  */
 
-class Send
+class SendClass
 {
 
     public static function send()
@@ -84,6 +84,6 @@ class Send
     }
 }
 
-Send::send();
-Send::send();
-Send::send();
+SendClass::send();
+SendClass::send();
+SendClass::send();
