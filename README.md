@@ -623,7 +623,7 @@ class TemplateView {
     public function render() {
         extract($this->variables);
         ob_start();
-        require_once($this->view);
+        require($this->view);
         return ob_get_clean();
     }
 }
