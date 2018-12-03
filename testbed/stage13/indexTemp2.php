@@ -11,7 +11,7 @@ class Send
 
     public static function send()
     {
-        $jsonObj = createPDFJSONObj();
+        $jsonObj = self::createPDFJSONObj();
         $jsonObj->user = $_ENV["HYPDF_USER"];
         $jsonObj->password = $_ENV["HYPDF_PASSWORD"];
         $jsonObj->content = "<html><p>Hello, world!</p></html>";
@@ -24,7 +24,7 @@ class Send
         $context = stream_context_create($options);
         $response = file_get_contents("https://www.hypdf.com/htmltopdf", false, $context);
 
-        $jsonObj = createEmailJSONObj();
+        $jsonObj = self::createEmailJSONObj();
         $jsonObj->personalizations[0]->to[0]->email = "andreas.martin@fhnw.ch";
         $jsonObj->subject = "Hello, World!";
         $jsonObj->content[0]->value = "<html><p>Hello, world!</p></html>";
