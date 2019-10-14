@@ -83,7 +83,9 @@ In stage 02 the HTML prototype files will be transferred to PHP files, and a bas
 
 Sessions are an almost secure (not 100%) way to identify a user over several requests.
 
-It is recommended to start a session at the beginning of a PHP script including the definition to have `httponly` session cookies only as follows: 
+> "To help mitigate cross-site scripting (XSS) attacks, HttpOnly cookies are inaccessible to JavaScript's Document.cookie API; they are only sent to the server." (see: MDN web docs - HTTP cookies)[https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies]
+
+Therefore, it is recommended to start a session at the beginning of a PHP script including the definition to have `httponly` session cookies only as follows: 
 ```PHP
 ini_set( 'session.cookie_httponly', 1 );
 session_start();
