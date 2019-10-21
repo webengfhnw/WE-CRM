@@ -17,8 +17,6 @@ class Autoloader
 
         if (file_exists($fileName)) {
             include_once($fileName);
-        } else {
-            return false;
         }
     }
 }
