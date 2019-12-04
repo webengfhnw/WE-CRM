@@ -86,13 +86,12 @@
             getCustomers(function (result) {
                 $("#tableData").empty();
                 $.each(result, function (i, item) {
-                    $("#tableData").append("<tr><td>" + item.id + "</td><td>" + item.name + "</td><td>" + item.email + "</td><td>" + item.mobile + "</td>" +
+                    $("#tableData").append($("<tr>").append($("<td>").text(item.id)).append($("<td>").text(item.name)).append($("<td>").text(item.email)).append($("<td>").text(item.mobile)).append($(
                         "<td><div class='btn-group btn-group-sm' role='group'>" +
                         "<a class='btn btn-default' role='button' href='customerEdit.html?id=" + item.id + "'> <i class='fa fa-edit'></i></a>" +
                         "<button class='btn btn-default' type='button' data-target='#confirm-modal' data-toggle='modal' data-id='" + item.id + "'> <i class='glyphicon glyphicon-trash'></i></button>" +
                         "</div></td></tr>"
-                    )
-                    ;
+                    )));
                 });
             });
         }

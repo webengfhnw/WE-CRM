@@ -3,31 +3,31 @@
 This is a reference project elaborated by the students step-by-step in every FHNW web engineering lecture.
 
 - [Analysis](#analysis)
-    - [Scenario](#scenario)
-    - [Use Case](#use-case)
+  - [Scenario](#scenario)
+  - [Use Case](#use-case)
 - [Design](#design)
-    - [Information Systems Modelling](#information-systems-modelling)
-    - [Information Systems (Layering) Architecture](#information-systems-layering-architecture)
+  - [Information Systems Modelling](#information-systems-modelling)
+  - [Information Systems (Layering) Architecture](#information-systems-layering-architecture)
 - [Implementation](#implementation)
-    - [Stage 1: Building a Static Website with Bootstrap](#stage-1-building-a-static-website-with-bootstrap)
-    - [Stage 2: PHP Files and Session](#stage-2-php-files-and-session)
-    - [Stage 3: namespace/use, Auto-Loading, .htaccess and Router](#stage-3-namespaceuse-auto-loading-htaccess-and-router)
-    - [Stage 4: Database, .env Config Files and Passwords](#stage-4-database-env-config-files-and-passwords)
-    - [Stage 5: Dynamic Views](#stage-5-dynamic-views)
-    - [Stage 6: Exception Handling and HTTP Status](#stage-6-exception-handling-and-http-status)
-    - [Stage 7: Domain and Data Access Objects (DAO)](#stage-7-domain-and-data-access-objects-dao)
-    - [Stage 8: Business Services](#stage-8-business-services)
-    - [Stage 9: Template View Pattern and XSS](#stage-9-template-view-pattern-and-xss)
-    - [Stage 10: Model-View-Controller](#stage-10-model-view-controller)
-    - [Stage 11: Validation](#stage-11-validation)
-    - [Stage 12: Auth and Remember Me](#stage-12-auth-and-remember-me)
-    - [Stage 13: Email and Password Reset](#stage-13-email-and-password-reset)
-    - [Stage 14: PDF](#stage-14-pdf)
-    - [Stage 15: REST Service API](#stage-15-rest-service-api)
-    - [Stage 16: JavaScript and jQuery Client](#stage-16-javascript-and-jquery-client)
+  - [Stage 1: Building a Static Website with Bootstrap](#stage-1-building-a-static-website-with-bootstrap)
+  - [Stage 2: PHP Files and Session](#stage-2-php-files-and-session)
+  - [Stage 3: namespace/use, Auto-Loading, .htaccess and Router](#stage-3-namespaceuse-auto-loading-htaccess-and-router)
+  - [Stage 4: Database, .env Config Files and Passwords](#stage-4-database-env-config-files-and-passwords)
+  - [Stage 5: Dynamic Views](#stage-5-dynamic-views)
+  - [Stage 6: Exception Handling and HTTP Status](#stage-6-exception-handling-and-http-status)
+  - [Stage 7: Domain and Data Access Objects (DAO)](#stage-7-domain-and-data-access-objects-dao)
+  - [Stage 8: Business Services](#stage-8-business-services)
+  - [Stage 9: Template View Pattern and XSS](#stage-9-template-view-pattern-and-xss)
+  - [Stage 10: Model-View-Controller](#stage-10-model-view-controller)
+  - [Stage 11: Validation](#stage-11-validation)
+  - [Stage 12: Auth and Remember Me](#stage-12-auth-and-remember-me)
+  - [Stage 13: Email and Password Reset](#stage-13-email-and-password-reset)
+  - [Stage 14: PDF](#stage-14-pdf)
+  - [Stage 15: REST Service API](#stage-15-rest-service-api)
+  - [Stage 16: JavaScript and jQuery Client](#stage-16-javascript-and-jquery-client)
 - [Deployment](#deployment)
-    - [Project Set-Up](#project-set-up)
-    - [Heroku Deployment](#heroku-deployment)
+  - [Project Set-Up](#project-set-up)
+  - [Heroku Deployment](#heroku-deployment)
 - [Maintainer](#maintainer)
 - [License](#license)
 
@@ -1421,17 +1421,18 @@ function loadData() {
     getCustomers(function (result) {
         $("#tableData").empty();
         $.each(result, function (i, item) {
-            $("#tableData").append("<tr><td>" + item.id + "</td><td>" + item.name + "</td><td>" + item.email + "</td><td>" + item.mobile + "</td>" +
+            $("#tableData").append($("<tr>").append($("<td>").text(item.id)).append($("<td>").text(item.name)).append($("<td>").text(item.email)).append($("<td>").text(item.mobile)).append($(
                 "<td><div class='btn-group btn-group-sm' role='group'>" +
                 "<a class='btn btn-default' role='button' href='customerEdit.html?id=" + item.id + "'> <i class='fa fa-edit'></i></a>" +
                 "<button class='btn btn-default' type='button' data-target='#confirm-modal' data-toggle='modal' data-id='" + item.id + "'> <i class='glyphicon glyphicon-trash'></i></button>" +
                 "</div></td></tr>"
-            )
-            ;
+            )));
         });
     });
 }
 ```
+
+> Don't forget that `.append()` can be dangerous when appending user input or database data. This untrusted data could contain harmful XSS-related JavaScript. Therefore untrusted data must be added using `.text()` to escape all special characters.
 
 Nevertheless, it might be advisable for readability to use a third-party library or a jQuery extension for appending HTML to the DOM.
 
